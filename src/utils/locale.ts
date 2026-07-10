@@ -20,3 +20,11 @@ export function resolveLocale(
 
   return defaultLocale;
 }
+
+export const LOCALE_COOKIE_NAME = 'LOCALE';
+
+export const LOCALE_COOKIE_OPTIONS = {
+  path: '/',
+  sameSite: 'lax' as const,
+  maxAge: 60 * 60 * 24 * 365, // 1 year
+};

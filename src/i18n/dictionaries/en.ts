@@ -81,6 +81,35 @@ export const en = {
       and: "and",
       privacy: "Privacy Policy"
     }
+  },
+  onboarding: {
+      welcome_title: "Welcome to Ledgr",
+      welcome_subtitle: "Let's configure your initial preferences.",
+      theme_label: "Theme",
+      theme_placeholder: "Select a theme",
+      theme_light: "Light",
+      theme_dark: "Dark",
+      theme_system: "System Default",
+      language_label: "Language",
+      language_placeholder: "Select a language",
+      date_format_label: "Date Format",
+      date_format_placeholder: "Select date format",
+      currency_label: "Main Currency",
+      currency_placeholder: "Select currency",
+      currency_search: "Search currency...",
+      currency_not_found: "No currency found.",
+      currency_popular: "Popular Currencies",
+      currency_all: "All Currencies",
+      currency_description: "This is the base currency for all your net worth calculations and dashboard charts.",
+      important_title: "Important",
+      important_description_1: "Your Main Currency is completely immutable and",
+      important_description_bold: "cannot be changed",
+      important_description_2: ". Please double check.",
+      btn_saving: "Saving preferences...",
+      btn_submit: "Complete Setup",
+      preview_net_worth: "Net Worth",
+      preview_checking: "Checking Account",
+      preview_savings: "Savings Account",
   }
 };
 

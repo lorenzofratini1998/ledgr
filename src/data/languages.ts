@@ -1,8 +1,8 @@
-type Language = { iso_code: string; is_default: boolean };
+type Language = { locale: string; is_default: boolean; native_name: string };
 
 export async function getActiveLanguages() {
   try {
-    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/languages?select=iso_code,is_default&is_enabled=eq.true`;
+    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/languages?select=locale,is_default,native_name&is_enabled=eq.true`;
 
     const res = await fetch(url, {
       cache: 'force-cache',
@@ -20,14 +20,14 @@ export async function getActiveLanguages() {
     const languages = await res.json() as Language[];
 
     return {
-      activeLocales: languages.map(l => l.iso_code) || ['en'],
-      defaultLocale: languages.find(l => l.is_default)?.iso_code || 'en',
+      activeLocales: languages.map(l => ({ locale: l.locale, native_name: l.native_name || l.locale })),
+      defaultLocale: languages.find(l => l.is_default)?.locale || 'en-US',
     };
   } catch (error) {
     console.error("Error fetching languages:", error);
     return {
-      activeLocales: ['en'],
-      defaultLocale: 'en',
+      activeLocales: [{ locale: 'en-US', native_name: 'English' }],
+      defaultLocale: 'en-US',
     };
   }
 }
