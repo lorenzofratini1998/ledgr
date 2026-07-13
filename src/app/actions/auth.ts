@@ -3,14 +3,15 @@
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
+import { headers, cookies } from "next/headers";
+import { ActionResponse } from "@/types/actions";
 
-export async function signInWithEmail(prevState: { error: string }, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+export async function signInWithEmail(payload: Record<string, string>): Promise<ActionResponse> {
+  const email = payload.email;
+  const password = payload.password;
 
   if (!email || !password) {
-    return { error: "Email and password are required." };
+    return { success: false, message: "Email and password are required." };
   }
 
   const supabase = await createClient();
@@ -20,26 +21,25 @@ export async function signInWithEmail(prevState: { error: string }, formData: Fo
   });
 
   if (error) {
-    return { error: error.message };
+    return { success: false, message: error.message };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { success: true, message: "Logged in successfully" };
 }
 
-export async function signUpWithEmail(prevState: { error: string }, formData: FormData) {
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
+export async function signUpWithEmail(payload: Record<string, string>): Promise<ActionResponse> {
+  const email = payload.email;
+  const password = payload.password;
+  const confirmPassword = payload.confirmPassword;
+  const firstName = payload.firstName;
+  const lastName = payload.lastName;
 
   if (!email || !password) {
-    return { error: "Email and password are required." };
+    return { success: false, message: "Email and password are required." };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
+    return { success: false, message: "Passwords do not match." };
   }
 
   const fullName = [firstName, lastName].filter(Boolean).join(" ");
@@ -56,25 +56,28 @@ export async function signUpWithEmail(prevState: { error: string }, formData: Fo
   });
 
   if (error) {
-    return { error: error.message };
+    return { success: false, message: error.message };
   }
 
-  revalidatePath("/", "layout");
-  redirect("/dashboard");
+  return { success: true, message: "Registered successfully" };
 }
 
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
+  
+  const cookieStore = await cookies();
+  cookieStore.delete("ONBOARDING_COMPLETED");
+
   revalidatePath("/", "layout");
   redirect("/login");
 }
 
-export async function requestPasswordReset(prevState: { error: string, success?: string }, formData: FormData) {
-  const email = formData.get("email") as string;
+export async function requestPasswordReset(payload: Record<string, string>): Promise<ActionResponse> {
+  const email = payload.email;
 
   if (!email) {
-    return { error: "Email is required." };
+    return { success: false, message: "Email is required." };
   }
 
   const supabase = await createClient();
@@ -86,30 +89,30 @@ export async function requestPasswordReset(prevState: { error: string, success?:
   });
 
   if (error) {
-    return { error: error.message };
+    return { success: false, message: error.message };
   }
 
-  return { error: "", success: "true" };
+  return { success: true, message: "Password reset email sent." };
 }
 
-export async function updateUserPassword(prevState: { error: string }, formData: FormData) {
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+export async function updateUserPassword(payload: Record<string, string>): Promise<ActionResponse> {
+  const password = payload.password;
+  const confirmPassword = payload.confirmPassword;
 
   if (!password || !confirmPassword) {
-    return { error: "Password is required." };
+    return { success: false, message: "Password is required." };
   }
 
   if (password !== confirmPassword) {
-    return { error: "Passwords do not match." };
+    return { success: false, message: "Passwords do not match." };
   }
 
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    return { error: error.message };
+    return { success: false, message: error.message };
   }
 
-  redirect("/login");
+  return { success: true, message: "Password updated successfully" };
 }

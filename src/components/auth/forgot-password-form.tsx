@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { requestPasswordReset } from "@/app/actions/auth";
 import {
   Form,
@@ -31,7 +32,6 @@ export function ForgotPasswordForm({
 }: React.ComponentProps<"div"> & { dictionary: Dictionary }) {
   const t = dictionary.auth.forgotPassword;
   const [isPending, startTransition] = useTransition();
-  const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
   const formSchema = getForgotPasswordSchema(t.errors);
@@ -44,16 +44,25 @@ export function ForgotPasswordForm({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setServerError(null);
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append("email", values.email);
-
-      const result = await requestPasswordReset({ error: "" }, formData);
-      if (result?.error) {
-        setServerError(result.error);
-      } else if (result?.success) {
-        setSuccess(true);
+      try {
+        const response = await requestPasswordReset({ email: values.email });
+        if (response.success) {
+          setSuccess(true);
+          toast.success(response.message || "Password reset email sent.");
+        } else {
+          if (response.errors) {
+            Object.entries(response.errors).forEach(([field, messages]) => {
+              form.setError(field as Parameters<typeof form.setError>[0], {
+                type: "server",
+                message: messages[0],
+              });
+            });
+          }
+          toast.error(response.message || "Failed to send reset email");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
       }
     });
   };
@@ -92,11 +101,6 @@ export function ForgotPasswordForm({
                       )}
                     />
 
-                    {serverError && (
-                      <p className="text-sm text-destructive font-medium text-center">
-                        {serverError}
-                      </p>
-                    )}
 
                     <Button type="submit" className="w-full mt-2" disabled={isPending}>
                       {isPending ? t.submitting : t.submit}

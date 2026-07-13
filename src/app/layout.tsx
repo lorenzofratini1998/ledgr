@@ -5,6 +5,7 @@ import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
 import { PWAManager } from "@/components/pwa-manager";
 import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "@/components/ui/sonner";
 
 export const viewport: Viewport = {
   themeColor: "#000000",
@@ -52,6 +53,7 @@ export default function RootLayout({
             {children}
             <PWAManager />
           </QueryProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

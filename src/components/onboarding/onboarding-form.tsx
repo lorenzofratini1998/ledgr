@@ -6,7 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { Check, ChevronsUpDown, Loader2, AlertTriangle, Wallet, Sparkles } from 'lucide-react';
 
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
+import { CurrencySelector } from '@/components/shared/currency-selector';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -83,7 +85,6 @@ export function OnboardingForm({ languages, currencies, defaultLocale, defaultCu
   const router = useRouter();
   const [isPending, setIsPending] = useState(false);
   const [isPendingLang, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
   const form = useForm<OnboardingPayload>({
     resolver: zodResolver(onboardingSchema),
@@ -100,16 +101,25 @@ export function OnboardingForm({ languages, currencies, defaultLocale, defaultCu
 
   async function onSubmit(data: OnboardingPayload) {
     setIsPending(true);
-    setError(null);
 
     const result = await completeBasicOnboarding(data);
 
     if (!result.success) {
-      setError(result.error || 'Something went wrong');
+      if (result.errors) {
+        Object.entries(result.errors).forEach(([field, messages]) => {
+          form.setError(field as Parameters<typeof form.setError>[0], {
+            type: "server",
+            message: messages[0],
+          });
+        });
+      }
+      toast.error(result.message || 'Something went wrong');
       setIsPending(false);
       return;
     }
 
+    toast.success(result.message || 'Onboarding completed successfully');
+    
     // Refresh and redirect to dashboard
     router.refresh();
     router.push('/');
@@ -154,13 +164,6 @@ export function OnboardingForm({ languages, currencies, defaultLocale, defaultCu
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col space-y-6 w-full">
 
-                  {error && (
-                    <Alert variant="destructive">
-                      <AlertTriangle className="h-4 w-4" />
-                      <AlertTitle>Error</AlertTitle>
-                      <AlertDescription>{error}</AlertDescription>
-                    </Alert>
-                  )}
 
                   <FormField
                     control={form.control}
@@ -254,90 +257,23 @@ export function OnboardingForm({ languages, currencies, defaultLocale, defaultCu
                   <FormField
                     control={form.control}
                     name="primary_currency_code"
-                    render={({ field }) => {
-                      const selected = currencies.find((c) => c.iso_code === field.value);
-                      return (
-                        <FormItem className="flex flex-col">
-                          <FormLabel>{dict.currency_label}</FormLabel>
-                          <Popover>
-                            <PopoverTrigger
-                              render={
-                                <FormControl>
-                                  <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    className={cn(
-                                      "w-full justify-between",
-                                      !field.value && "text-muted-foreground"
-                                    )}
-                                  >
-                                    {selected
-                                      ? `${selected.iso_code} - ${selected.name} (${selected.symbol})`
-                                      : dict.currency_placeholder}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                  </Button>
-                                </FormControl>
-                              }
-                            />
-                            <PopoverContent className="w-[300px] lg:w-[400px] p-0" align="start">
-                              <Command>
-                                <CommandInput placeholder={dict.currency_search} />
-                                <CommandList>
-                                  <CommandEmpty>{dict.currency_not_found}</CommandEmpty>
-                                  <CommandGroup heading={dict.currency_popular}>
-                                    {popularCurrencies.map((currency) => (
-                                      <CommandItem
-                                        value={`${currency.iso_code} ${currency.name}`}
-                                        key={currency.iso_code}
-                                        onSelect={() => {
-                                          form.setValue("primary_currency_code", currency.iso_code, { shouldValidate: true });
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            currency.iso_code === field.value
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          )}
-                                        />
-                                        {currency.iso_code} - {currency.name} ({currency.symbol})
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                  <CommandSeparator />
-                                  <CommandGroup heading={dict.currency_all}>
-                                    {otherCurrencies.map((currency) => (
-                                      <CommandItem
-                                        value={`${currency.iso_code} ${currency.name}`}
-                                        key={currency.iso_code}
-                                        onSelect={() => {
-                                          form.setValue("primary_currency_code", currency.iso_code, { shouldValidate: true });
-                                        }}
-                                      >
-                                        <Check
-                                          className={cn(
-                                            "mr-2 h-4 w-4",
-                                            currency.iso_code === field.value
-                                              ? "opacity-100"
-                                              : "opacity-0"
-                                          )}
-                                        />
-                                        {currency.iso_code} - {currency.name} ({currency.symbol})
-                                      </CommandItem>
-                                    ))}
-                                  </CommandGroup>
-                                </CommandList>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <FormDescription>
-                            {dict.currency_description}
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      );
-                    }}
+                    render={({ field }) => (
+                      <FormItem className="flex flex-col">
+                        <FormLabel>{dict.currency_label}</FormLabel>
+                        <FormControl>
+                          <CurrencySelector
+                            value={field.value}
+                            onValueChange={(val) => form.setValue("primary_currency_code", val, { shouldValidate: true })}
+                            currencies={currencies}
+                            dict={dict}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {dict.currency_description}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
                   <Alert className="border-orange-500/50 bg-orange-500/10 text-orange-600 dark:text-orange-400 mt-2">

@@ -57,3 +57,23 @@ export async function hasUserCompletedOnboarding(
 
   return !!pref?.onboarding_completed;
 }
+
+export async function getUserPreferences(userId: string) {
+  const supabase = await createClient();
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('user_id', userId)
+    .single();
+
+  if (!profile) return null;
+
+  const { data: pref } = await supabase
+    .from('user_preferences')
+    .select('*')
+    .eq('profile_id', profile.id)
+    .single();
+
+  return pref;
+}

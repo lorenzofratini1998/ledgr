@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { updateUserPassword } from "@/app/actions/auth";
 import {
   Form,
@@ -39,7 +40,6 @@ export function UpdatePasswordForm({
 }: React.ComponentProps<"div"> & { dictionary: Dictionary }) {
   const t = dictionary.auth.updatePassword;
   const [isPending, startTransition] = useTransition();
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const formSchema = getUpdatePasswordSchema(t.errors);
 
@@ -52,15 +52,29 @@ export function UpdatePasswordForm({
   });
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    setServerError(null);
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append("password", values.password);
-      formData.append("confirmPassword", values.confirmPassword);
+      try {
+        const response = await updateUserPassword({
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+        });
 
-      const result = await updateUserPassword({ error: "" }, formData);
-      if (result?.error) {
-        setServerError(result.error);
+        if (response.success) {
+          toast.success(response.message || "Password updated successfully.");
+          window.location.href = "/login";
+        } else {
+          if (response.errors) {
+            Object.entries(response.errors).forEach(([field, messages]) => {
+              form.setError(field as Parameters<typeof form.setError>[0], {
+                type: "server",
+                message: messages[0],
+              });
+            });
+          }
+          toast.error(response.message || "Failed to update password.");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
       }
     });
   };
@@ -104,11 +118,6 @@ export function UpdatePasswordForm({
                   )}
                 />
 
-                {serverError && (
-                  <p className="text-sm text-destructive font-medium text-center">
-                    {serverError}
-                  </p>
-                )}
 
                 <Button type="submit" className="w-full mt-2" disabled={isPending}>
                   {isPending ? t.submitting : t.submit}

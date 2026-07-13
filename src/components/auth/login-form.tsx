@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { signInWithEmail, signUpWithEmail } from "@/app/actions/auth";
 import {
   Form,
@@ -106,15 +107,29 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
   });
 
   const onLoginSubmit = (values: z.infer<typeof loginSchema>) => {
-    setServerError(null);
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append("email", values.email);
-      formData.append("password", values.password);
+      try {
+        const response = await signInWithEmail({
+          email: values.email,
+          password: values.password,
+        });
 
-      const result = await signInWithEmail({ error: "" }, formData);
-      if (result?.error) {
-        setServerError(result.error);
+        if (response.success) {
+          toast.success(response.message || "Logged in successfully");
+          window.location.href = "/dashboard";
+        } else {
+          if (response.errors) {
+            Object.entries(response.errors).forEach(([field, messages]) => {
+              loginForm.setError(field as Parameters<typeof loginForm.setError>[0], {
+                type: "server",
+                message: messages[0],
+              });
+            });
+          }
+          toast.error(response.message || "Login failed");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
       }
     });
   };
@@ -155,11 +170,6 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
           )}
         />
 
-        {serverError && (
-          <p className="text-sm text-destructive font-medium text-center">
-            {serverError}
-          </p>
-        )}
 
         <Button type="submit" className="w-full mt-2" disabled={isPending}>
           {isPending ? t.submitting : t.submit}
@@ -171,7 +181,6 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
 
 function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
   const [isPending, startTransition] = useTransition();
-  const [serverError, setServerError] = useState<string | null>(null);
 
   const registerSchema = useMemo(() => getRegisterSchema(t.errors), [t.errors]);
 
@@ -187,18 +196,32 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
   });
 
   const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
-    setServerError(null);
     startTransition(async () => {
-      const formData = new FormData();
-      formData.append("email", values.email);
-      formData.append("password", values.password);
-      formData.append("confirmPassword", values.confirmPassword);
-      if (values.firstName) formData.append("firstName", values.firstName);
-      if (values.lastName) formData.append("lastName", values.lastName);
+      try {
+        const response = await signUpWithEmail({
+          email: values.email,
+          password: values.password,
+          confirmPassword: values.confirmPassword,
+          firstName: values.firstName || "",
+          lastName: values.lastName || "",
+        });
 
-      const result = await signUpWithEmail({ error: "" }, formData);
-      if (result?.error) {
-        setServerError(result.error);
+        if (response.success) {
+          toast.success(response.message || "Registered successfully");
+          window.location.href = "/dashboard";
+        } else {
+          if (response.errors) {
+            Object.entries(response.errors).forEach(([field, messages]) => {
+              registerForm.setError(field as Parameters<typeof registerForm.setError>[0], {
+                type: "server",
+                message: messages[0],
+              });
+            });
+          }
+          toast.error(response.message || "Registration failed");
+        }
+      } catch (error) {
+        toast.error("An unexpected error occurred. Please try again.");
       }
     });
   };
@@ -277,11 +300,6 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
           )}
         />
 
-        {serverError && (
-          <p className="text-sm text-destructive font-medium text-center">
-            {serverError}
-          </p>
-        )}
 
         <Button type="submit" className="w-full mt-2" disabled={isPending}>
           {isPending ? t.submitting : t.submit}

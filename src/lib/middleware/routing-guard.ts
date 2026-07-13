@@ -59,13 +59,13 @@ async function resolveOnboardingStatus(
   supabase: SupabaseClient<Database>
 ): Promise<boolean> {
   const onboardingCookie = request.cookies.get(ONBOARDING_COOKIE_NAME);
-  if (onboardingCookie?.value === 'true') {
+  if (onboardingCookie?.value === user.id) {
     return true;
   }
 
   const onboarded = await hasUserCompletedOnboarding(supabase, user.id);
   if (onboarded) {
-    response.cookies.set(ONBOARDING_COOKIE_NAME, 'true', {
+    response.cookies.set(ONBOARDING_COOKIE_NAME, user.id, {
       path: '/',
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

@@ -31,6 +31,7 @@ self.addEventListener("fetch", (event) => {
 
   // Exclude Next.js internal data requests (RSC payloads, HMR, etc.)
   if (
+    event.request.mode === "navigate" ||
     event.request.headers.get("RSC") === "1" ||
     event.request.headers.get("Next-Router-Prefetch") === "1" ||
     url.pathname.startsWith("/_next/webpack-hmr")
@@ -42,13 +43,11 @@ self.addEventListener("fetch", (event) => {
   // and ensure Supabase Auth middleware always runs.
   event.respondWith(
     fetch(event.request)
-      .then((response) => {
-        // Optionally cache successful GET responses for static assets here
-        return response;
-      })
-      .catch(() => {
-        // Fallback to cache if offline
-        return caches.match(event.request);
+      .then((response) => response)
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) return cachedResponse;
+        return new Response('Network error or offline', { status: 503, statusText: 'Service Unavailable' });
       })
   );
 });

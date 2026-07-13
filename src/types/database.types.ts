@@ -7,11 +7,6 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
-  __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
   graphql_public: {
     Tables: {
       [_ in never]: never
@@ -314,6 +309,68 @@ export type Database = {
           },
         ]
       }
+      wallets: {
+        Row: {
+          color: string | null
+          created_at: string
+          created_by: string | null
+          currency_code: string
+          description: string | null
+          icon: string | null
+          id: string
+          initial_balance: number
+          is_active: boolean
+          is_default: boolean
+          name: string
+          type: Database["public"]["Enums"]["wallet_type"]
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          initial_balance?: number
+          is_active?: boolean
+          is_default?: boolean
+          name: string
+          type?: Database["public"]["Enums"]["wallet_type"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          currency_code?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          initial_balance?: number
+          is_active?: boolean
+          is_default?: boolean
+          name?: string
+          type?: Database["public"]["Enums"]["wallet_type"]
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallets_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -329,6 +386,7 @@ export type Database = {
         | "last_30_days"
         | "current_week"
         | "current_year"
+      wallet_type: "regular" | "savings" | "investment"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -467,6 +525,8 @@ export const Constants = {
         "current_week",
         "current_year",
       ],
+      wallet_type: ["regular", "savings", "investment"],
     },
   },
 } as const
+
