@@ -1,4 +1,4 @@
-import { UpdatePasswordForm } from "@/components/auth/update-password-form";
+import { UpdatePasswordForm } from "@/features/auth/components/update-password-form";
 import { getLocaleDictionary } from "@/i18n/get-dictionary";
 
 export const metadata = {

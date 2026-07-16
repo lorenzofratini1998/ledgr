@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
-import { OnboardingPayload } from '@/lib/schemas/onboarding.schema';
-import { SupabaseClient } from '@supabase/supabase-js';
-import { Database } from '@/types/database.types';
+import { createStaticClient } from '@/lib/supabase/static';
+import { unstable_cache } from 'next/cache';
+import { OnboardingPayload } from '@/features/onboarding/schemas';
 
 export async function completeOnboarding(
   userId: string,
@@ -13,7 +13,7 @@ export async function completeOnboarding(
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('id')
-    .eq('user_id', userId)
+    .eq('id', userId)
     .single();
 
   if (profileError || !profile) {
@@ -28,7 +28,6 @@ export async function completeOnboarding(
       date_format: payload.date_format,
       language_locale: payload.language_locale,
       primary_currency_code: payload.primary_currency_code,
-      onboarding_completed: true,
     })
     .eq('profile_id', profile.id);
 
@@ -37,43 +36,36 @@ export async function completeOnboarding(
   }
 }
 
-export async function hasUserCompletedOnboarding(
-  supabase: SupabaseClient<Database>,
-  userId: string
-): Promise<boolean> {
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('user_id', userId)
-    .single();
 
-  if (!profile) return false;
-
-  const { data: pref } = await supabase
-    .from('user_preferences')
-    .select('onboarding_completed')
-    .eq('profile_id', profile.id)
-    .single();
-
-  return !!pref?.onboarding_completed;
-}
 
 export async function getUserPreferences(userId: string) {
-  const supabase = await createClient();
+  const supabaseServer = await createClient();
+  const { data: { session } } = await supabaseServer.auth.getSession();
+  const token = session?.access_token;
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('id')
-    .eq('user_id', userId)
-    .single();
+  const fetchPrefs = unstable_cache(
+    async () => {
+      const supabase = createStaticClient(token);
 
-  if (!profile) return null;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', userId)
+        .single();
 
-  const { data: pref } = await supabase
-    .from('user_preferences')
-    .select('*')
-    .eq('profile_id', profile.id)
-    .single();
+      if (!profile) return null;
 
-  return pref;
+      const { data: pref } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('profile_id', profile.id)
+        .single();
+
+      return pref;
+    },
+    [`preferences-${userId}`],
+    { tags: [`preferences-${userId}`] }
+  );
+
+  return fetchPrefs();
 }

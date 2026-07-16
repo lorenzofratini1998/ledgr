@@ -3,20 +3,23 @@ import {
   Wallet,
   ArrowRightLeft,
   PieChart,
-  Target
+  Target,
+  Tags
 } from 'lucide-react';
 
 export const MAIN_NAV_ITEMS = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Wallets', href: '/wallets', icon: Wallet },
-  { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
-  { name: 'Budgets', href: '/budgets', icon: Target },
-  { name: 'Analytics', href: '/analytics', icon: PieChart },
+  { name: 'Dashboard', dictionaryKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Wallets', dictionaryKey: 'wallets', href: '/wallets', icon: Wallet },
+  { name: 'Categories', dictionaryKey: 'categories', href: '/categories', icon: Tags },
+  { name: 'Transactions', dictionaryKey: 'transactions', href: '/transactions', icon: ArrowRightLeft },
+  { name: 'Budgets', dictionaryKey: 'budgets', href: '/budgets', icon: Target },
+  { name: 'Analytics', dictionaryKey: 'analytics', href: '/analytics', icon: PieChart },
 ];
 
 export const BOTTOM_NAV_ITEMS = [
-  { name: 'Home', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Wallets', href: '/wallets', icon: Wallet },
-  { name: 'Transactions', href: '/transactions', icon: ArrowRightLeft },
-  { name: 'Budgets', href: '/budgets', icon: Target },
+  { name: 'Home', dictionaryKey: 'home', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Wallets', dictionaryKey: 'wallets', href: '/wallets', icon: Wallet },
+  { name: 'Categories', dictionaryKey: 'categories', href: '/categories', icon: Tags },
+  { name: 'Transactions', dictionaryKey: 'transactions', href: '/transactions', icon: ArrowRightLeft },
+  { name: 'Budgets', dictionaryKey: 'budgets', href: '/budgets', icon: Target },
 ];

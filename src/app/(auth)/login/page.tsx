@@ -1,6 +1,6 @@
-import { LoginForm } from "@/components/auth/login-form";
+import { LoginForm } from "@/features/auth/components/login-form";
 import { getLocaleDictionary } from "@/i18n/get-dictionary";
-import { getActiveAuthProviders } from "@/data/auth-providers";
+import { getActiveAuthProviders } from "@/features/auth/constants";
 
 export const metadata = {
   title: "Login",

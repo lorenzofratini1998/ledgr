@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import { CsvImportWizard } from "@/components/onboarding/csv-import-wizard";
+import { CsvImportWizard } from "@/features/onboarding/components/csv-import-wizard";
 
 export const metadata: Metadata = {
   title: "Import Data | Ledgr",

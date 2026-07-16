@@ -1,6 +1,6 @@
 import { getActiveLanguages } from '@/data/languages';
 import { getActiveCurrencies } from '@/data/currencies';
-import { OnboardingForm } from '@/components/onboarding/onboarding-form';
+import { OnboardingForm } from '@/features/onboarding/components/onboarding-form';
 import { getLocaleDictionary } from '@/i18n/get-dictionary';
 import { cookies } from 'next/headers';
 import { LOCALE_COOKIE_NAME } from '@/utils/locale';

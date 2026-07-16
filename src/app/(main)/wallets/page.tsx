@@ -1,9 +1,9 @@
 import { Metadata } from 'next';
-import { getWallets, getArchivedWallets } from '@/data/wallets';
+import { getWallets, getArchivedWallets } from '@/features/wallets/queries';
 import { getActiveCurrencies } from '@/data/currencies';
-import { WalletsClientView } from '@/components/wallets/wallet-client-view';
-import { CreateWalletDrawer } from '@/components/wallets/create-wallet-drawer';
-import { createClient } from '@/lib/supabase/server';
+import { WalletsClientView } from '@/features/wallets/components/wallet-client-view';
+import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getUserPreferences } from '@/data/user-preferences';
 
@@ -13,8 +13,7 @@ export const metadata: Metadata = {
 };
 
 export default async function WalletsPage() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await getUser();
 
   if (!user) {
     redirect('/login');
@@ -47,7 +46,7 @@ export default async function WalletsPage() {
           </p>
         </div>
         <div className="hidden md:block">
-          <CreateWalletDrawer currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
+          <CreateWalletTrigger currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
         </div>
       </div>
 
@@ -62,7 +61,7 @@ export default async function WalletsPage() {
 
       {/* Mobile trigger */}
       <div className="md:hidden">
-        <CreateWalletDrawer currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
+        <CreateWalletTrigger currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
       </div>
     </div>
   );

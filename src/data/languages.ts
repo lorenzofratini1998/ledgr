@@ -1,33 +1,40 @@
+import { createStaticClient } from '@/lib/supabase/static';
+import { unstable_cache } from 'next/cache';
+
 type Language = { locale: string; is_default: boolean; native_name: string };
 
 export async function getActiveLanguages() {
-  try {
-    const url = `${process.env.NEXT_PUBLIC_SUPABASE_URL}/rest/v1/languages?select=locale,is_default,native_name&is_enabled=eq.true`;
+  const fetchLanguages = unstable_cache(
+    async () => {
+      try {
+        const supabase = createStaticClient();
+        
+        const { data: languages, error } = await supabase
+          .from('languages')
+          .select('locale, is_default, native_name')
+          .eq('is_enabled', true);
 
-    const res = await fetch(url, {
-      cache: 'force-cache',
-      headers: {
-        apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!}`,
-      },
-      next: { revalidate: 3600 }, // Cache for 1 hour
-    });
+        if (error) {
+          throw new Error(`Failed to fetch languages: ${error.message}`);
+        }
 
-    if (!res.ok) {
-      throw new Error(`Failed to fetch languages: ${res.statusText}`);
-    }
+        const validLanguages = (languages || []) as Language[];
 
-    const languages = await res.json() as Language[];
+        return {
+          activeLocales: validLanguages.map(l => ({ locale: l.locale, native_name: l.native_name || l.locale })),
+          defaultLocale: validLanguages.find(l => l.is_default)?.locale || 'en-US',
+        };
+      } catch (error) {
+        console.error("Error fetching languages:", error);
+        return {
+          activeLocales: [{ locale: 'en-US', native_name: 'English' }],
+          defaultLocale: 'en-US',
+        };
+      }
+    },
+    ['active-languages'],
+    { tags: ['active-languages'] }
+  );
 
-    return {
-      activeLocales: languages.map(l => ({ locale: l.locale, native_name: l.native_name || l.locale })),
-      defaultLocale: languages.find(l => l.is_default)?.locale || 'en-US',
-    };
-  } catch (error) {
-    console.error("Error fetching languages:", error);
-    return {
-      activeLocales: [{ locale: 'en-US', native_name: 'English' }],
-      defaultLocale: 'en-US',
-    };
-  }
+  return fetchLanguages();
 }

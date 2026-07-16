@@ -14,7 +14,8 @@ import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { MAIN_NAV_ITEMS } from '@/config/navigation';
 import { LayoutUser } from '@/types/layout';
-import { UserNavPopover } from './UserNavPopover';
+import { UserNavPopover } from './user-nav-popover';
+import { useDictionary } from '@/i18n/dictionary-provider';
 
 interface SidebarProps {
   user: LayoutUser;
@@ -22,6 +23,7 @@ interface SidebarProps {
 
 export function Sidebar({ user }: SidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const dictionary = useDictionary();
 
   return (
     <aside className={`hidden md:flex flex-col border-r bg-background transition-all duration-300 shrink-0 h-full relative ${isCollapsed ? 'w-20' : 'w-64'}`}>
@@ -49,11 +51,11 @@ export function Sidebar({ user }: SidebarProps) {
               key={item.name}
               href={item.href}
               className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-              title={isCollapsed ? item.name : undefined}
+              title={isCollapsed ? (dictionary.navigation[item.dictionaryKey as keyof typeof dictionary.navigation] || item.name) : undefined}
             >
               <Icon className="h-5 w-5 shrink-0 mx-auto md:mx-0" />
               <span className={`font-medium whitespace-nowrap overflow-hidden transition-all ${isCollapsed ? 'hidden' : 'block'}`}>
-                {item.name}
+                {dictionary.navigation[item.dictionaryKey as keyof typeof dictionary.navigation] || item.name}
               </span>
             </Link>
           );
@@ -64,20 +66,20 @@ export function Sidebar({ user }: SidebarProps) {
 
       <div className="p-3 flex flex-col gap-2">
         <Popover>
-          <PopoverTrigger render={<button className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative" title={isCollapsed ? 'Notifications' : undefined} />}>
+          <PopoverTrigger render={<button className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative" title={isCollapsed ? dictionary.navigation.notifications : undefined} />}>
             <div className="relative mx-auto md:mx-0 shrink-0">
               <Bell className="h-5 w-5" />
               <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-background" />
             </div>
             <span className={`font-medium whitespace-nowrap overflow-hidden transition-all text-left ${isCollapsed ? 'hidden' : 'block'}`}>
-              Notifications
+              {dictionary.navigation.notifications}
             </span>
           </PopoverTrigger>
           <PopoverContent align="end" side="right" sideOffset={16} className="w-80">
             <div className="space-y-2">
-              <h4 className="font-medium leading-none">Notifications</h4>
+              <h4 className="font-medium leading-none">{dictionary.navigation.notifications}</h4>
               <p className="text-sm text-muted-foreground">
-                You have 2 unread messages.
+                {dictionary.navigation.unreadMessages}
               </p>
             </div>
           </PopoverContent>
@@ -86,11 +88,11 @@ export function Sidebar({ user }: SidebarProps) {
         <Link
           href="/settings"
           className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          title={isCollapsed ? 'Settings' : undefined}
+          title={isCollapsed ? dictionary.navigation.settings : undefined}
         >
           <Settings className="h-5 w-5 shrink-0 mx-auto md:mx-0" />
           <span className={`font-medium whitespace-nowrap overflow-hidden transition-all ${isCollapsed ? 'hidden' : 'block'}`}>
-            Settings
+            {dictionary.navigation.settings}
           </span>
         </Link>
         

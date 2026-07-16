@@ -1,4 +1,4 @@
-import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { ForgotPasswordForm } from "@/features/auth/components/forgot-password-form";
 import { getLocaleDictionary } from "@/i18n/get-dictionary";
 
 export const metadata = {

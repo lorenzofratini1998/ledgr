@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { User } from "@supabase/supabase-js";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Database } from "@/types/database.types";
-import { hasUserCompletedOnboarding } from "@/data/user-preferences";
+
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/auth/callback'];
-const ONBOARDING_COOKIE_NAME = 'ONBOARDING_COMPLETED';
+
 
 export async function enforceRoutingGuards(
   request: NextRequest,
@@ -58,18 +58,11 @@ async function resolveOnboardingStatus(
   user: User,
   supabase: SupabaseClient<Database>
 ): Promise<boolean> {
-  const onboardingCookie = request.cookies.get(ONBOARDING_COOKIE_NAME);
-  if (onboardingCookie?.value === user.id) {
+  // Check the JWT claim for zero-latency routing
+  if (user.user_metadata?.onboarding_completed === true) {
     return true;
   }
 
-  const onboarded = await hasUserCompletedOnboarding(supabase, user.id);
-  if (onboarded) {
-    response.cookies.set(ONBOARDING_COOKIE_NAME, user.id, {
-      path: '/',
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
-  }
-  return onboarded;
+  // Any user without the JWT claim must go through onboarding or relogin
+  return false;
 }

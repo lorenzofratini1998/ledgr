@@ -55,6 +55,60 @@ export type Database = {
         }
         Relationships: []
       }
+      categories: {
+        Row: {
+          category_description: string | null
+          category_id: string
+          category_name: string
+          color: string | null
+          created_at: string
+          icon: string | null
+          is_active: boolean
+          parent_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_description?: string | null
+          category_id?: string
+          category_name: string
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          is_active?: boolean
+          parent_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_description?: string | null
+          category_id?: string
+          category_name?: string
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          is_active?: boolean
+          parent_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "categories_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       currencies: {
         Row: {
           created_at: string
@@ -207,7 +261,6 @@ export type Database = {
           lock_timeout_seconds: number
           notify_budget_breach: boolean
           notify_recurring_reminder: boolean
-          onboarding_completed: boolean
           primary_currency_code: string | null
           profile_id: string
           theme: Database["public"]["Enums"]["app_theme_type"]
@@ -225,7 +278,6 @@ export type Database = {
           lock_timeout_seconds?: number
           notify_budget_breach?: boolean
           notify_recurring_reminder?: boolean
-          onboarding_completed?: boolean
           primary_currency_code?: string | null
           profile_id: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
@@ -243,7 +295,6 @@ export type Database = {
           lock_timeout_seconds?: number
           notify_budget_breach?: boolean
           notify_recurring_reminder?: boolean
-          onboarding_completed?: boolean
           primary_currency_code?: string | null
           profile_id?: string
           theme?: Database["public"]["Enums"]["app_theme_type"]

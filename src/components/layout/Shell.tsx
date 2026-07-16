@@ -1,8 +1,8 @@
 import { ReactNode } from 'react';
-import { Sidebar } from './Sidebar';
-import { TopHeader } from './TopHeader';
-import { BottomNav } from './BottomNav';
-import { RightPanel } from './RightPanel';
+import { Sidebar } from './sidebar';
+import { TopHeader } from './top-header';
+import { BottomNav } from './bottom-nav';
+import { RightPanel } from './right-panel';
 import { LayoutUser } from '@/types/layout';
 
 interface ShellProps {

@@ -1,4 +1,4 @@
-import { FormPatternExample } from "@/components/forms/FormPatternExample";
+import { FormPatternExample } from "@/components/forms/form-pattern-example";
 
 export default function TestFormPage() {
   return (

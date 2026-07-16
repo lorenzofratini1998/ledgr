@@ -5,6 +5,11 @@ export type Profile = Tables<'profiles'>;
 export type Currency = Tables<'currencies'>;
 export type Language = Tables<'languages'>;
 export type Wallet = Tables<'wallets'>;
+export type Category = Tables<'categories'>;
+
+export type CategoryWithChildren = Category & {
+  children?: Category[];
+};
 
 export type AppThemeType = Enums<'app_theme_type'>;
 export type AppDateFormatType = Enums<'app_date_format_type'>;

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { Suspense } from "react";
-import { signOut } from "@/app/actions/auth";
+import { signOut } from "@/features/auth/actions";
 import { logger } from "@/utils/logger";
 
 

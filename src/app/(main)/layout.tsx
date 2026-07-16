@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { Shell } from '@/components/layout/Shell';
-import { UpcomingList } from '@/components/layout/UpcomingList';
-import { createClient } from '@/lib/supabase/server';
+import { Shell } from '@/components/layout/shell';
+import { UpcomingList } from '@/components/layout/upcoming-list';
+import { createClient, getUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 
 interface MainLayoutProps {
@@ -9,8 +9,7 @@ interface MainLayoutProps {
 }
 
 export default async function MainLayout({ children }: MainLayoutProps) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await getUser();
 
   if (!user) {
     redirect('/login');

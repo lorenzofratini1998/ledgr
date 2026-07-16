@@ -6,6 +6,8 @@ import { ThemeProvider } from "@/providers/theme-provider";
 import { PWAManager } from "@/components/pwa-manager";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "@/components/ui/sonner";
+import { getLocaleDictionary } from "@/i18n/get-dictionary";
+import { DictionaryProvider } from "@/i18n/dictionary-provider";
 
 export const viewport: Viewport = {
   themeColor: "#000000",
@@ -34,13 +36,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const { locale, dictionary } = await getLocaleDictionary();
+
   return (
-    <html lang="en" suppressHydrationWarning className="h-full antialiased font-sans">
+    <html lang={locale} suppressHydrationWarning className="h-full antialiased font-sans">
       <body className="min-h-full flex flex-col">
         <NextTopLoader showSpinner={false} color="#2563eb" />
         <ThemeProvider
@@ -49,11 +53,13 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <QueryProvider>
-            {children}
-            <PWAManager />
-          </QueryProvider>
-          <Toaster />
+          <DictionaryProvider dictionary={dictionary}>
+            <QueryProvider>
+              {children}
+              <PWAManager />
+            </QueryProvider>
+            <Toaster />
+          </DictionaryProvider>
         </ThemeProvider>
       </body>
     </html>
