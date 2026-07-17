@@ -3,6 +3,7 @@ export const en = {
     login: {
       title: "Welcome back",
       description: "Login with your email or social accounts",
+      descriptionEmailOnly: "Enter your email below to login to your account",
       emailLabel: "Email",
       emailPlaceholder: "m@example.com",
       passwordLabel: "Password",
@@ -19,6 +20,7 @@ export const en = {
     register: {
       title: "Create an account",
       description: "Sign up with your email or social accounts",
+      descriptionEmailOnly: "Enter your details below to create an account",
       firstNameLabel: "First Name",
       lastNameLabel: "Last Name",
       optional: "(Optional)",

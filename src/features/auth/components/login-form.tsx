@@ -22,35 +22,17 @@ import {
 import { type Dictionary } from "@/i18n/dictionaries/en";
 import Link from "next/link";
 
-const getLoginSchema = (t: Dictionary['auth']['login']['errors']) => z.object({
-  email: z.email({ message: t.invalidEmail }),
-  password: z.string().min(1, { message: t.passwordRequired }),
-});
-
-const getRegisterSchema = (t: Dictionary['auth']['register']['errors']) => z.object({
-  firstName: z.string().optional(),
-  lastName: z.string().optional(),
-  email: z.string().email({ message: t.invalidEmail }),
-  password: z
-    .string()
-    .min(8, { message: t.passwordMin })
-    .regex(/[A-Z]/, { message: t.passwordUppercase })
-    .regex(/[0-9]/, { message: t.passwordNumber })
-    .regex(/[^A-Za-z0-9]/, { message: t.passwordSpecial }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: t.passwordMismatch,
-  path: ["confirmPassword"],
-});
+import { getLoginSchema, getRegisterSchema } from "@/features/auth/schemas";
 
 
 function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['auth']['social'] }) {
-  if (providers.length === 0) return null;
+  const socialProviders = providers.filter(p => p !== 'email');
+  if (socialProviders.length === 0) return null;
 
   return (
     <>
       <div className="flex flex-col gap-2 sm:grid sm:grid-cols-2 sm:gap-2">
-        {providers.includes("apple") && (
+        {socialProviders.includes("apple") && (
           <Button variant="outline" type="button" className="w-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-4">
               <path
@@ -61,7 +43,7 @@ function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['
             {t.apple}
           </Button>
         )}
-        {providers.includes("google") && (
+        {socialProviders.includes("google") && (
           <Button variant="outline" type="button" className="w-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-4">
               <path
@@ -72,7 +54,7 @@ function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['
             {t.google}
           </Button>
         )}
-        {providers.includes("github") && (
+        {socialProviders.includes("github") && (
           <Button variant="outline" type="button" className="w-full">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 size-4">
               <path
@@ -286,6 +268,7 @@ export function LoginForm({
 }: React.ComponentProps<"div"> & { providers: string[], dictionary: Dictionary }) {
   const [mode, setMode] = useState<"login" | "register">("login");
   const t = dictionary.auth;
+  const hasSocialProviders = providers.some(p => p !== "email");
 
   const toggleMode = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -301,8 +284,8 @@ export function LoginForm({
           </CardTitle>
           <CardDescription>
             {mode === "login"
-              ? t.login.description
-              : t.register.description}
+              ? (hasSocialProviders ? t.login.description : t.login.descriptionEmailOnly)
+              : (hasSocialProviders ? t.register.description : t.register.descriptionEmailOnly)}
           </CardDescription>
         </CardHeader>
         <CardContent>

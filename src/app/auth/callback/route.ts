@@ -9,12 +9,20 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    
+
     if (!error) {
       return NextResponse.redirect(`${origin}${next}`);
+    } else {
+      // Exchange failed, so the link is invalid/expired
+      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
     }
   }
 
-  // return the user to an error page with instructions
+  if (next === '/update-password') {
+    // If there is no code, it might be an implicit flow sending the token in the URL hash.
+    // Modern browsers preserve the hash fragment across 302 redirects.
+    return NextResponse.redirect(`${origin}${next}`);
+  }
+
   return NextResponse.redirect(`${origin}/login?error=Invalid%20or%20expired%20reset%20link`);
 }

@@ -62,14 +62,14 @@ export async function signUpWithEmail(payload: Record<string, string>): Promise<
   return { success: true, message: "Registered successfully" };
 }
 
-export async function signOut() {
+export async function clearSession() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  
-  const cookieStore = await cookies();
-  cookieStore.delete("ONBOARDING_COMPLETED");
-
   revalidatePath("/", "layout");
+}
+
+export async function signOut() {
+  await clearSession();
   redirect("/login");
 }
 
@@ -83,12 +83,18 @@ export async function requestPasswordReset(payload: Record<string, string>): Pro
   const supabase = await createClient();
   const headersList = await headers();
   const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
-  
+
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/update-password`,
   });
 
   if (error) {
+    if (error.status === 429) {
+      return {
+        success: false,
+        message: "You can only request a reset link once per minute. Please check your spam folder or wait before trying again."
+      };
+    }
     return { success: false, message: error.message };
   }
 
@@ -114,5 +120,7 @@ export async function updateUserPassword(payload: Record<string, string>): Promi
     return { success: false, message: error.message };
   }
 
-  return { success: true, message: "Password updated successfully" };
+  await clearSession();
+
+  return { success: true, message: "Password updated successfully. Please log in with your new password." };
 }

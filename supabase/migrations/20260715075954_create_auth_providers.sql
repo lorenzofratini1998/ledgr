@@ -17,5 +17,5 @@ CREATE POLICY "Allow read-only access to all users"
 INSERT INTO auth_providers (id, is_enabled) 
 VALUES 
     ('email', true),
-    ('google', true),
-    ('github', true);
+    ('google', false),
+    ('github', false);

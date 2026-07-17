@@ -5,6 +5,7 @@ export const it: Dictionary = {
     login: {
       title: "Bentornato",
       description: "Accedi con la tua email o i tuoi account social",
+      descriptionEmailOnly: "Inserisci la tua email qui sotto per accedere al tuo account",
       emailLabel: "Email",
       emailPlaceholder: "m@example.com",
       passwordLabel: "Password",
@@ -21,6 +22,7 @@ export const it: Dictionary = {
     register: {
       title: "Crea un account",
       description: "Registrati con la tua email o i tuoi account social",
+      descriptionEmailOnly: "Inserisci i tuoi dati qui sotto per creare un account",
       firstNameLabel: "Nome",
       lastNameLabel: "Cognome",
       optional: "(Opzionale)",
