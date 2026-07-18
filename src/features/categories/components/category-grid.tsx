@@ -4,12 +4,13 @@ import { ActionDialog } from '@/components/shared/action-dialog';
 import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { archiveCategoryAction, deleteCategoryAction, unarchiveCategoryAction } from '@/features/categories/actions';
+import { CategoryDetailView } from '@/features/categories/components/category-detail-view';
+import { CategoryMasterView } from '@/features/categories/components/category-master-view';
 import { CreateCategoryForm } from '@/features/categories/components/create-category-form';
 import { useDictionary } from '@/i18n/dictionary-provider';
 import { CategoryWithChildren } from '@/types/models';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
-import { CategoryList } from './category-list';
 
 interface CategoryGridProps {
   categories: CategoryWithChildren[];
@@ -19,42 +20,87 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
   const [isPending, startTransition] = useTransition();
   const dictionary = useDictionary();
   
-  const [selectedCategory, setSelectedCategory] = useState<CategoryWithChildren | null>(null);
+  const [activeTab, setActiveTab] = useState<string>('active');
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  
+  const [selectedCategoryForAction, setSelectedCategoryForAction] = useState<CategoryWithChildren | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-
-  const activeCategories = categories.filter(c => c.is_active);
-  const archivedCategories = categories.filter(c => !c.is_active);
+  const [isDeleteAllPromptOpen, setIsDeleteAllPromptOpen] = useState(false);
   
-  const activeCategoriesWithFilteredChildren = activeCategories.map(c => ({
-    ...c,
-    children: (c.children || []).filter(child => child.is_active)
-  }));
-  const archivedCategoriesWithFilteredChildren = archivedCategories.map(c => ({
-    ...c,
-    children: (c.children || []).filter(child => !child.is_active)
-  }));
+  const [isAddSubcategoryOpen, setIsAddSubcategoryOpen] = useState(false);
+  const [parentForNewSubcategory, setParentForNewSubcategory] = useState<CategoryWithChildren | null>(null);
+
+  // Active view: only active parents, containing only active children
+  const activeCategoriesWithFilteredChildren = categories
+    .filter(c => c.is_active)
+    .map(c => ({
+      ...c,
+      children: (c.children || []).filter(child => child.is_active)
+    }));
+
+  // Archived view: archived parents OR active parents that have at least one archived child
+  const archivedCategoriesWithFilteredChildren = categories
+    .filter(c => !c.is_active || (c.children || []).some(child => !child.is_active))
+    .map(c => ({
+      ...c,
+      children: (c.children || []).filter(child => !child.is_active)
+    }));
+
+  let selectedParentCategoryFiltered: CategoryWithChildren | null = null;
+  if (selectedCategoryId) {
+    if (activeTab === 'active') {
+       selectedParentCategoryFiltered = activeCategoriesWithFilteredChildren.find(c => c.category_id === selectedCategoryId) || null;
+    } else {
+       selectedParentCategoryFiltered = archivedCategoriesWithFilteredChildren.find(c => c.category_id === selectedCategoryId) || null;
+    }
+  }
+
+  // Clear selection if the item disappears from the current tab
+  useEffect(() => {
+    if (selectedCategoryId && !selectedParentCategoryFiltered) {
+      setSelectedCategoryId(null);
+    }
+  }, [selectedCategoryId, selectedParentCategoryFiltered]);
+
+  const handleSelectCategory = (category: CategoryWithChildren) => {
+    setSelectedCategoryId(category.category_id);
+  };
+
+  const handleBack = () => {
+    setSelectedCategoryId(null);
+  };
+
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    setSelectedCategoryId(null);
+  };
 
   const openEdit = (category: CategoryWithChildren) => {
-    setSelectedCategory(category);
+    setSelectedCategoryForAction(category);
     setIsEditOpen(true);
   };
 
   const openArchive = (category: CategoryWithChildren) => {
-    setSelectedCategory(category);
+    setSelectedCategoryForAction(category);
     setIsArchiveOpen(true);
   };
 
   const openDelete = (category: CategoryWithChildren) => {
-    setSelectedCategory(category);
+    setSelectedCategoryForAction(category);
     setIsDeleteOpen(true);
+  };
+  
+  const openAddSubcategory = (parentCategory: CategoryWithChildren) => {
+    setParentForNewSubcategory(parentCategory);
+    setIsAddSubcategoryOpen(true);
   };
 
   const handleArchive = () => {
-    if (!selectedCategory) return;
+    if (!selectedCategoryForAction) return;
     startTransition(async () => {
-      const res = await archiveCategoryAction(selectedCategory.category_id);
+      const res = await archiveCategoryAction(selectedCategoryForAction.category_id);
       if (res.success) {
         toast.success(dictionary.categories.archivedSuccess);
         setIsArchiveOpen(false);
@@ -64,15 +110,24 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     });
   };
 
-  const handleDelete = () => {
-    if (!selectedCategory) return;
+  const handleDelete = (forceCascade: boolean = false) => {
+    if (!selectedCategoryForAction) return;
     startTransition(async () => {
-      const res = await deleteCategoryAction(selectedCategory.category_id);
+      const res = await deleteCategoryAction(selectedCategoryForAction.category_id, forceCascade);
       if (res.success) {
         toast.success(dictionary.categories.deletedSuccess);
         setIsDeleteOpen(false);
+        setIsDeleteAllPromptOpen(false);
+        if (selectedCategoryId === selectedCategoryForAction.category_id) {
+          setSelectedCategoryId(null);
+        }
       } else {
-        toast.error(res.message || dictionary.categories.failedDelete);
+        if (res.message === 'HAS_CHILDREN') {
+          setIsDeleteOpen(false);
+          setIsDeleteAllPromptOpen(true);
+        } else {
+          toast.error(res.message || dictionary.categories.failedDelete);
+        }
       }
     });
   };
@@ -89,32 +144,51 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
   };
 
   return (
-    <>
-      <Tabs defaultValue="active" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="active">{dictionary.wallets.active}</TabsTrigger>
-          <TabsTrigger value="archived">{dictionary.wallets.archived}</TabsTrigger>
+    <div className="flex flex-col h-full mt-4">
+      <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex flex-col h-full">
+        <TabsList className="grid w-full grid-cols-2 mb-6">
+          <TabsTrigger value="active">
+            {dictionary.wallets.active}
+          </TabsTrigger>
+          <TabsTrigger value="archived">
+            {dictionary.wallets.archived}
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="active">
-          <CategoryList
-            categories={activeCategoriesWithFilteredChildren}
-            isArchivedView={false}
-            onEdit={openEdit}
-            onArchive={openArchive}
-            onDelete={openDelete}
-            onUnarchive={handleUnarchive}
-          />
-        </TabsContent>
-        <TabsContent value="archived">
-          <CategoryList
-            categories={archivedCategoriesWithFilteredChildren}
-            isArchivedView={true}
-            onEdit={openEdit}
-            onArchive={openArchive}
-            onDelete={openDelete}
-            onUnarchive={handleUnarchive}
-          />
-        </TabsContent>
+
+        <div className="flex-1 flex flex-col md:flex-row rounded-xl border bg-card text-card-foreground shadow-sm overflow-hidden min-h-[600px]">
+          {/* Master Pane */}
+          <div className={`w-full md:w-2/5 md:block shrink-0 md:border-r border-border bg-card overflow-y-auto ${selectedCategoryId ? 'hidden' : 'block'}`}>
+            <TabsContent value="active" className="m-0 border-0 p-0 h-full data-[state=inactive]:hidden">
+              <CategoryMasterView
+                categories={activeCategoriesWithFilteredChildren}
+                selectedCategoryId={selectedCategoryId}
+                onSelectCategory={handleSelectCategory}
+                isArchivedView={false}
+              />
+            </TabsContent>
+            <TabsContent value="archived" className="m-0 border-0 p-0 h-full data-[state=inactive]:hidden">
+              <CategoryMasterView
+                categories={archivedCategoriesWithFilteredChildren}
+                selectedCategoryId={selectedCategoryId}
+                onSelectCategory={handleSelectCategory}
+                isArchivedView={true}
+              />
+            </TabsContent>
+          </div>
+
+          {/* Detail Pane */}
+          <div className={`w-full md:w-3/5 md:block flex-1 bg-muted/10 overflow-y-auto p-4 md:p-6 ${selectedCategoryId ? 'block' : 'hidden'}`}>
+            <CategoryDetailView
+              category={selectedParentCategoryFiltered}
+              onBack={handleBack}
+              onEdit={openEdit}
+              onArchive={openArchive}
+              onDelete={openDelete}
+              onUnarchive={handleUnarchive}
+              onAddSubcategory={openAddSubcategory}
+            />
+          </div>
+        </div>
       </Tabs>
 
       {/* Edit Sheet/Drawer */}
@@ -124,11 +198,27 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         title={dictionary.categories.editCategory}
         description={dictionary.categories.editDescription}
       >
-        {selectedCategory && (
+        {selectedCategoryForAction && (
           <CreateCategoryForm
-            parentCategories={activeCategories}
-            initialData={selectedCategory}
+            parentCategories={categories.filter(c => c.is_active)}
+            initialData={selectedCategoryForAction}
             onSuccess={() => setIsEditOpen(false)}
+          />
+        )}
+      </ResponsiveDrawer>
+      
+      {/* Add Subcategory Sheet/Drawer */}
+      <ResponsiveDrawer
+        open={isAddSubcategoryOpen}
+        onOpenChange={setIsAddSubcategoryOpen}
+        title={dictionary.categories.newCategory}
+        description={dictionary.categories.descriptionPlaceholder}
+      >
+        {parentForNewSubcategory && (
+          <CreateCategoryForm
+            parentCategories={categories.filter(c => c.is_active)}
+            initialParentId={parentForNewSubcategory.category_id}
+            onSuccess={() => setIsAddSubcategoryOpen(false)}
           />
         )}
       </ResponsiveDrawer>
@@ -140,7 +230,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         title={dictionary.categories.archiveCategory}
         description={
           <>
-            {dictionary.categories.archivePrompt1} <strong>{selectedCategory?.category_name}</strong>{dictionary.categories.archivePrompt2}
+            {dictionary.categories.archivePrompt1} <strong>{selectedCategoryForAction?.category_name}</strong>{dictionary.categories.archivePrompt2}
           </>
         }
         actionText={dictionary.categories.archiveAction}
@@ -157,15 +247,28 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         description={
           <>
             {dictionary.categories.deletePrompt1}
-            <strong> {selectedCategory?.category_name}</strong>{dictionary.categories.deletePrompt2}
+            <strong> {selectedCategoryForAction?.category_name}</strong>{dictionary.categories.deletePrompt2}
           </>
         }
         actionText={dictionary.common.delete}
         cancelText={dictionary.common.cancel}
-        onAction={handleDelete}
+        onAction={() => handleDelete(false)}
         isPending={isPending}
         destructive={true}
       />
-    </>
+
+      {/* Delete All Prompt Dialog */}
+      <ActionDialog
+        open={isDeleteAllPromptOpen}
+        onOpenChange={setIsDeleteAllPromptOpen}
+        title={dictionary.categories.deleteAllTitle}
+        description={dictionary.categories.deleteAllPrompt}
+        actionText={dictionary.categories.deleteAllAction}
+        cancelText={dictionary.common.cancel}
+        onAction={() => handleDelete(true)}
+        isPending={isPending}
+        destructive={true}
+      />
+    </div>
   );
 }

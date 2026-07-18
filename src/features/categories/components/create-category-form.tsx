@@ -30,10 +30,11 @@ const iconOptions = CATEGORY_ICONS.map(key => ({
 interface CreateCategoryFormProps {
   parentCategories: CategoryWithChildren[];
   initialData?: CategoryWithChildren | null;
+  initialParentId?: string;
   onSuccess?: () => void;
 }
 
-export function CreateCategoryForm({ parentCategories, initialData, onSuccess }: CreateCategoryFormProps) {
+export function CreateCategoryForm({ parentCategories, initialData, initialParentId, onSuccess }: CreateCategoryFormProps) {
   const dictionary = useDictionary();
 
   const availableParentCategories = initialData
@@ -45,7 +46,7 @@ export function CreateCategoryForm({ parentCategories, initialData, onSuccess }:
     defaultValues: {
       category_name: initialData?.category_name || '',
       category_description: initialData?.category_description || '',
-      parent_id: initialData?.parent_id || '',
+      parent_id: initialData?.parent_id || initialParentId || '',
       color: initialData?.color || 'slate',
       icon: initialData?.icon || 'tag',
     },

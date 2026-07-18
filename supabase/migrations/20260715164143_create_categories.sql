@@ -3,7 +3,7 @@ CREATE TABLE public.categories (
     user_id              UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
     category_name        TEXT NOT NULL,
     category_description TEXT,
-    parent_id            UUID REFERENCES public.categories(category_id) ON DELETE CASCADE,
+    parent_id            UUID REFERENCES public.categories(category_id) ON DELETE RESTRICT,
     color                TEXT,
     icon                 TEXT,
     is_active            BOOLEAN DEFAULT TRUE NOT NULL,
@@ -37,6 +37,7 @@ BEGIN
         RAISE EXCEPTION 'A category cannot be its own parent.';
     END IF;
 
+    -- Prevent adding a subcategory to a subcategory (New Parent is already a child)
     IF EXISTS (
         SELECT 1 FROM public.categories
         WHERE category_id = NEW.parent_id AND parent_id IS NOT NULL
@@ -44,10 +45,14 @@ BEGIN
         RAISE EXCEPTION 'Categories support a maximum of two levels (Category -> Subcategory).';
     END IF;
 
+    -- Prevent a parent category from becoming a subcategory if it already has children
+    IF EXISTS (
+        SELECT 1 FROM public.categories
+        WHERE parent_id = NEW.category_id
+    ) THEN
+        RAISE EXCEPTION 'A category with subcategories cannot become a subcategory itself.';
+    END IF;
+
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = '';
-
-CREATE TRIGGER check_category_hierarchy
-    BEFORE INSERT OR UPDATE ON public.categories
-    FOR EACH ROW EXECUTE FUNCTION public.enforce_category_hierarchy();

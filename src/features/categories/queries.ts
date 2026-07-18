@@ -135,7 +135,18 @@ export async function archiveCategory(categoryId: string) {
 export async function unarchiveCategory(categoryId: string) {
   const supabase = await createClient();
 
-  // Reactivate parent
+  // Get the category first to check if it has a parent
+  const { data: categoryInfo, error: fetchError } = await supabase
+    .from('categories')
+    .select('parent_id')
+    .eq('category_id', categoryId)
+    .single();
+
+  if (fetchError) {
+    throw new Error(`Failed to fetch category info: ${fetchError.message}`);
+  }
+
+  // Reactivate the requested category
   const { data, error } = await supabase
     .from('categories')
     .update({ is_active: true })
@@ -147,38 +158,64 @@ export async function unarchiveCategory(categoryId: string) {
     throw new Error(`Failed to unarchive category: ${error.message}`);
   }
 
-  // Also reactivate children
-  const { error: childrenError } = await supabase
-    .from('categories')
-    .update({ is_active: true })
-    .eq('parent_id', categoryId);
+  if (categoryInfo.parent_id) {
+    // Option A: Auto-reactivate the parent if we are unarchiving a child
+    await supabase
+      .from('categories')
+      .update({ is_active: true })
+      .eq('category_id', categoryInfo.parent_id);
+  } else {
+    // If it's a parent, reactivate its children automatically
+    const { error: childrenError } = await supabase
+      .from('categories')
+      .update({ is_active: true })
+      .eq('parent_id', categoryId);
 
-  if (childrenError) {
-    console.error(`Failed to unarchive subcategories: ${childrenError.message}`);
+    if (childrenError) {
+      console.error(`Failed to unarchive subcategories: ${childrenError.message}`);
+    }
   }
 
   return data;
 }
 
-export async function deleteCategory(categoryId: string) {
+export async function deleteCategory(categoryId: string, forceCascade: boolean = false) {
   const supabase = await createClient();
 
-  // Enforce Soft Deletes according to the Ledger Pattern
-  const { error: childrenError } = await supabase
-    .from('categories')
-    .update({ is_active: false })
-    .eq('parent_id', categoryId);
+  if (forceCascade) {
+    const { error: childrenError } = await supabase
+      .from('categories')
+      .delete()
+      .eq('parent_id', categoryId);
 
-  if (childrenError) {
-    throw new Error(`Failed to soft-delete subcategories: ${childrenError.message}`);
+    if (childrenError) {
+      throw new Error(`Failed to delete subcategories: ${childrenError.message}`);
+    }
+  } else {
+    // Check if it has children to prevent foreign key violation
+    const { count, error: countError } = await supabase
+      .from('categories')
+      .select('*', { count: 'exact', head: true })
+      .eq('parent_id', categoryId);
+      
+    if (countError) {
+      throw new Error(`Failed to check subcategories: ${countError.message}`);
+    }
+    
+    if ((count || 0) > 0) {
+      throw new Error('HAS_CHILDREN');
+    }
   }
 
   const { error } = await supabase
     .from('categories')
-    .update({ is_active: false })
+    .delete()
     .eq('category_id', categoryId);
 
   if (error) {
+    if (error.code === '23503') {
+      throw new Error('HAS_CHILDREN');
+    }
     throw new Error(`Failed to delete category: ${error.message}`);
   }
 

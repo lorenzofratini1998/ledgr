@@ -68,7 +68,7 @@ export async function archiveCategoryAction(categoryId: string): Promise<ActionR
   }
 }
 
-export async function deleteCategoryAction(categoryId: string): Promise<ActionResponse> {
+export async function deleteCategoryAction(categoryId: string, forceCascade: boolean = false): Promise<ActionResponse> {
   try {
     const supabase = await createClient();
     const { data: { user } } = await getUser();
@@ -77,11 +77,14 @@ export async function deleteCategoryAction(categoryId: string): Promise<ActionRe
       return { success: false, message: 'Unauthorized' };
     }
 
-    await dbDeleteCategory(categoryId);
+    await dbDeleteCategory(categoryId, forceCascade);
     revalidateTag(`categories-${user.id}`, undefined as any);
     
     return { success: true };
   } catch (error: unknown) {
+    if (error instanceof Error && error.message === 'HAS_CHILDREN') {
+      return { success: false, message: 'HAS_CHILDREN' };
+    }
     console.error('Error deleting category:', error);
     return {
       success: false,
