@@ -1,4 +1,4 @@
-import {createClient} from '@supabase/supabase-js';
+import { createClient } from '@supabase/supabase-js';
 
 // Read from process.env (Playwright automatically loads .env.local if configured, or we fall back)
 // We need the SERVICE_ROLE_KEY to bypass RLS and delete users from auth.users directly.
@@ -56,4 +56,43 @@ export async function deleteTestUserByEmail(email: string) {
   } catch (error) {
     console.error(`Failed to clean up test user ${email}:`, error);
   }
+}
+
+/**
+ * Creates a fully onboarded user for E2E testing to bypass the onboarding UI flow.
+ * Returns the created user object.
+ */
+export async function createTestUser(email: string, password = 'ValidPass123!') {
+  if (!supabaseServiceKey) {
+    throw new Error('SUPABASE_SERVICE_ROLE_KEY is required to create a test user directly.');
+  }
+
+  const { data: { user }, error } = await supabaseAdmin.auth.admin.createUser({
+    email,
+    password,
+    email_confirm: true,
+    user_metadata: {
+      display_name: 'E2E User',
+      onboarding_completed: true,
+    }
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  if (!user) {
+    throw new Error('Failed to create user: user is null');
+  }
+
+  const { error: prefsError } = await supabaseAdmin
+    .from('user_preferences')
+    .update({ primary_currency_code: 'USD' })
+    .eq('profile_id', user.id);
+
+  if (prefsError) {
+    throw prefsError;
+  }
+
+  return user;
 }

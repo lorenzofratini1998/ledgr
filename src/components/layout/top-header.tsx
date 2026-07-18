@@ -23,7 +23,7 @@ export function TopHeader({ user, upcomingSlot }: TopHeaderProps) {
             <button className="flex items-center gap-3">
               <Avatar className="h-8 w-8 border">
                 <AvatarImage src={user.avatar_url} alt={user.display_name} />
-                <AvatarFallback>{user.display_name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user?.display_name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               <span className="font-semibold text-lg">Ledgr</span>
             </button>

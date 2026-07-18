@@ -1,4 +1,4 @@
-import { signOut } from "@/features/auth/actions";
+
 import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/utils/logger";
 import { Suspense } from "react";
@@ -83,23 +83,12 @@ async function InstrumentsData() {
   return <pre>{JSON.stringify(instruments, null, 2)}</pre>;
 }
 
-export function LogoutButton() {
-  return (
-    // The action attribute natively binds the server action to the form submission
-    <form action={signOut}>
-      <button type="submit">
-        Log Out
-      </button>
-    </form>
-  );
-}
 
 
 export default function Instruments() {
   return (
     <Suspense fallback={<div>Loading instruments...</div>}>
       <InstrumentsData />
-      <LogoutButton />
     </Suspense>
   );
 }

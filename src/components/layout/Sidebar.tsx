@@ -98,10 +98,10 @@ export function Sidebar({ user }: SidebarProps) {
             <button className="w-full flex items-center gap-3 overflow-hidden rounded-lg p-2 hover:bg-muted transition-colors cursor-pointer mt-2">
               <Avatar className="h-9 w-9 shrink-0 mx-auto md:mx-0">
                 <AvatarImage src={user.avatar_url} alt={user.display_name} />
-                <AvatarFallback>{user.display_name.charAt(0)}</AvatarFallback>
+                <AvatarFallback>{user?.display_name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               <div className={`flex-1 min-w-0 transition-all text-left ${isCollapsed ? 'hidden' : 'block'}`}>
-                <p className="text-sm font-medium truncate">{user.display_name}</p>
+                <p className="text-sm font-medium truncate">{user?.display_name || 'User'}</p>
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
             </button>
