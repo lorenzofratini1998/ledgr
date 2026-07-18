@@ -367,6 +367,7 @@ export type Database = {
           created_by: string | null
           currency_code: string
           description: string | null
+          exclude_from_net_worth: boolean
           icon: string | null
           id: string
           initial_balance: number
@@ -384,6 +385,7 @@ export type Database = {
           created_by?: string | null
           currency_code: string
           description?: string | null
+          exclude_from_net_worth?: boolean
           icon?: string | null
           id?: string
           initial_balance?: number
@@ -401,6 +403,7 @@ export type Database = {
           created_by?: string | null
           currency_code?: string
           description?: string | null
+          exclude_from_net_worth?: boolean
           icon?: string | null
           id?: string
           initial_balance?: number

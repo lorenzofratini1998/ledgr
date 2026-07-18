@@ -1,11 +1,11 @@
 'use server';
 
 import { archiveWallet, createWallet, setDefaultWallet } from '@/features/wallets/queries';
-import { CreateWalletPayload, CreateWalletSchema } from '@/features/wallets/schemas';
+import { CreateWalletPayload, CreateWalletSchema, UpdateWalletPayload, UpdateWalletSchema } from '@/features/wallets/schemas';
 import { getUser } from '@/lib/supabase/server';
 import { formatZodErrors } from '@/lib/utils/action-utils';
 import { ActionResponse } from '@/types/actions';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 
 export async function createWalletAction(payload: CreateWalletPayload): Promise<ActionResponse> {
   try {
@@ -27,6 +27,7 @@ export async function createWalletAction(payload: CreateWalletPayload): Promise<
     await createWallet(user.id, result.data);
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     revalidateTag(`archived-wallets-${user.id}`, undefined as any);
     return { success: true, message: 'Wallet created successfully' };
   } catch (error) {
@@ -46,6 +47,7 @@ export async function archiveWalletAction(walletId: string): Promise<ActionRespo
     await archiveWallet(user.id, walletId);
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     revalidateTag(`archived-wallets-${user.id}`, undefined as any);
     return { success: true, message: 'Wallet archived successfully' };
   } catch (error) {
@@ -65,6 +67,7 @@ export async function setDefaultWalletAction(walletId: string): Promise<ActionRe
     await setDefaultWallet(user.id, walletId);
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     return { success: true, message: 'Default wallet updated' };
   } catch (error) {
     console.error('Failed to set default wallet:', error);
@@ -83,6 +86,7 @@ export async function unarchiveWalletAction(walletId: string): Promise<ActionRes
     await import('@/features/wallets/queries').then(m => m.unarchiveWallet(user.id, walletId));
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     revalidateTag(`archived-wallets-${user.id}`, undefined as any);
     return { success: true, message: 'Wallet unarchived successfully' };
   } catch (error) {
@@ -102,6 +106,7 @@ export async function deleteWalletAction(walletId: string): Promise<ActionRespon
     await import('@/features/wallets/queries').then(m => m.deleteWallet(user.id, walletId));
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     revalidateTag(`archived-wallets-${user.id}`, undefined as any);
     return { success: true, message: 'Wallet deleted successfully' };
   } catch (error) {
@@ -110,7 +115,7 @@ export async function deleteWalletAction(walletId: string): Promise<ActionRespon
   }
 }
 
-export async function updateWalletAction(walletId: string, payload: Partial<CreateWalletPayload>): Promise<ActionResponse> {
+export async function updateWalletAction(walletId: string, payload: UpdateWalletPayload): Promise<ActionResponse> {
   try {
     const { data: { user } } = await getUser();
 
@@ -118,9 +123,19 @@ export async function updateWalletAction(walletId: string, payload: Partial<Crea
       return { success: false, message: 'Unauthorized' };
     }
 
-    await import('@/features/wallets/queries').then(m => m.updateWallet(user.id, walletId, payload));
+    const result = UpdateWalletSchema.safeParse(payload);
+    if (!result.success) {
+      return { 
+        success: false, 
+        message: 'Invalid wallet data', 
+        errors: formatZodErrors(result.error) 
+      };
+    }
+
+    await import('@/features/wallets/queries').then(m => m.updateWallet(user.id, walletId, result.data));
     
     revalidateTag(`wallets-${user.id}`, undefined as any);
+    revalidatePath('/wallets');
     revalidateTag(`archived-wallets-${user.id}`, undefined as any);
     return { success: true, message: 'Wallet updated successfully' };
   } catch (error) {

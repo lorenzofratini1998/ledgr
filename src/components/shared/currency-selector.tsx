@@ -32,6 +32,7 @@ interface CurrencySelectorProps {
   dict?: CurrencySelectorDictionary;
   className?: string;
   trigger?: React.ReactElement;
+  disabled?: boolean;
 }
 
 export function CurrencySelector({
@@ -41,7 +42,8 @@ export function CurrencySelector({
   popularCurrencyCodes = ['USD', 'EUR', 'GBP', 'JPY', 'CHF'],
   dict = {},
   className,
-  trigger
+  trigger,
+  disabled
 }: CurrencySelectorProps) {
   const [open, setOpen] = useState(false);
   const selected = currencies.find((c) => c.iso_code === value);
@@ -64,6 +66,7 @@ export function CurrencySelector({
         !value && "text-muted-foreground",
         className
       )}
+      disabled={disabled}
     >
       {selected
         ? `${selected.iso_code} - ${selected.name} (${selected.symbol})`

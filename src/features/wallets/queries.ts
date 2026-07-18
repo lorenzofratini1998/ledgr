@@ -1,4 +1,4 @@
-import { CreateWalletPayload } from '@/features/wallets/schemas';
+import { CreateWalletPayload, UpdateWalletPayload } from '@/features/wallets/schemas';
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import { unstable_cache } from 'next/cache';
@@ -44,6 +44,7 @@ export async function createWallet(userId: string, data: CreateWalletPayload) {
     description: data.description || null,
     color: data.color || null,
     icon: data.icon || null,
+    exclude_from_net_worth: data.exclude_from_net_worth,
   });
 
   if (error) {
@@ -125,10 +126,12 @@ export async function unarchiveWallet(userId: string, walletId: string) {
 export async function deleteWallet(userId: string, walletId: string) {
   const supabase = await createClient();
 
-  // Enforce Soft Deletes according to the Ledger Pattern
+  // Enforce Hard Delete according to AC-3
+  // TODO: Implement transaction cascade and transfer conversion (Story 2 AC-4 & AC-5)
+  // When transactions are implemented, this deletion will need to trigger conversions first.
   const { error } = await supabase
     .from('wallets')
-    .update({ is_active: false })
+    .delete()
     .eq('id', walletId)
     .eq('user_id', userId);
 
@@ -137,16 +140,16 @@ export async function deleteWallet(userId: string, walletId: string) {
   }
 }
 
-export async function updateWallet(userId: string, walletId: string, data: Partial<CreateWalletPayload>) {
+export async function updateWallet(userId: string, walletId: string, data: UpdateWalletPayload) {
   const supabase = await createClient();
 
   const updateData: any = {};
   if (data.name !== undefined) updateData.name = data.name;
   if (data.type !== undefined) updateData.type = data.type;
-  if (data.currency_code !== undefined) updateData.currency_code = data.currency_code;
   if (data.description !== undefined) updateData.description = data.description || null;
   if (data.color !== undefined) updateData.color = data.color || null;
   if (data.icon !== undefined) updateData.icon = data.icon || null;
+  if (data.exclude_from_net_worth !== undefined) updateData.exclude_from_net_worth = data.exclude_from_net_worth;
   // We explicitly do not update initial_balance here as it's part of the ledger history, 
   // but if we needed to, we could add it. Assuming we can update it if the user wants.
   if (data.initial_balance !== undefined) updateData.initial_balance = Number(data.initial_balance);

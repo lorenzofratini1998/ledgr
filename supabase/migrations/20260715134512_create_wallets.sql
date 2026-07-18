@@ -2,19 +2,20 @@ CREATE TYPE public.wallet_type AS ENUM ('regular', 'savings', 'investment');
 
 CREATE TABLE public.wallets
 (
-    id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id             UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    name                TEXT NOT NULL,
-    type                public.wallet_type NOT NULL DEFAULT 'regular',
-    initial_balance     NUMERIC(18, 4) DEFAULT 0.0000 NOT NULL,
-    description         TEXT,
-    is_default          BOOLEAN DEFAULT FALSE NOT NULL,
-    currency_code       CHAR(3) NOT NULL REFERENCES public.currencies(iso_code) ON UPDATE CASCADE,
-    color               TEXT,
-    icon                TEXT,
-    is_active           BOOLEAN DEFAULT TRUE NOT NULL,
-    created_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+    id                      UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id                 UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    name                    TEXT NOT NULL,
+    type                    public.wallet_type NOT NULL DEFAULT 'regular',
+    initial_balance         NUMERIC(18, 4) DEFAULT 0.0000 NOT NULL,
+    description             TEXT,
+    is_default              BOOLEAN DEFAULT FALSE NOT NULL,
+    currency_code           CHAR(3) NOT NULL REFERENCES public.currencies(iso_code) ON UPDATE CASCADE,
+    color                   TEXT,
+    icon                    TEXT,
+    exclude_from_net_worth  BOOLEAN DEFAULT FALSE NOT NULL,
+    is_active               BOOLEAN DEFAULT TRUE NOT NULL,
+    created_at              TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE INDEX idx_wallets_user_id ON public.wallets(user_id);
@@ -52,6 +53,13 @@ BEGIN
     -- The wallet is being inserted and the user has no other active wallets
     IF TG_OP = 'INSERT' AND NEW.is_default = FALSE THEN
         IF NOT EXISTS (SELECT 1 FROM public.wallets WHERE user_id = NEW.user_id AND is_active = TRUE) THEN
+            NEW.is_default := TRUE;
+        END IF;
+    END IF;
+
+    -- The wallet is being un-archived and the user has no other active wallets
+    IF TG_OP = 'UPDATE' AND OLD.is_active = FALSE AND NEW.is_active = TRUE AND NEW.is_default = FALSE THEN
+        IF NOT EXISTS (SELECT 1 FROM public.wallets WHERE user_id = NEW.user_id AND id != NEW.id AND is_active = TRUE) THEN
             NEW.is_default := TRUE;
         END IF;
     END IF;

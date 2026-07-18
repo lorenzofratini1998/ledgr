@@ -3,6 +3,7 @@
 import { ActionDialog } from '@/components/shared/action-dialog';
 import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import {
   archiveWalletAction,
   deleteWalletAction,
@@ -14,7 +15,7 @@ import { WALLET_COLOR_MAP, WALLET_ICON_MAP } from '@/features/wallets/constants'
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
 import { Currency, Wallet } from '@/types/models';
-import { Wallet as DefaultWalletIcon, Star } from 'lucide-react';
+import { Wallet as DefaultWalletIcon, Star, EyeOff } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
 import { WalletActions } from './wallet-actions';
@@ -31,6 +32,7 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState('');
 
   const handleArchive = () => {
     startTransition(async () => {
@@ -98,6 +100,11 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
             {wallet.is_default && (
               <Star className="w-4 h-4 text-amber-500 fill-amber-500 ml-1" />
             )}
+            {wallet.exclude_from_net_worth && (
+              <div title="Excluded from Net Worth" className="flex items-center justify-center p-1 bg-muted rounded-full ml-1">
+                <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />
+              </div>
+            )}
           </CardTitle>
           <WalletActions
             isActive={wallet.is_active}
@@ -145,7 +152,10 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
       {/* Delete Dialog */}
       <ActionDialog
         open={isDeleteOpen}
-        onOpenChange={setIsDeleteOpen}
+        onOpenChange={(open) => {
+          setIsDeleteOpen(open);
+          if (!open) setDeleteConfirmation('');
+        }}
         title="Delete Permanently"
         description={
           <>
@@ -157,7 +167,20 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
         onAction={handleDelete}
         isPending={isPending}
         destructive={true}
-      />
+        actionDisabled={deleteConfirmation !== wallet.name}
+      >
+        <div className="pt-2">
+          <label className="text-sm font-medium mb-2 block">
+            Type <strong>{wallet.name}</strong> to confirm
+          </label>
+          <Input 
+            value={deleteConfirmation}
+            onChange={(e) => setDeleteConfirmation(e.target.value)}
+            placeholder={wallet.name}
+            className="mt-1"
+          />
+        </div>
+      </ActionDialog>
     </>
   );
 }

@@ -180,6 +180,8 @@ export const it: Dictionary = {
     currency: "Valuta",
     createdSuccess: "Portafoglio creato con successo",
     updatedSuccess: "Portafoglio aggiornato con successo",
+    excludeFromNetWorth: "Escludi dal Patrimonio Netto",
+    excludeFromNetWorthDesc: "Nascondi il saldo di questo portafoglio dal calcolo del tuo patrimonio netto globale.",
     active: "Attivi",
     archived: "Archiviati",
     noActiveWallets: "Nessun portafoglio attivo",

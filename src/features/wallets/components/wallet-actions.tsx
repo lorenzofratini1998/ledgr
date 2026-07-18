@@ -25,12 +25,10 @@ export function WalletActions({
 }: WalletActionsProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger render={
-        <Button variant="ghost" className="h-8 w-8 p-0">
-          <span className="sr-only">Open menu</span>
-          <MoreVertical className="h-4 w-4" />
-        </Button>
-      } />
+      <DropdownMenuTrigger className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
+        <span className="sr-only">Open menu</span>
+        <MoreVertical className="h-4 w-4" />
+      </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         {isActive ? (
           <>

@@ -178,6 +178,8 @@ export const en = {
     currency: "Currency",
     createdSuccess: "Wallet created successfully",
     updatedSuccess: "Wallet updated successfully",
+    excludeFromNetWorth: "Exclude from Net Worth",
+    excludeFromNetWorthDesc: "Hide this wallet's balance from your global net worth calculation.",
     active: "Active",
     archived: "Archived",
     noActiveWallets: "No active wallets",

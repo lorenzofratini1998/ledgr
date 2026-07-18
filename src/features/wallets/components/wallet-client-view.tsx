@@ -1,6 +1,7 @@
 'use client';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useState, useEffect } from 'react';
 import { useDictionary } from '@/i18n/dictionary-provider';
 import { Currency, Wallet } from '@/types/models';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -28,11 +29,17 @@ export function WalletsClientView({
   const searchParams = useSearchParams();
   const dictionary = useDictionary();
 
-  const view = searchParams.get('view') === 'archived' ? 'archived' : 'active';
+  const initialView = searchParams.get('view') === 'archived' ? 'archived' : 'active';
+  const [view, setView] = useState(initialView);
 
-  const handleTabChange = (value: string) => {
+  useEffect(() => {
+    setView(initialView);
+  }, [initialView]);
+
+  const handleTabChange = (newValue: string) => {
+    setView(newValue);
     const params = new URLSearchParams(searchParams.toString());
-    if (value === 'archived') {
+    if (newValue === 'archived') {
       params.set('view', 'archived');
     } else {
       params.delete('view');

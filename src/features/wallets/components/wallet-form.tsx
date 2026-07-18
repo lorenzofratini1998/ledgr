@@ -35,6 +35,7 @@ export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialDat
       currency_code: initialData?.currency_code || defaultCurrencyCode,
       color: initialData?.color || DEFAULT_WALLET_THEMES['regular'].color,
       icon: initialData?.icon || DEFAULT_WALLET_THEMES['regular'].icon,
+      exclude_from_net_worth: initialData?.exclude_from_net_worth || false,
     },
   });
 
@@ -74,8 +75,7 @@ export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialDat
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-        
-        <WalletFormFields currencies={currencies} />
+        <WalletFormFields currencies={currencies} isEditMode={!!initialData} />
 
         <div className="pt-4">
           <Button type="submit" className="w-full" disabled={isPending} size="lg">

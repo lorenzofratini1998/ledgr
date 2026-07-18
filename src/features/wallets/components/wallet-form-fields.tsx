@@ -3,7 +3,8 @@
 import { ColorPicker } from '@/components/shared/color-picker';
 import { CurrencySelector } from '@/components/shared/currency-selector';
 import { IconPicker } from '@/components/shared/icon-picker';
-import { FormControl, FormField, FormItem, FormLabel, FormMessage, } from '@/components/ui/form';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage, } from '@/components/ui/form';
+import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
@@ -27,9 +28,10 @@ interface WalletFormFieldsProps {
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   // Prefix to support nested forms (like ecosystemSchema.wallet)
   fieldPrefix?: string;
+  isEditMode?: boolean;
 }
 
-export function WalletFormFields({ currencies, fieldPrefix = '' }: WalletFormFieldsProps) {
+export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = false }: WalletFormFieldsProps) {
   const dictionary = useDictionary();
   const form = useFormContext();
 
@@ -168,9 +170,33 @@ export function WalletFormFields({ currencies, fieldPrefix = '' }: WalletFormFie
                 value={field.value}
                 onValueChange={field.onChange}
                 currencies={currencies}
+                disabled={isEditMode}
               />
             </FormControl>
             <FormMessage />
+          </FormItem>
+        )}
+      />
+
+      <FormField
+        control={form.control}
+        name={getFieldName('exclude_from_net_worth')}
+        render={({ field }) => (
+          <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+            <div className="space-y-0.5 pr-4">
+              <FormLabel className="text-base">
+                {dictionary.wallets.excludeFromNetWorth}
+              </FormLabel>
+              <FormDescription>
+                {dictionary.wallets.excludeFromNetWorthDesc}
+              </FormDescription>
+            </div>
+            <FormControl>
+              <Switch
+                checked={field.value}
+                onCheckedChange={field.onChange}
+              />
+            </FormControl>
           </FormItem>
         )}
       />
