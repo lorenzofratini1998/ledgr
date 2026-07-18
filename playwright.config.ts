@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import {defineConfig, devices} from '@playwright/test';
 import dotenv from 'dotenv';
 
 // Load .env.local so we can access SUPABASE_SERVICE_ROLE_KEY for test cleanup

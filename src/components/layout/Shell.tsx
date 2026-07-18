@@ -1,9 +1,9 @@
+import { LayoutUser } from '@/types/layout';
 import { ReactNode } from 'react';
-import { Sidebar } from './sidebar';
-import { TopHeader } from './top-header';
 import { BottomNav } from './bottom-nav';
 import { RightPanel } from './right-panel';
-import { LayoutUser } from '@/types/layout';
+import { Sidebar } from './sidebar';
+import { TopHeader } from './top-header';
 
 interface ShellProps {
   children: ReactNode;

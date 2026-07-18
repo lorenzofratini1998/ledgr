@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Button } from '@/components/ui/button';
 import { WalletForm } from '@/features/wallets/components/wallet-form';
-import { Currency } from '@/types/models';
 import { useDictionary } from '@/i18n/dictionary-provider';
-import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
+import { Currency } from '@/types/models';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 interface CreateWalletTriggerProps {
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];

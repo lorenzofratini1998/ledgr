@@ -1,17 +1,22 @@
 'use client';
 
-import { useTransition, useState } from 'react';
-import { Wallet, Currency } from '@/types/models';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatCurrency } from '@/lib/formatters';
-import { archiveWalletAction, setDefaultWalletAction, deleteWalletAction, unarchiveWalletAction } from '@/features/wallets/actions';
-import { toast } from 'sonner';
-import { Star, Wallet as DefaultWalletIcon } from 'lucide-react';
-import { WalletForm } from '@/features/wallets/components/wallet-form';
-import { cn } from '@/lib/utils';
-import { WALLET_COLOR_MAP, WALLET_ICON_MAP } from '@/features/wallets/constants';
-import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { ActionDialog } from '@/components/shared/action-dialog';
+import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  archiveWalletAction,
+  deleteWalletAction,
+  setDefaultWalletAction,
+  unarchiveWalletAction
+} from '@/features/wallets/actions';
+import { WalletForm } from '@/features/wallets/components/wallet-form';
+import { WALLET_COLOR_MAP, WALLET_ICON_MAP } from '@/features/wallets/constants';
+import { formatCurrency } from '@/lib/formatters';
+import { cn } from '@/lib/utils';
+import { Currency, Wallet } from '@/types/models';
+import { Wallet as DefaultWalletIcon, Star } from 'lucide-react';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { WalletActions } from './wallet-actions';
 
 interface WalletCardProps {

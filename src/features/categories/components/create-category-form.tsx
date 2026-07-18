@@ -1,22 +1,20 @@
 'use client';
 
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { CreateCategorySchema, CreateCategoryPayload } from '@/features/categories/schemas';
-import { z } from 'zod';
-import { CategoryWithChildren } from '@/types/models';
+import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createCategoryAction, updateCategoryAction } from '@/features/categories/actions';
+import { CreateCategoryPayload, CreateCategorySchema } from '@/features/categories/schemas';
 import { useActionMutation } from '@/hooks/use-action-mutation';
+import { CategoryWithChildren } from '@/types/models';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 import { ColorPicker } from '@/components/shared/color-picker';
 import { IconPicker } from '@/components/shared/icon-picker';
-import { CATEGORY_COLORS, CATEGORY_ICONS } from '@/features/categories/constants';
-import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP } from '@/features/categories/constants';
+import { CATEGORY_COLOR_MAP, CATEGORY_COLORS, CATEGORY_ICON_MAP, CATEGORY_ICONS } from '@/features/categories/constants';
 import { useDictionary } from '@/i18n/dictionary-provider';
 
 const colorOptions = CATEGORY_COLORS.map(key => ({

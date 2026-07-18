@@ -1,8 +1,8 @@
 'use client';
 
-import Link from 'next/link';
 import { BOTTOM_NAV_ITEMS } from '@/config/navigation';
 import { useDictionary } from '@/i18n/dictionary-provider';
+import Link from 'next/link';
 
 interface BottomNavProps {}
 

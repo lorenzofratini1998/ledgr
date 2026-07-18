@@ -1,12 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { PlusIcon } from 'lucide-react';
-import { CategoryWithChildren } from '@/types/models';
-import { CreateCategoryForm } from './create-category-form';
-import { useDictionary } from '@/i18n/dictionary-provider';
 import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
+import { Button } from '@/components/ui/button';
+import { useDictionary } from '@/i18n/dictionary-provider';
+import { CategoryWithChildren } from '@/types/models';
+import { PlusIcon } from 'lucide-react';
+import { useState } from 'react';
+import { CreateCategoryForm } from './create-category-form';
 
 interface CreateCategoryTriggerProps {
   parentCategories: CategoryWithChildren[];

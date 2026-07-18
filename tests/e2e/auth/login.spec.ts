@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
-import { deleteTestUserByEmail } from '../utils/supabase-admin';
+import {expect, test} from '@playwright/test';
+import {deleteTestUserByEmail} from '../utils/supabase-admin';
 
 test.describe('User Login E2E Tests', () => {
   let testEmail: string;

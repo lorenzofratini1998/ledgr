@@ -1,7 +1,7 @@
+import { OnboardingPayload } from '@/features/onboarding/schemas';
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import { unstable_cache } from 'next/cache';
-import { OnboardingPayload } from '@/features/onboarding/schemas';
 
 export async function completeOnboarding(
   userId: string,

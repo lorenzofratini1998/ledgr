@@ -1,5 +1,5 @@
-import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { Database } from '@/types/database.types';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 
 /**
  * Creates a standard Supabase client for use inside Next.js unstable_cache.

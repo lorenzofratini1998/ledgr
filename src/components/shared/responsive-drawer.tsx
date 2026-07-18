@@ -1,7 +1,7 @@
-import React from 'react';
-import { useMediaQuery } from '@/hooks/use-media-query';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Drawer, DrawerContent, DrawerDescription, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useMediaQuery } from '@/hooks/use-media-query';
+import React from 'react';
 
 interface ResponsiveDrawerProps {
   open: boolean;

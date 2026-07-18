@@ -1,9 +1,14 @@
 "use client";
 
-import React from 'react';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
-import { MoreHorizontal, Edit, Archive, Trash2, RotateCcw } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu';
 import { useDictionary } from '@/i18n/dictionary-provider';
+import { Archive, Edit, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-react';
 
 interface CategoryActionsProps {
   isActive: boolean;

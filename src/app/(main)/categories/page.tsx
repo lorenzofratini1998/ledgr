@@ -1,7 +1,6 @@
-import React from 'react';
-import { getCategories } from '@/features/categories/queries';
 import { CategoryGrid } from '@/features/categories/components/category-grid';
 import { CreateCategoryTrigger } from '@/features/categories/components/create-category-trigger';
+import { getCategories } from '@/features/categories/queries';
 
 import { getUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';

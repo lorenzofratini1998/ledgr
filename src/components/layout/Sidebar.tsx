@@ -1,21 +1,16 @@
 'use client';
 
-import { useState } from 'react';
-import Link from 'next/link';
-import {
-  Settings,
-  PanelLeftClose,
-  PanelLeft,
-  Bell
-} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 import { MAIN_NAV_ITEMS } from '@/config/navigation';
-import { LayoutUser } from '@/types/layout';
-import { UserNavPopover } from './user-nav-popover';
 import { useDictionary } from '@/i18n/dictionary-provider';
+import { LayoutUser } from '@/types/layout';
+import { Bell, PanelLeft, PanelLeftClose, Settings } from 'lucide-react';
+import Link from 'next/link';
+import { useState } from 'react';
+import { UserNavPopover } from './user-nav-popover';
 
 interface SidebarProps {
   user: LayoutUser;

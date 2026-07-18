@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
-import { CategoryWithChildren } from '@/types/models';
-import { archiveCategoryAction, deleteCategoryAction, unarchiveCategoryAction } from '@/features/categories/actions';
-import { toast } from 'sonner';
+import { ActionDialog } from '@/components/shared/action-dialog';
+import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { archiveCategoryAction, deleteCategoryAction, unarchiveCategoryAction } from '@/features/categories/actions';
 import { CreateCategoryForm } from '@/features/categories/components/create-category-form';
 import { useDictionary } from '@/i18n/dictionary-provider';
-import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
-import { ActionDialog } from '@/components/shared/action-dialog';
+import { CategoryWithChildren } from '@/types/models';
+import { useState, useTransition } from 'react';
+import { toast } from 'sonner';
 import { CategoryList } from './category-list';
 
 interface CategoryGridProps {

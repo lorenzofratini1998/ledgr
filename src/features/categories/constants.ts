@@ -1,4 +1,4 @@
-import { Tag, Home, ShoppingCart, Car, Zap, Coffee, Heart, Gift } from 'lucide-react';
+import { Car, Coffee, Gift, Heart, Home, ShoppingCart, Tag, Zap } from 'lucide-react';
 
 export const CATEGORY_COLORS = [
   'slate',

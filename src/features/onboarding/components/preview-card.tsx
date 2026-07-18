@@ -1,8 +1,7 @@
-
-import { Wallet } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { OnboardingDictionary } from './onboarding-form';
 import { formatCurrency } from '@/lib/formatters';
+import { Wallet } from 'lucide-react';
+import { OnboardingDictionary } from './onboarding-form';
 
 interface PreviewCardProps {
     theme: string;

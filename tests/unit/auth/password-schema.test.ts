@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { getRegisterSchema } from '@/features/auth/schemas';
-import { en } from '@/i18n/dictionaries/en';
+import {describe, expect, it} from 'vitest';
+import {getRegisterSchema} from '@/features/auth/schemas';
+import {en} from '@/i18n/dictionaries/en';
 
 describe('Password Validation Schema (AC-2)', () => {
   const schema = getRegisterSchema(en.auth.register.errors);

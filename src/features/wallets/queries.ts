@@ -1,7 +1,7 @@
+import { CreateWalletPayload } from '@/features/wallets/schemas';
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import { unstable_cache } from 'next/cache';
-import { CreateWalletPayload } from '@/features/wallets/schemas';
 
 export async function getWallets(userId: string) {
   const supabaseServer = await createClient();

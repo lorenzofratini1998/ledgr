@@ -1,8 +1,8 @@
-import { ReactNode } from 'react';
 import { Shell } from '@/components/layout/shell';
 import { UpcomingList } from '@/components/layout/upcoming-list';
-import { createClient, getUser } from '@/lib/supabase/server';
+import { getUser } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
+import { ReactNode } from 'react';
 
 interface MainLayoutProps {
   children: ReactNode;

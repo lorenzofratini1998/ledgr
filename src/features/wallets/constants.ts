@@ -1,4 +1,4 @@
-import { Wallet as WalletIconLucide, CreditCard, PiggyBank, TrendingUp, Coins, Landmark } from 'lucide-react';
+import { Coins, CreditCard, Landmark, PiggyBank, TrendingUp, Wallet as WalletIconLucide } from 'lucide-react';
 
 export const WALLET_COLORS = [
   'slate',

@@ -1,8 +1,8 @@
+import { CreateCategoryPayload } from '@/features/categories/schemas';
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
-import { unstable_cache } from 'next/cache';
-import { CreateCategoryPayload } from '@/features/categories/schemas';
 import { CategoryWithChildren } from '@/types/models';
+import { unstable_cache } from 'next/cache';
 
 export async function getCategories(userId: string): Promise<CategoryWithChildren[]> {
   const supabaseServer = await createClient();

@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { MapPinOff } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { MapPinOff } from "lucide-react";
+import Link from "next/link";
 
 export default function NotFound() {
   return (

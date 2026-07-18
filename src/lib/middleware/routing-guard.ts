@@ -1,7 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
 import { User } from "@supabase/supabase-js";
-import { SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "@/types/database.types";
+import { NextRequest, NextResponse } from "next/server";
 
 
 const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/auth/callback', '/update-password'];
@@ -10,8 +8,7 @@ const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/auth/callback'
 export async function enforceRoutingGuards(
   request: NextRequest,
   response: NextResponse,
-  user: User | null,
-  supabase: SupabaseClient<Database>
+  user: User | null
 ): Promise<NextResponse | null> {
   const url = request.nextUrl.clone();
   const path = url.pathname;
@@ -30,20 +27,28 @@ export async function enforceRoutingGuards(
   // Exempt /auth/callback and /update-password from redirecting authenticated users to the dashboard.
   // We need them to be able to exchange codes and reset passwords even if they have an active session.
   if (user && isPublicRoute && path !== '/auth/callback' && path !== '/update-password') {
-    url.pathname = '/';
+    url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }
 
   if (!user || isPublicRoute) return null;
 
-  const isOnboarded = await resolveOnboardingStatus(request, response, user, supabase);
+  const isOnboarded = await resolveOnboardingStatus(request, response, user);
 
   if (path === '/onboarding') {
     if (isOnboarded) {
-      url.pathname = '/';
+      url.pathname = '/dashboard';
       return NextResponse.redirect(url);
     }
     return null;
+  }
+
+  // If the user visits the root path and is fully onboarded, redirect to dashboard
+  if (path === '/') {
+    if (isOnboarded) {
+      url.pathname = '/dashboard';
+      return NextResponse.redirect(url);
+    }
   }
 
   if (!isOnboarded) {
@@ -57,8 +62,7 @@ export async function enforceRoutingGuards(
 async function resolveOnboardingStatus(
   request: NextRequest,
   response: NextResponse,
-  user: User,
-  supabase: SupabaseClient<Database>
+  user: User
 ): Promise<boolean> {
   // Check the JWT claim for zero-latency routing
   if (user.user_metadata?.onboarding_completed === true) {

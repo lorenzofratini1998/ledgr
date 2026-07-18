@@ -1,10 +1,10 @@
 'use client';
 
-import { ReactElement } from 'react';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { Button } from '@/components/ui/button';
 import { LogOut, User as UserIcon } from 'lucide-react';
+import { ReactElement } from 'react';
 
 interface UserNavPopoverProps {
   triggerRender: ReactElement;

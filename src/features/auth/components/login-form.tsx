@@ -1,26 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { toast } from "sonner";
 import { signInWithEmail, signUpWithEmail } from "@/features/auth/actions";
 import { useActionMutation } from "@/hooks/use-action-mutation";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { type Dictionary } from "@/i18n/dictionaries/en";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useMemo, useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 import { getLoginSchema, getRegisterSchema } from "@/features/auth/schemas";
 

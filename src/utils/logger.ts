@@ -18,7 +18,7 @@ async function getCorrelationId(): Promise<string | undefined> {
   try {
     const headersList = await headers();
     return headersList.get("x-correlation-id") || undefined;
-  } catch (error) {
+  } catch {
     return undefined;
   }
 }

@@ -1,11 +1,20 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UploadCloud, CheckCircle2, ArrowRight, ArrowLeft, FileType2, Database, AlertCircle, PlayCircle } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Database,
+  FileType2,
+  PlayCircle,
+  UploadCloud
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 // Step structure
 const STEPS = [

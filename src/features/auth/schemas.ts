@@ -1,5 +1,5 @@
-import * as z from "zod";
 import { type Dictionary } from "@/i18n/dictionaries/en";
+import * as z from "zod";
 
 export const getLoginSchema = (t: Dictionary['auth']['login']['errors']) => z.object({
   email: z.email({ message: t.invalidEmail }),

@@ -1,13 +1,13 @@
-import type { Metadata, Viewport } from "next";
-import "./globals.css";
+import { PWAManager } from "@/components/pwa-manager";
+import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
+import { DictionaryProvider } from "@/i18n/dictionary-provider";
+import { getLocaleDictionary } from "@/i18n/get-dictionary";
 import { QueryProvider } from "@/providers/query-provider";
 import { ThemeProvider } from "@/providers/theme-provider";
-import { PWAManager } from "@/components/pwa-manager";
+import type { Metadata, Viewport } from "next";
 import NextTopLoader from "nextjs-toploader";
-import { Toaster } from "@/components/ui/sonner";
-import { getLocaleDictionary } from "@/i18n/get-dictionary";
-import { DictionaryProvider } from "@/i18n/dictionary-provider";
+import "./globals.css";
 
 export const viewport: Viewport = {
   themeColor: "#000000",

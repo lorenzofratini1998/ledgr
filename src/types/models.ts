@@ -1,4 +1,4 @@
-import { Tables, Enums } from './database.types';
+import { Enums, Tables } from './database.types';
 
 export type UserPreference = Tables<'user_preferences'>;
 export type Profile = Tables<'profiles'>;

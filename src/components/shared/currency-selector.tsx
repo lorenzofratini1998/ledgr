@@ -1,9 +1,6 @@
 'use client';
 
-import { useState } from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
 import {
   Command,
   CommandEmpty,
@@ -13,12 +10,11 @@ import {
   CommandList,
   CommandSeparator,
 } from '@/components/ui/command';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Popover, PopoverContent, PopoverTrigger, } from '@/components/ui/popover';
+import { cn } from '@/lib/utils';
 import { Currency } from '@/types/models';
+import { Check, ChevronsUpDown } from 'lucide-react';
+import { useState } from 'react';
 
 export interface CurrencySelectorDictionary {
   currency_placeholder?: string;

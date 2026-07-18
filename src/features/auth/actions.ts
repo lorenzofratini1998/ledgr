@@ -1,10 +1,10 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { headers, cookies } from "next/headers";
 import { ActionResponse } from "@/types/actions";
+import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
 export async function signInWithEmail(payload: Record<string, string>): Promise<ActionResponse> {
   const email = payload.email;

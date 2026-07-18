@@ -1,9 +1,8 @@
 'use client';
 
-import React from 'react';
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { MoreVertical, Edit2, Archive, Star, Trash2, RotateCcw } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Archive, Edit2, MoreVertical, RotateCcw, Star, Trash2 } from 'lucide-react';
 
 interface WalletActionsProps {
   isActive: boolean;

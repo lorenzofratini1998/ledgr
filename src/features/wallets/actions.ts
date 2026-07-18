@@ -1,15 +1,14 @@
 'use server';
 
-import { revalidatePath, revalidateTag } from 'next/cache';
-import { CreateWalletSchema, CreateWalletPayload } from '@/features/wallets/schemas';
-import { createWallet, updateWallet, archiveWallet, setDefaultWallet, deleteWallet, unarchiveWallet } from '@/features/wallets/queries';
-import { createClient, getUser } from '@/lib/supabase/server';
-import { ActionResponse } from '@/types/actions';
+import { archiveWallet, createWallet, setDefaultWallet } from '@/features/wallets/queries';
+import { CreateWalletPayload, CreateWalletSchema } from '@/features/wallets/schemas';
+import { getUser } from '@/lib/supabase/server';
 import { formatZodErrors } from '@/lib/utils/action-utils';
+import { ActionResponse } from '@/types/actions';
+import { revalidateTag } from 'next/cache';
 
 export async function createWalletAction(payload: CreateWalletPayload): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {
@@ -38,7 +37,6 @@ export async function createWalletAction(payload: CreateWalletPayload): Promise<
 
 export async function archiveWalletAction(walletId: string): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {
@@ -58,7 +56,6 @@ export async function archiveWalletAction(walletId: string): Promise<ActionRespo
 
 export async function setDefaultWalletAction(walletId: string): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {
@@ -77,7 +74,6 @@ export async function setDefaultWalletAction(walletId: string): Promise<ActionRe
 
 export async function unarchiveWalletAction(walletId: string): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {
@@ -97,7 +93,6 @@ export async function unarchiveWalletAction(walletId: string): Promise<ActionRes
 
 export async function deleteWalletAction(walletId: string): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {
@@ -117,7 +112,6 @@ export async function deleteWalletAction(walletId: string): Promise<ActionRespon
 
 export async function updateWalletAction(walletId: string, payload: Partial<CreateWalletPayload>): Promise<ActionResponse> {
   try {
-    const supabase = await createClient();
     const { data: { user } } = await getUser();
 
     if (!user) {

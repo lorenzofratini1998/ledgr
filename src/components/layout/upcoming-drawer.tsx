@@ -1,5 +1,3 @@
-import { ReactNode } from 'react';
-import { CalendarClock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Drawer,
@@ -11,6 +9,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import { CalendarClock } from 'lucide-react';
+import { ReactNode } from 'react';
 
 interface UpcomingDrawerProps {
   children: ReactNode;

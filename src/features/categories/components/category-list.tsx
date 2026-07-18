@@ -1,14 +1,12 @@
 "use client";
 
-import React from 'react';
-import { CategoryWithChildren } from '@/types/models';
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Card } from '@/components/ui/card';
-import { Tag } from 'lucide-react';
-import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP } from '@/features/categories/constants';
-import { CategoryColor, CategoryIcon } from '@/features/categories/constants';
 import { CategoryActions } from '@/features/categories/components/category-actions';
+import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, CategoryColor, CategoryIcon } from '@/features/categories/constants';
 import { useDictionary } from '@/i18n/dictionary-provider';
+import { CategoryWithChildren } from '@/types/models';
+import { Tag } from 'lucide-react';
 
 interface CategoryListProps {
   categories: CategoryWithChildren[];

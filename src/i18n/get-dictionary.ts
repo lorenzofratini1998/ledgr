@@ -1,7 +1,7 @@
+import { LOCALE_COOKIE_NAME } from '@/utils/locale';
+import { cookies } from "next/headers";
 import 'server-only';
 import { type Dictionary } from './dictionaries/en';
-import { cookies } from "next/headers";
-import { LOCALE_COOKIE_NAME } from '@/utils/locale';
 
 const dictionaries = {
   en: () => import('./dictionaries/en').then((module) => module.en),

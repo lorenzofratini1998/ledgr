@@ -1,11 +1,11 @@
-import { Metadata } from 'next';
-import { getWallets, getArchivedWallets } from '@/features/wallets/queries';
 import { getActiveCurrencies } from '@/data/currencies';
-import { WalletsClientView } from '@/features/wallets/components/wallet-client-view';
-import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
-import { createClient, getUser } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
 import { getUserPreferences } from '@/data/user-preferences';
+import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
+import { WalletsClientView } from '@/features/wallets/components/wallet-client-view';
+import { getArchivedWallets, getWallets } from '@/features/wallets/queries';
+import { getUser } from '@/lib/supabase/server';
+import { Metadata } from 'next';
+import { redirect } from 'next/navigation';
 
 export const metadata: Metadata = {
   title: 'Wallets - Ledgr',

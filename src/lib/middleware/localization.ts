@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { resolveLocale, LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS } from "@/utils/locale";
 import { getActiveLanguages } from "@/data/languages";
+import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS, resolveLocale } from "@/utils/locale";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function applyLocalization(request: NextRequest, response: NextResponse) {
   const { activeLocales, defaultLocale } = await getActiveLanguages();

@@ -1,11 +1,4 @@
-import {
-  LayoutDashboard,
-  Wallet,
-  ArrowRightLeft,
-  PieChart,
-  Target,
-  Tags
-} from 'lucide-react';
+import { ArrowRightLeft, LayoutDashboard, PieChart, Tags, Target, Wallet } from 'lucide-react';
 
 export const MAIN_NAV_ITEMS = [
   { name: 'Dashboard', dictionaryKey: 'dashboard', href: '/dashboard', icon: LayoutDashboard },

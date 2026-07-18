@@ -1,15 +1,15 @@
-import { type NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/middleware";
+import { applyLocalization } from "@/lib/middleware/localization";
 import { applyCorrelationId } from "@/lib/middleware/observability";
 import { enforceRoutingGuards } from "@/lib/middleware/routing-guard";
-import { applyLocalization } from "@/lib/middleware/localization";
+import { updateSession } from "@/lib/supabase/middleware";
+import { type NextRequest } from "next/server";
 
 export async function middleware(request: NextRequest) {
-  const { supabaseResponse: response, user, supabase } = await updateSession(request);
+  const { supabaseResponse: response, user } = await updateSession(request);
 
   applyCorrelationId(request, response);
 
-  const redirectResponse = await enforceRoutingGuards(request, response, user, supabase);
+  const redirectResponse = await enforceRoutingGuards(request, response, user);
   if (redirectResponse) return redirectResponse;
 
   await applyLocalization(request, response);

@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter, useSearchParams, usePathname } from 'next/navigation';
-import { Wallet, Currency } from '@/types/models';
-import { WalletCard } from './wallet-card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useDictionary } from '@/i18n/dictionary-provider';
+import { Currency, Wallet } from '@/types/models';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { WalletCard } from './wallet-card';
 
 interface WalletsClientViewProps {
   regularWallets: Wallet[];

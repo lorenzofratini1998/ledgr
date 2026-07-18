@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
+import {createClient} from '@supabase/supabase-js';
 
 // Read from process.env (Playwright automatically loads .env.local if configured, or we fall back)
 // We need the SERVICE_ROLE_KEY to bypass RLS and delete users from auth.users directly.

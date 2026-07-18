@@ -1,7 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
-import { Suspense } from "react";
 import { signOut } from "@/features/auth/actions";
+import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/utils/logger";
+import { Suspense } from "react";
 
 
 /*export default function Home() {

@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, ReactNode } from 'react';
-import { CalendarClock, PanelRightClose, PanelRightOpen, PanelRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
+import { CalendarClock, PanelRight, PanelRightClose, PanelRightOpen } from 'lucide-react';
+import { ReactNode, useState } from 'react';
 
 interface RightPanelProps {
   calendarSlot: ReactNode;

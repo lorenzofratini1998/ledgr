@@ -1,5 +1,5 @@
 import { useState, useTransition } from 'react';
-import { UseFormReturn, FieldValues, Path } from 'react-hook-form';
+import { FieldValues, Path, UseFormReturn } from 'react-hook-form';
 import { toast } from 'sonner';
 
 export interface ActionResponse {
@@ -8,7 +8,7 @@ export interface ActionResponse {
   errors?: Record<string, string[]>;
 }
 
-interface UseActionMutationOptions<TData, TResult extends ActionResponse, TFieldValues extends FieldValues> {
+interface UseActionMutationOptions<TData, TResult extends ActionResponse> {
   action: (data: TData) => Promise<TResult>;
   onSuccess?: (result: TResult) => void;
   onError?: (result: TResult) => void;
@@ -19,7 +19,7 @@ interface UseActionMutationOptions<TData, TResult extends ActionResponse, TField
 
 export function useActionMutation<TData, TResult extends ActionResponse, TFieldValues extends FieldValues>(
   form: UseFormReturn<TFieldValues>,
-  options: UseActionMutationOptions<TData, TResult, TFieldValues>
+  options: UseActionMutationOptions<TData, TResult>
 ) {
   const [isPending, startTransition] = useTransition();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -55,7 +55,7 @@ export function useActionMutation<TData, TResult extends ActionResponse, TFieldV
           }
           options.onError?.(result);
         }
-      } catch (error) {
+      } catch {
         const msg = typeof options.errorMessage === 'function' ? options.errorMessage({} as TResult) : (options.errorMessage || 'An unexpected error occurred. Please try again.');
         setServerError(msg);
         toast.error(msg);

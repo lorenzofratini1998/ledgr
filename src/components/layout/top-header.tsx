@@ -1,9 +1,9 @@
-import { Bell } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { UpcomingDrawer } from './upcoming-drawer';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { LayoutUser } from '@/types/layout';
+import { Bell } from 'lucide-react';
+import { UpcomingDrawer } from './upcoming-drawer';
 import { UserNavPopover } from './user-nav-popover';
 
 interface TopHeaderProps {
