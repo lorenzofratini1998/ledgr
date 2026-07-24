@@ -63,11 +63,9 @@
 }*/
 import { Suspense } from "react";
 import { getActiveLanguages } from "@/lib/constants/languages";
-import { logger } from "@/lib/utils/logger";
+import { logger } from "@/lib/logger";
 
 async function InstrumentsData() {
-  console.log("URL Supabase in uso:", process.env.NEXT_PUBLIC_SUPABASE_URL);
-
   const { activeLocales } = await getActiveLanguages();
   
   await logger.info("Dati ricevuti", { data: activeLocales });

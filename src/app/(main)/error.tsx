@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { AlertCircle, RefreshCw } from "lucide-react";
 import { useEffect } from "react";
+import { logger } from "@/lib/logger";
 
 export default function ErrorPage({
   error,
@@ -14,7 +15,7 @@ export default function ErrorPage({
 }) {
   useEffect(() => {
     // Optionally log the error to an error reporting service
-    console.error("Application error:", error);
+    logger.error(error, "Application error");
   }, [error]);
 
   return (

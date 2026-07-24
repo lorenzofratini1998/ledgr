@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { createClient } from '@/lib/supabase/client';
+import { logger } from "@/lib/logger";
 
 export function useLogout() {
   const queryClient = useQueryClient();
@@ -22,7 +23,7 @@ export function useLogout() {
       // Hard refresh to login page to guarantee pristine client state
       window.location.href = '/login';
     } catch (error) {
-      console.error('Logout failed:', error);
+      logger.error(error, 'Logout failed');
       setIsPending(false);
     }
   };

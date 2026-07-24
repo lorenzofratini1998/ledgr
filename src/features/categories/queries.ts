@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
 import { CategoryWithChildren } from '@/types/models';
 import { unstable_cache } from 'next/cache';
+import { logger } from "@/lib/logger";
 
 export async function getCategories(userId: string): Promise<CategoryWithChildren[]> {
   const supabaseServer = await createClient();
@@ -172,7 +173,7 @@ export async function unarchiveCategory(categoryId: string) {
       .eq('parent_id', categoryId);
 
     if (childrenError) {
-      console.error(`Failed to unarchive subcategories: ${childrenError.message}`);
+      logger.error(childrenError, `Failed to unarchive subcategories: ${childrenError.message}`);
     }
   }
 

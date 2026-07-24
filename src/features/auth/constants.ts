@@ -1,4 +1,5 @@
 type AuthProvider = { id: string };
+import { logger } from "@/lib/logger";
 
 export async function getActiveAuthProviders(): Promise<string[]> {
   try {
@@ -20,7 +21,7 @@ export async function getActiveAuthProviders(): Promise<string[]> {
     const providers = await res.json() as AuthProvider[];
     return providers.map((p) => p.id) || [];
   } catch (error) {
-    console.error("Error fetching auth providers:", error);
+    logger.error(error, "Error fetching auth providers");
     return [];
   }
 }

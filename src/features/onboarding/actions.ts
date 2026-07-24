@@ -6,7 +6,7 @@ import { getLocaleDictionary } from '@/i18n/get-dictionary';
 import { createClient } from '@/lib/supabase/server';
 import { executeValidatedAction } from '@/lib/utils/action-utils';
 import { ActionResponse } from '@/types/actions';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/logger';
 import { updateTag } from 'next/cache';
 import { DEFAULT_ONBOARDING_CATEGORIES, DefaultCategoryKey } from './constants';
 

@@ -3,6 +3,7 @@ import { Database } from "@/types/database.types";
 import { FrankfurterRate } from "./types";
 import { FRANKFURTER_API_BASE_URL, DEFAULT_BASE_CURRENCY } from "./constants";
 import { getSupportedCurrencies, upsertExchangeRates } from "./queries";
+import { logger } from "@/lib/logger";
 
 export async function syncExchangeRates(
   supabaseAdmin: SupabaseClient<Database>,
@@ -19,7 +20,7 @@ export async function syncExchangeRates(
   }
 
   const apiUrl = `${FRANKFURTER_API_BASE_URL}/rates?${urlParams.toString()}`;
-  console.log(`[SyncService] Fetching from: ${apiUrl}`);
+  logger.debug(`[SyncService] Fetching from: ${apiUrl}`);
 
   const response = await fetch(apiUrl);
 
@@ -40,7 +41,7 @@ export async function syncExchangeRates(
     (r) => validCurrencies.has(r.base) && validCurrencies.has(r.quote)
   );
 
-  console.log(
+  logger.debug(
     `[SyncService] Filtered ${rates.length} rates down to ${validRates.length} valid rates.`
   );
 

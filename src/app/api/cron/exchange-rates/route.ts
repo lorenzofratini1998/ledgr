@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { syncExchangeRates } from "@/features/exchange-rates/services";
 import { getLastExchangeRateDate } from "@/features/exchange-rates/queries";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: Request) {
   try {
@@ -29,7 +30,7 @@ export async function GET(request: Request) {
     return NextResponse.json(result);
 
   } catch (error: any) {
-    console.error("Unexpected error in exchange rates cron:", error);
+    logger.error(error, "Unexpected error in exchange rates cron");
     return new NextResponse(
       JSON.stringify({ error: error.message || "Internal Server Error", stack: error.stack }),
       { status: 500, headers: { "Content-Type": "application/json" } }

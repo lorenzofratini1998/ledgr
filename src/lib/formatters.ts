@@ -1,3 +1,5 @@
+import { logger } from "@/lib/logger";
+
 export function formatCurrency(
     amount: number,
     currencyCode: string = 'USD',
@@ -9,7 +11,7 @@ export function formatCurrency(
             currency: currencyCode,
         }).format(amount);
     } catch (error) {
-        console.error(`Error formatting currency: ${error}`, error);
+        logger.error(error, `Error formatting currency: ${error}`);
         return `${currencyCode} ${amount.toFixed(2)}`;
     }
 }

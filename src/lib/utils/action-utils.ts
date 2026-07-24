@@ -2,6 +2,7 @@ import { ZodError, z } from "zod";
 import { getUser } from '@/lib/supabase/server';
 import { ActionResponse } from '@/types/actions';
 import { User } from '@supabase/supabase-js';
+import { logger } from "@/lib/logger";
 
 /**
  * Formats a ZodError into a flat map of field paths to error messages.
@@ -39,7 +40,7 @@ export async function executeAction<T>(
 
     return await handler(user);
   } catch (error) {
-    console.error('Action error:', error);
+    logger.error(error, 'Action error');
     return { 
       success: false, 
       message: 'An unexpected error occurred' 
@@ -79,7 +80,7 @@ export async function executePublicAction<T>(
   try {
     return await handler();
   } catch (error) {
-    console.error('Action error:', error);
+    logger.error(error, 'Action error');
     return { 
       success: false, 
       message: error instanceof Error ? error.message : 'An unexpected error occurred' 
