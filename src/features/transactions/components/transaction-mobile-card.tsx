@@ -11,6 +11,7 @@ import {
 import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { TransactionRow } from "./data-table"
 import { Row } from "@tanstack/react-table"
+import { useTranslation } from "@/i18n/hooks/use-translation"
 
 interface TransactionMobileCardProps {
   row: Row<any>
@@ -34,6 +35,7 @@ export function TransactionMobileCard({
     style: "currency",
     currency: currency,
   }).format(Math.abs(amount));
+  const { t } = useTranslation();
 
   const isConverted = amount !== normalizedAmount && primaryCurrencyCode;
   const formattedNormalized = isConverted ? new Intl.NumberFormat("en-US", {
@@ -63,7 +65,7 @@ export function TransactionMobileCard({
                 {tx.categories.category_name}
               </Badge>
             ) : (
-              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">Uncategorized</span>
+              <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{t('transactions.uncategorized')}</span>
             )}
           </div>
           <span className="font-semibold text-sm truncate">{tx.description}</span>
@@ -117,12 +119,12 @@ export function TransactionMobileCard({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onEdit(tx)}>
                   <Pencil className="mr-2 h-4 w-4" />
-                  Edit
+                  {t('common.edit')}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => onDelete(tx)} className="text-red-600 focus:bg-red-500/10 focus:text-red-600">
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  {t('common.delete')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

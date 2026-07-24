@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { MultiSelect } from "@/components/shared/multi-select"
+import { useTranslation } from "@/i18n/hooks/use-translation"
 
 interface TransactionFiltersProps {
   localFilters: {
@@ -41,49 +42,50 @@ export function TransactionFilters({
   const selectedCurrencySymbol = localFilters.currencies.length === 1 
     ? currencies.find(c => c.iso_code === localFilters.currencies[0])?.symbol || null
     : null;
+  const { t } = useTranslation();
 
   return (
     <div className="py-4 px-4 sm:px-2 space-y-6">
       
       {/* Transaction Type */}
       <div className="space-y-3">
-        <Label>Transaction Type</Label>
+        <Label>{t('transactions.transactionType')}</Label>
         <div className="flex bg-muted p-1 rounded-lg w-full items-center">
           <button
             className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'all' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'all' }))}
           >
-            All
+            {t('transactions.all')}
           </button>
           <button
             className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'income' ? "bg-background shadow-sm text-emerald-500" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'income' }))}
           >
-            Income
+            {t('transactions.income')}
           </button>
           <button
             className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'expense' ? "bg-background shadow-sm text-rose-500" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'expense' }))}
           >
-            Expense
+            {t('transactions.expense')}
           </button>
         </div>
       </div>
 
       {/* Date Range */}
       <div className="space-y-3">
-        <Label>Date Range</Label>
+        <Label>{t('transactions.dateRange')}</Label>
         <div className="flex flex-wrap gap-2">
-          <Badge variant={localFilters.datePreset === 'this-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-month')}>This Month</Badge>
-          <Badge variant={localFilters.datePreset === 'last-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('last-month')}>Last Month</Badge>
-          <Badge variant={localFilters.datePreset === 'this-year' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-year')}>This Year</Badge>
-          <Badge variant={localFilters.datePreset === 'custom' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => setLocalFilters((p: any) => ({ ...p, datePreset: 'custom' }))}>Custom</Badge>
+          <Badge variant={localFilters.datePreset === 'this-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-month')}>{t('transactions.thisMonth')}</Badge>
+          <Badge variant={localFilters.datePreset === 'last-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('last-month')}>{t('transactions.lastMonth')}</Badge>
+          <Badge variant={localFilters.datePreset === 'this-year' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-year')}>{t('transactions.thisYear')}</Badge>
+          <Badge variant={localFilters.datePreset === 'custom' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => setLocalFilters((p: any) => ({ ...p, datePreset: 'custom' }))}>{t('transactions.custom')}</Badge>
         </div>
         
         {localFilters.datePreset === 'custom' && (
           <div className="grid grid-cols-2 gap-4 mt-3 animate-in fade-in slide-in-from-top-2 duration-200">
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">From</Label>
+              <Label className="text-xs text-muted-foreground">{t('transactions.from')}</Label>
               <Input 
                 type="date" 
                 value={localFilters.startDate}
@@ -92,7 +94,7 @@ export function TransactionFilters({
               />
             </div>
             <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">To</Label>
+              <Label className="text-xs text-muted-foreground">{t('transactions.to')}</Label>
               <Input 
                 type="date" 
                 value={localFilters.endDate}
@@ -106,7 +108,7 @@ export function TransactionFilters({
 
       {/* Currency */}
       <div className="space-y-3">
-        <Label>Currency</Label>
+        <Label>{t('common.currency')}</Label>
         <MultiSelect 
           title="currencies"
           options={currencies.map(c => ({ label: `${c.iso_code} - ${c.name}`, value: c.iso_code }))}
@@ -117,10 +119,10 @@ export function TransactionFilters({
 
       {/* Amount Range */}
       <div className="space-y-3">
-        <Label>Amount Range</Label>
+        <Label>{t('transactions.amountRange')}</Label>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Min Amount</Label>
+            <Label className="text-xs text-muted-foreground">{t('transactions.minAmount')}</Label>
             <div className="relative">
               {selectedCurrencySymbol && (
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
@@ -149,7 +151,7 @@ export function TransactionFilters({
             </div>
           </div>
           <div className="space-y-1.5">
-            <Label className="text-xs text-muted-foreground">Max Amount</Label>
+            <Label className="text-xs text-muted-foreground">{t('transactions.maxAmount')}</Label>
             <div className="relative">
               {selectedCurrencySymbol && (
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
@@ -182,7 +184,7 @@ export function TransactionFilters({
 
       {/* Wallets */}
       <div className="space-y-3">
-        <Label>Wallets</Label>
+        <Label>{t('common.wallets')}</Label>
         <MultiSelect 
           title="wallets"
           options={wallets.map(w => ({ label: w.name, value: w.id }))}
@@ -193,7 +195,7 @@ export function TransactionFilters({
 
       {/* Categories */}
       <div className="space-y-3">
-        <Label>Categories</Label>
+        <Label>{t('common.categories')}</Label>
         <MultiSelect 
           title="categories"
           options={categories.map(c => ({ label: c.category_name, value: c.category_id }))}
@@ -205,7 +207,7 @@ export function TransactionFilters({
       {/* Tags */}
       {tags.length > 0 && (
         <div className="space-y-3">
-          <Label>Tags</Label>
+          <Label>{t('transactions.tags')}</Label>
           <MultiSelect 
             title="tags"
             options={tags.map(t => ({ label: t.tag_name, value: t.tag_id }))}

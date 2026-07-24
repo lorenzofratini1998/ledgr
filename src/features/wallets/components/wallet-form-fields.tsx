@@ -12,7 +12,8 @@ import { Currency } from '@/types/models';
 import { useFormContext } from 'react-hook-form';
 
 import { WALLET_COLOR_MAP, WALLET_COLORS, WALLET_ICON_MAP, WALLET_ICONS } from '@/features/wallets/constants';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
+import { TranslationKey } from '@/i18n/types';
 
 const colorOptions = WALLET_COLORS.map(key => ({
   value: key,
@@ -32,7 +33,7 @@ interface WalletFormFieldsProps {
 }
 
 export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = false }: WalletFormFieldsProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
   const form = useFormContext();
 
   const getFieldName = (name: string) => fieldPrefix ? `${fieldPrefix}.${name}` : name;
@@ -47,9 +48,9 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('name')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.wallets.walletName}</FormLabel>
+            <FormLabel>{t('wallets.walletName')}</FormLabel>
             <FormControl>
-              <Input placeholder={dictionary.wallets.mainAccountPlaceholder} {...field} value={field.value || ''} />
+              <Input placeholder={t('wallets.mainAccountPlaceholder') as string} {...field} value={field.value || ''} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -60,23 +61,21 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         control={form.control}
         name={getFieldName('type')}
         render={({ field }) => {
-          const typeLabels: Record<string, string> = dictionary.wallets.types as Record<string, string>;
-
           return (
             <FormItem>
-              <FormLabel>{dictionary.wallets.type}</FormLabel>
+              <FormLabel>{t('wallets.type')}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={dictionary.wallets.selectType}>
-                      {field.value ? typeLabels[field.value] : null}
+                    <SelectValue placeholder={t('wallets.selectType')}>
+                      {field.value ? t(`wallets.types.${field.value}` as TranslationKey) : null}
                     </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="regular">{dictionary.wallets.types.regular}</SelectItem>
-                  <SelectItem value="savings">{dictionary.wallets.types.savings}</SelectItem>
-                  <SelectItem value="investment">{dictionary.wallets.types.investment}</SelectItem>
+                  <SelectItem value="regular">{t('wallets.types.regular')}</SelectItem>
+                  <SelectItem value="savings">{t('wallets.types.savings')}</SelectItem>
+                  <SelectItem value="investment">{t('wallets.types.investment')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -90,7 +89,7 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('color')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.common.color}</FormLabel>
+            <FormLabel>{t('common.color')}</FormLabel>
             <FormControl>
               <ColorPicker
                 value={field.value || ''}
@@ -108,7 +107,7 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('icon')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.common.icon}</FormLabel>
+            <FormLabel>{t('common.icon')}</FormLabel>
             <FormControl>
               <IconPicker
                 value={field.value || ''}
@@ -126,10 +125,10 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('description')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.common.description} <span className="text-muted-foreground font-normal">{dictionary.common.optional}</span></FormLabel>
+            <FormLabel>{t('common.description')} <span className="text-muted-foreground font-normal">{t('common.optional')}</span></FormLabel>
             <FormControl>
               <Textarea
-                placeholder={dictionary.wallets.descriptionPlaceholder}
+                placeholder={t('wallets.descriptionPlaceholder') as string}
                 className="resize-none"
                 {...field}
                 value={field.value || ''}
@@ -145,7 +144,7 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('initial_balance')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.wallets.initialBalance}</FormLabel>
+            <FormLabel>{t('wallets.initialBalance')}</FormLabel>
             <FormControl>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
@@ -164,7 +163,7 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
         name={getFieldName('currency_code')}
         render={({ field }) => (
           <FormItem>
-            <FormLabel>{dictionary.wallets.currency}</FormLabel>
+            <FormLabel>{t('wallets.currency')}</FormLabel>
             <FormControl>
               <CurrencySelector
                 value={field.value}
@@ -185,10 +184,10 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
           <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
             <div className="space-y-0.5 pr-4">
               <FormLabel className="text-base">
-                {dictionary.wallets.excludeFromNetWorth}
+                {t('wallets.excludeFromNetWorth')}
               </FormLabel>
               <FormDescription>
-                {dictionary.wallets.excludeFromNetWorthDesc}
+                {t('wallets.excludeFromNetWorthDesc')}
               </FormDescription>
             </div>
             <FormControl>

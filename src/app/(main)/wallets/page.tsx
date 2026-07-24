@@ -2,17 +2,22 @@ import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
 import { WalletsClientView } from '@/features/wallets/components/wallet-client-view';
-import { getArchivedWallets, getWallets } from '@/features/wallets/queries';
+import { getWallets, getArchivedWallets } from '@/features/wallets/queries';
+import { getTranslator } from '@/i18n/server';
 import { getUser } from '@/lib/supabase/server';
 import { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 
-export const metadata: Metadata = {
-  title: 'Wallets - Ledgr',
-  description: 'Manage your accounts, cards, and investments.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return {
+    title: `${t('wallets.title')} - Ledgr`,
+    description: t('wallets.description'),
+  };
+}
 
 export default async function WalletsPage() {
+  const { t } = await getTranslator();
   const { data: { user } } = await getUser();
 
   if (!user) {
@@ -40,9 +45,9 @@ export default async function WalletsPage() {
     <div className="flex flex-col h-full space-y-6 pt-safe pb-safe pb-24 md:pb-6 px-4 md:px-8">
       <div className="flex items-center justify-between mt-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Wallets</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('wallets.title')}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your accounts and investments.
+            {t('wallets.description')}
           </p>
         </div>
         <div className="hidden md:block">

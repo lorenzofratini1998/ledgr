@@ -9,10 +9,15 @@ import { CreateTransactionTrigger } from '@/features/transactions/components/cre
 import { TransactionsClientView } from '@/features/transactions/components/transactions-client-view';
 import { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  title: 'Transactions - Ledgr',
-  description: 'Manage your income and expenses.',
-};
+import { getTranslator } from '@/i18n/server';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator();
+  return {
+    title: `${t('transactions.title')} - Ledgr`,
+    description: t('transactions.description') as string,
+  };
+}
 
 export default async function TransactionsPage(
   props: {
@@ -46,7 +51,8 @@ export default async function TransactionsPage(
     nestedCategories,
     currencies,
     primaryCurrencyCode,
-    tags
+    tags,
+    { t }
   ] = await Promise.all([
     getTransactions(user.id, { 
       page, pageSize: 20, search, walletIds, categoryIds, tagIds, currencyCodes,
@@ -56,7 +62,8 @@ export default async function TransactionsPage(
     getCategories(user.id),
     getActiveCurrencies(),
     getPrimaryCurrencyCode(supabase, user.id),
-    getTags(user.id, { pageSize: 1000 })
+    getTags(user.id, { pageSize: 1000 }),
+    getTranslator()
   ]);
 
   if (!primaryCurrencyCode) {
@@ -78,9 +85,9 @@ export default async function TransactionsPage(
     <div className="flex flex-col h-full space-y-6 pt-safe pb-safe pb-24 md:pb-6 px-4 md:px-8">
       <div className="flex items-center justify-between mt-4">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Transactions</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">{t('transactions.title')}</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your income and expenses.
+            {t('transactions.description')}
           </p>
         </div>
         <div className="hidden md:block">

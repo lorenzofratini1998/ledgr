@@ -13,8 +13,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useTranslation } from "@/i18n/hooks/use-translation";
 
-export const columns: ColumnDef<TransactionRow>[] = [
+export const useColumns = (): ColumnDef<TransactionRow>[] => {
+  const { t } = useTranslation();
+  
+  return [
   {
     id: "select",
     header: ({ table }) => (
@@ -36,7 +40,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
   },
   {
     accessorKey: "date",
-    header: "Date",
+    header: t('common.date'),
     cell: ({ row }) => {
       const dateStr = row.getValue("date") as string;
       return <div className="text-muted-foreground whitespace-nowrap">{new Date(dateStr).toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>;
@@ -44,7 +48,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
   },
   {
     accessorKey: "description",
-    header: "Description",
+    header: t('common.description'),
     cell: ({ row }) => {
       const tx = row.original;
       return (
@@ -68,7 +72,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
   },
   {
     accessorKey: "category",
-    header: "Category",
+    header: t('categories.title'),
     cell: ({ row }) => {
       const cat = row.original.categories;
       if (!cat) return <span className="text-muted-foreground">-</span>;
@@ -85,7 +89,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
   },
   {
     accessorKey: "wallet",
-    header: "Wallet",
+    header: t('common.wallet'),
     cell: ({ row }) => {
       const wallet = row.original.wallets;
       if (!wallet) return <span className="text-muted-foreground">-</span>;
@@ -102,7 +106,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
   },
   {
     accessorKey: "amount",
-    header: () => <div className="text-right">Amount</div>,
+    header: () => <div className="text-right">{t('common.amount')}</div>,
     cell: ({ row, table }) => {
       const amount = parseFloat(row.getValue("amount"));
       const normalizedAmount = parseFloat(row.original.normalized_amount as unknown as string);
@@ -151,7 +155,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => meta?.onEdit?.(tx)}>
               <Pencil className="mr-2 h-4 w-4" />
-              Edit
+              {t('common.edit')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem 
@@ -159,7 +163,7 @@ export const columns: ColumnDef<TransactionRow>[] = [
               className="text-red-600 focus:bg-red-500/10 focus:text-red-600"
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete
+              {t('common.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -167,3 +171,4 @@ export const columns: ColumnDef<TransactionRow>[] = [
     },
   },
 ];
+};

@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Archive, Edit2, MoreVertical, RotateCcw, Star, Trash2 } from 'lucide-react';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 
 interface WalletActionsProps {
   isActive: boolean;
@@ -23,6 +24,7 @@ export function WalletActions({
   onUnarchive,
   onSetDefault,
 }: WalletActionsProps) {
+  const { t } = useTranslation();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="h-8 w-8 p-0 inline-flex items-center justify-center rounded-md hover:bg-accent hover:text-accent-foreground transition-colors outline-none focus-visible:ring-2 focus-visible:ring-ring">
@@ -35,27 +37,27 @@ export function WalletActions({
             {!isDefault && (
               <DropdownMenuItem onClick={onSetDefault}>
                 <Star className="mr-2 h-4 w-4" />
-                <span>Set as Default</span>
+                <span>{t('wallets.setAsDefault')}</span>
               </DropdownMenuItem>
             )}
             <DropdownMenuItem onClick={onEdit}>
               <Edit2 className="mr-2 h-4 w-4" />
-              <span>Edit</span>
+              <span>{t('wallets.edit')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onArchive} className="text-destructive">
               <Archive className="mr-2 h-4 w-4" />
-              <span>Archive</span>
+              <span>{t('wallets.archive')}</span>
             </DropdownMenuItem>
           </>
         ) : (
           <>
             <DropdownMenuItem onClick={onUnarchive}>
               <RotateCcw className="mr-2 h-4 w-4" />
-              <span>Reactivate</span>
+              <span>{t('wallets.reactivate')}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onDelete} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />
-              <span>Delete Permanently</span>
+              <span>{t('wallets.deletePermanently')}</span>
             </DropdownMenuItem>
           </>
         )}

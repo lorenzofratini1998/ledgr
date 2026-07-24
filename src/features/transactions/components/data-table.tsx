@@ -23,6 +23,7 @@ import { DataGrid } from "@/components/shared/data-grid/data-grid";
 import { DataGridPagination } from "@/components/shared/data-grid/data-grid-pagination";
 import { TransactionFilters } from "./transaction-filters";
 import { TransactionMobileCard } from "./transaction-mobile-card";
+import { useTranslation } from "@/i18n/hooks/use-translation";
 
 import {
   Sheet,
@@ -78,6 +79,7 @@ export function DataTable<TData, TValue>({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
+  const { t } = useTranslation();
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
   const [open, setOpen] = useState(false);
@@ -274,7 +276,7 @@ export function DataTable<TData, TValue>({
       <div className="flex items-center justify-between gap-4">
         <div className="flex flex-1 items-center space-x-2 max-w-sm">
           <Input
-            placeholder="Search transactions..."
+            placeholder={t('transactions.searchPlaceholder') as string}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="h-9 w-full bg-background"
@@ -291,7 +293,7 @@ export function DataTable<TData, TValue>({
               onClick={() => setBulkDeleteDialogOpen(true)}
             >
               <Trash2 className="mr-2 h-4 w-4" />
-              Delete {Object.keys(rowSelection).length}
+              {t('common.delete')} {Object.keys(rowSelection).length}
             </Button>
           )}
           {isDesktop ? (
@@ -299,7 +301,7 @@ export function DataTable<TData, TValue>({
             <SheetTrigger render={
               <Button variant="outline" size="sm" className="h-9">
                 <Filter className="mr-2 h-4 w-4" />
-                Filters
+                {t('transactions.filters')}
                 {activeFilterCount > 0 && (
                   <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 flex items-center justify-center rounded-full">
                     {activeFilterCount}
@@ -309,9 +311,9 @@ export function DataTable<TData, TValue>({
             } />
             <SheetContent className="w-full sm:max-w-md overflow-y-auto">
               <SheetHeader>
-                <SheetTitle>Advanced Filters</SheetTitle>
+                <SheetTitle>{t('transactions.advancedFiltersTitle')}</SheetTitle>
                 <SheetDescription>
-                  Narrow down your transactions by specific criteria.
+                  {t('transactions.advancedFiltersDescription')}
                 </SheetDescription>
               </SheetHeader>
               
@@ -337,10 +339,10 @@ export function DataTable<TData, TValue>({
 
               <SheetFooter className="mt-auto sm:flex-row gap-2 pb-6 sm:pb-0 px-6 sm:px-2">
                 <Button variant="outline" className="w-full sm:w-auto" onClick={clearFilters}>
-                  Clear All
+                  {t('transactions.clearAll')}
                 </Button>
                 <Button className="w-full sm:w-auto" onClick={handleApplyFilters}>
-                  Show Results
+                  {t('transactions.showResults')}
                 </Button>
               </SheetFooter>
             </SheetContent>
@@ -350,7 +352,7 @@ export function DataTable<TData, TValue>({
             <DrawerTrigger render={
               <Button variant="outline" size="sm" className="h-9">
                 <Filter className="mr-2 h-4 w-4" />
-                Filters
+                {t('transactions.filters')}
                 {activeFilterCount > 0 && (
                   <Badge variant="secondary" className="ml-2 h-5 w-5 p-0 flex items-center justify-center rounded-full">
                     {activeFilterCount}
@@ -360,9 +362,9 @@ export function DataTable<TData, TValue>({
             } />
             <DrawerContent className="max-h-[90vh]">
               <DrawerHeader className="text-left px-6">
-                <DrawerTitle>Advanced Filters</DrawerTitle>
+                <DrawerTitle>{t('transactions.advancedFiltersTitle')}</DrawerTitle>
                 <DrawerDescription>
-                  Narrow down your transactions by specific criteria.
+                  {t('transactions.advancedFiltersDescription')}
                 </DrawerDescription>
               </DrawerHeader>
               
@@ -389,8 +391,8 @@ export function DataTable<TData, TValue>({
               </div>
 
               <DrawerFooter className="pt-2 pb-8 px-6">
-                <Button onClick={handleApplyFilters}>Show Results</Button>
-                <Button variant="outline" onClick={clearFilters}>Clear All</Button>
+                <Button onClick={handleApplyFilters}>{t('transactions.showResults')}</Button>
+                <Button variant="outline" onClick={clearFilters}>{t('transactions.clearAll')}</Button>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
@@ -402,7 +404,7 @@ export function DataTable<TData, TValue>({
         table={table}
         columnsLength={columns.length}
         isPending={isPending}
-        noResultsMessage="No transactions found."
+        noResultsMessage={t('transactions.noTransactionsFound')}
         renderMobileItem={(tx) => (
           <TransactionMobileCard
             row={table.getRowModel().rows.find(r => r.original === tx)!}
@@ -425,7 +427,7 @@ export function DataTable<TData, TValue>({
 
       <div className="hidden md:flex items-center justify-between px-2 pt-4">
         <div className="text-sm text-muted-foreground flex items-center">
-          Showing {data.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}
+          {t('transactions.showing')} {data.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} {t('transactions.paginationTo')} {Math.min(currentPage * pageSize, totalCount)} {t('transactions.paginationOf')} {totalCount}
         </div>
         <DataGridPagination 
           currentPage={currentPage}
@@ -435,12 +437,11 @@ export function DataTable<TData, TValue>({
         />
       </div>
 
-      {/* Edit Drawer */}
       <ResponsiveDrawer
         open={!!editTransaction}
         onOpenChange={(open) => !open && setEditTransaction(null)}
-        title="Edit Transaction"
-        description="Modify the details of your transaction."
+        title={t('transactions.editTransaction')}
+        description={t('transactions.editTransactionDescription')}
       >
         {editTransaction && (
           <TransactionForm 
@@ -465,13 +466,12 @@ export function DataTable<TData, TValue>({
         )}
       </ResponsiveDrawer>
 
-      {/* Delete Single Dialog */}
       <ActionDialog
         open={!!deleteTransaction}
         onOpenChange={(open) => !open && setDeleteTransaction(null)}
-        title="Are you absolutely sure?"
-        description="This will permanently delete this transaction. Your wallet balances and dashboard metrics will be automatically updated."
-        actionText="Delete Transaction"
+        title={t('transactions.deleteConfirmTitle')}
+        description={t('transactions.deleteConfirmDescription')}
+        actionText={t('transactions.deleteAction')}
         destructive={true}
         isPending={isPending}
         onAction={() => {
@@ -494,13 +494,12 @@ export function DataTable<TData, TValue>({
         }}
       />
 
-      {/* Bulk Delete Dialog */}
       <ActionDialog
         open={bulkDeleteDialogOpen}
         onOpenChange={setBulkDeleteDialogOpen}
-        title={`Delete ${Object.keys(rowSelection).length} transactions?`}
-        description="This will permanently delete the selected transactions. Your wallet balances and dashboard metrics will be automatically updated."
-        actionText="Delete Selected"
+        title={t('transactions.bulkDeleteConfirmTitle')}
+        description={t('transactions.bulkDeleteConfirmDescription')}
+        actionText={t('transactions.bulkDeleteAction')}
         destructive={true}
         isPending={isPending}
         onAction={() => {

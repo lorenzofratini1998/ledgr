@@ -62,6 +62,7 @@
   );
 }*/
 import { Suspense } from "react";
+import { getTranslator } from "@/i18n/server";
 import { getActiveLanguages } from "@/lib/constants/languages";
 import { logger } from "@/lib/logger";
 
@@ -73,9 +74,10 @@ async function InstrumentsData() {
   return <pre>{JSON.stringify(activeLocales, null, 2)}</pre>;
 }
 
-export default function Instruments() {
+export default async function Instruments() {
+  const { t } = await getTranslator();
   return (
-    <Suspense fallback={<div>Loading instruments...</div>}>
+    <Suspense fallback={<div>{t('common.loadingInstruments')}</div>}>
       <InstrumentsData />
     </Suspense>
   );

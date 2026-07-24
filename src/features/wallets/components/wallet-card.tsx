@@ -18,6 +18,7 @@ import { Currency, Wallet } from '@/types/models';
 import { Wallet as DefaultWalletIcon, Star, EyeOff } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { WalletActions } from './wallet-actions';
 
 interface WalletCardProps {
@@ -27,6 +28,7 @@ interface WalletCardProps {
 }
 
 export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCardProps) {
+  const { t } = useTranslation();
   const [isPending, startTransition] = useTransition();
 
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -38,10 +40,10 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
     startTransition(async () => {
       const response = await archiveWalletAction(wallet.id);
       if (response.success) {
-        toast.success(response.message || 'Wallet archived successfully');
+        toast.success(response.message || t('wallets.archiveSuccess'));
         setIsArchiveOpen(false);
       } else {
-        toast.error(response.message || 'Failed to archive wallet');
+        toast.error(response.message || t('wallets.archiveError'));
       }
     });
   };
@@ -50,10 +52,10 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
     startTransition(async () => {
       const response = await deleteWalletAction(wallet.id);
       if (response.success) {
-        toast.success(response.message || 'Wallet deleted successfully');
+        toast.success(response.message || t('wallets.deleteSuccess'));
         setIsDeleteOpen(false);
       } else {
-        toast.error(response.message || 'Failed to delete wallet');
+        toast.error(response.message || t('wallets.deleteError'));
       }
     });
   };
@@ -62,9 +64,9 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
     startTransition(async () => {
       const response = await unarchiveWalletAction(wallet.id);
       if (response.success) {
-        toast.success(response.message || 'Wallet unarchived successfully');
+        toast.success(response.message || t('wallets.unarchiveSuccess'));
       } else {
-        toast.error(response.message || 'Failed to unarchive wallet');
+        toast.error(response.message || t('wallets.unarchiveError'));
       }
     });
   };
@@ -73,9 +75,9 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
     startTransition(async () => {
       const response = await setDefaultWalletAction(wallet.id);
       if (response.success) {
-        toast.success(response.message || 'Default wallet updated');
+        toast.success(response.message || t('wallets.setDefaultSuccess'));
       } else {
-        toast.error(response.message || 'Failed to set default wallet');
+        toast.error(response.message || t('wallets.setDefaultError'));
       }
     });
   };
@@ -127,8 +129,8 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
       <ResponsiveDrawer
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
-        title="Edit Wallet"
-        description="Make changes to your wallet here."
+        title={t('wallets.editWallet')}
+        description={t('wallets.editWalletDescription')}
       >
         <WalletForm
           currencies={currencies}
@@ -142,9 +144,9 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
       <ActionDialog
         open={isArchiveOpen}
         onOpenChange={setIsArchiveOpen}
-        title="Archive Wallet"
-        description="Are you sure you want to archive this wallet? It will be hidden from your active list, but all historical transactions and data will be preserved in your dashboard charts."
-        actionText="Archive"
+        title={t('wallets.archiveWallet')}
+        description={t('wallets.archivePrompt')}
+        actionText={t('wallets.archiveAction')}
         onAction={handleArchive}
         isPending={isPending}
       />
@@ -156,14 +158,15 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
           setIsDeleteOpen(open);
           if (!open) setDeleteConfirmation('');
         }}
-        title="Delete Permanently"
+        title={t('wallets.deletePermanently')}
         description={
           <>
-            This action cannot be undone. This will permanently delete your wallet
-            <strong> {wallet.name} </strong> and all associated transactions. Your historical dashboard data will be permanently altered.
+            {t('wallets.deletePrompt1')}
+            <strong> {wallet.name} </strong> 
+            {t('wallets.deletePrompt2')}
           </>
         }
-        actionText="Delete"
+        actionText={t('wallets.deleteAction')}
         onAction={handleDelete}
         isPending={isPending}
         destructive={true}
@@ -171,7 +174,7 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
       >
         <div className="pt-2">
           <label className="text-sm font-medium mb-2 block">
-            Type <strong>{wallet.name}</strong> to confirm
+            {t('wallets.typeToConfirm')} <strong>{wallet.name}</strong> {t('wallets.toConfirm')}
           </label>
           <Input 
             value={deleteConfirmation}

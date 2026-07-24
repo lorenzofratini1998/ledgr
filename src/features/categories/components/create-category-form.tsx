@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { ColorPicker } from '@/components/shared/color-picker';
 import { IconPicker } from '@/components/shared/icon-picker';
 import { CATEGORY_COLOR_MAP, CATEGORY_COLORS, CATEGORY_ICON_MAP, CATEGORY_ICONS } from '@/features/categories/constants';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 
 const colorOptions = CATEGORY_COLORS.map(key => ({
   value: key,
@@ -35,7 +35,7 @@ interface CreateCategoryFormProps {
 }
 
 export function CreateCategoryForm({ parentCategories, initialData, initialParentId, onSuccess }: CreateCategoryFormProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   const availableParentCategories = initialData
     ? parentCategories.filter(c => c.category_id !== initialData.category_id)
@@ -59,8 +59,8 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
       }
       return createCategoryAction(data);
     },
-    successMessage: (res) => initialData ? dictionary.categories.updatedSuccess : dictionary.categories.createdSuccess,
-    errorMessage: (res) => res.message || (initialData ? dictionary.categories.failedUpdate : dictionary.categories.failedCreate),
+    successMessage: (res) => initialData ? t('categories.updatedSuccess') : t('categories.createdSuccess'),
+    errorMessage: (res) => res.message || (initialData ? t('categories.failedUpdate') : t('categories.failedCreate')),
     resetOnSuccess: !initialData,
     onSuccess: () => {
       onSuccess?.();
@@ -83,9 +83,9 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           name="category_name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{dictionary.common.name}</FormLabel>
+              <FormLabel>{t('common.name')}</FormLabel>
               <FormControl>
-                <Input placeholder={dictionary.categories.namePlaceholder} {...field} />
+                <Input placeholder={t('categories.namePlaceholder') as string} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,9 +97,9 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           name="category_description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{dictionary.common.description} {dictionary.common.optional}</FormLabel>
+              <FormLabel>{t('common.description')} {t('common.optional')}</FormLabel>
               <FormControl>
-                <Input placeholder={dictionary.categories.descriptionPlaceholder} {...field} value={field.value || ''} />
+                <Input placeholder={t('categories.descriptionPlaceholder') as string} {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -111,19 +111,19 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           name="parent_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{dictionary.categories.parentCategory} {dictionary.common.optional}</FormLabel>
+              <FormLabel>{t('categories.parentCategory')} {t('common.optional')}</FormLabel>
               <Select onValueChange={field.onChange} value={field.value || ''}>
                 <FormControl>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder={dictionary.categories.selectParent}>
+                    <SelectValue placeholder={t('categories.selectParent')}>
                       {field.value
-                        ? availableParentCategories.find((c) => c.category_id === field.value)?.category_name || dictionary.categories.noneTopLevel
+                        ? availableParentCategories.find((c) => c.category_id === field.value)?.category_name || t('categories.noneTopLevel')
                         : null}
                     </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="">{dictionary.categories.noneTopLevel}</SelectItem>
+                  <SelectItem value="">{t('categories.noneTopLevel')}</SelectItem>
                   {availableParentCategories.map((category) => (
                     <SelectItem key={category.category_id} value={category.category_id}>
                       {category.category_name}
@@ -131,7 +131,7 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
                   ))}
                 </SelectContent>
               </Select>
-              <p className="text-xs text-muted-foreground">{dictionary.categories.parentHint}</p>
+              <p className="text-xs text-muted-foreground">{t('categories.parentHint')}</p>
               <FormMessage />
             </FormItem>
           )}
@@ -142,7 +142,7 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           name="color"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{dictionary.common.color}</FormLabel>
+              <FormLabel>{t('common.color')}</FormLabel>
               <FormControl>
                 <ColorPicker
                   value={field.value || undefined}
@@ -160,7 +160,7 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           name="icon"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{dictionary.common.icon}</FormLabel>
+              <FormLabel>{t('common.icon')}</FormLabel>
               <FormControl>
                 <IconPicker
                   value={field.value || undefined}
@@ -174,7 +174,7 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
         />
 
         <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (initialData ? dictionary.categories.updating : dictionary.categories.creating) : (initialData ? dictionary.common.saveChanges : dictionary.categories.createCategory)}
+          {isSubmitting ? (initialData ? t('categories.updating') : t('categories.creating')) : (initialData ? t('common.saveChanges') : t('categories.createCategory'))}
         </Button>
       </form>
     </Form>

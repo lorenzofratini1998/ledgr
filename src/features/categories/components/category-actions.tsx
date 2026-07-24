@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { Archive, Edit, MoreHorizontal, RotateCcw, Trash2 } from 'lucide-react';
 
 interface CategoryActionsProps {
@@ -25,7 +25,7 @@ export function CategoryActions({
   onDelete,
   onUnarchive,
 }: CategoryActionsProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   return (
     <DropdownMenu>
@@ -38,23 +38,23 @@ export function CategoryActions({
           <>
             <DropdownMenuItem onClick={onEdit}>
               <Edit className="mr-2 h-4 w-4" />
-              {dictionary.common.edit}
+              {t('common.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onArchive} className="text-destructive">
               <Archive className="mr-2 h-4 w-4" />
-              {dictionary.categories.archiveAction}
+              {t('categories.archiveAction')}
             </DropdownMenuItem>
           </>
         ) : (
           <DropdownMenuItem onClick={onUnarchive}>
             <RotateCcw className="mr-2 h-4 w-4" />
-            {dictionary.categories.reactivate}
+            {t('categories.reactivate')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onDelete} className="text-destructive focus:text-destructive">
           <Trash2 className="mr-2 h-4 w-4" />
-          {dictionary.common.delete}
+          {t('common.delete')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

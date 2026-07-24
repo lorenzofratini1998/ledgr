@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CategoryActions } from '@/features/categories/components/category-actions';
 import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, CategoryColor, CategoryIcon } from '@/features/categories/constants';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { CategoryWithChildren } from '@/types/models';
 import { ArrowLeft, Plus, Tag } from 'lucide-react';
 
@@ -27,15 +27,15 @@ export function CategoryDetailView({
   onUnarchive,
   onAddSubcategory,
 }: CategoryDetailViewProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   if (!category) {
     return (
       <div className="hidden md:flex h-full min-h-[400px] flex-col items-center justify-center rounded-xl border border-dashed bg-muted/20 text-center px-4">
         <Tag className="h-10 w-10 text-muted-foreground/30 mb-4" />
-        <h3 className="text-lg font-medium text-muted-foreground">{dictionary.categories.selectParent}</h3>
+        <h3 className="text-lg font-medium text-muted-foreground">{t('categories.selectParent')}</h3>
         <p className="text-sm text-muted-foreground/70 max-w-sm mt-1">
-          {dictionary.categories.parentHint}
+          {t('categories.parentHint')}
         </p>
       </div>
     );
@@ -81,7 +81,7 @@ export function CategoryDetailView({
 
       <div className="flex items-center justify-between mt-2 mb-2">
         <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-          {dictionary.categories.subcategoriesOf} {category.category_name}
+          {t('categories.subcategoriesOf')} {category.category_name}
         </h3>
       </div>
 
@@ -129,7 +129,7 @@ export function CategoryDetailView({
             })
           ) : (
             <div className="py-8 px-4 text-center">
-              <p className="text-sm text-muted-foreground">{dictionary.categories.noSubcategories}</p>
+              <p className="text-sm text-muted-foreground">{t('categories.noSubcategories')}</p>
             </div>
           )}
           
@@ -142,7 +142,7 @@ export function CategoryDetailView({
               <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary/10">
                 <Plus className="h-4 w-4" />
               </div>
-              <span className="text-sm font-medium">{dictionary.categories.addSubcategory}</span>
+              <span className="text-sm font-medium">{t('categories.addSubcategory')}</span>
             </div>
           )}
         </div>

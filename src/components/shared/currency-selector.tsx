@@ -16,20 +16,14 @@ import { Currency } from '@/types/models';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
 
-export interface CurrencySelectorDictionary {
-  currency_placeholder?: string;
-  currency_search?: string;
-  currency_not_found?: string;
-  currency_popular?: string;
-  currency_all?: string;
-}
+import { useTranslation } from '@/i18n/hooks/use-translation';
 
 interface CurrencySelectorProps {
   value: string;
   onValueChange: (value: string) => void;
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   popularCurrencyCodes?: string[];
-  dict?: CurrencySelectorDictionary;
+
   className?: string;
   trigger?: React.ReactElement;
   disabled?: boolean;
@@ -41,23 +35,23 @@ export function CurrencySelector({
   onValueChange,
   currencies,
   popularCurrencyCodes = ['USD', 'EUR', 'GBP', 'JPY', 'CHF'],
-  dict = {},
   className,
   trigger,
   disabled,
   hideIcon = false
 }: CurrencySelectorProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const selected = currencies.find((c) => c.iso_code === value);
 
   const popularCurrencies = currencies.filter(c => popularCurrencyCodes.includes(c.iso_code));
   const otherCurrencies = currencies.filter(c => !popularCurrencyCodes.includes(c.iso_code));
 
-  const placeholder = dict.currency_placeholder || "Select currency";
-  const searchPlaceholder = dict.currency_search || "Search currency...";
-  const notFoundText = dict.currency_not_found || "No currency found.";
-  const popularHeading = dict.currency_popular || "Popular";
-  const allHeading = dict.currency_all || "All Currencies";
+  const placeholder = t('onboarding.currency_placeholder');
+  const searchPlaceholder = t('onboarding.currency_search');
+  const notFoundText = t('onboarding.currency_not_found');
+  const popularHeading = t('onboarding.currency_popular');
+  const allHeading = t('onboarding.currency_all');
 
   const defaultTrigger = (
     <Button

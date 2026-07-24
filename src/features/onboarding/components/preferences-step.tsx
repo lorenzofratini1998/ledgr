@@ -18,7 +18,7 @@ import { useActionMutation } from '@/hooks/use-action-mutation';
 import { setLocale } from '@/i18n/actions';
 import { completeBasicOnboarding } from '@/features/onboarding/actions';
 import { OnboardingPayload, onboardingSchema } from '@/features/onboarding/schemas';
-import { OnboardingDictionary } from './onboarding-form';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { PreviewCard } from './preview-card';
 
 interface Currency {
@@ -37,14 +37,15 @@ interface PreferencesStepProps {
   currencies: Currency[];
   defaultLocale: string;
   defaultCurrencyCode: string;
-  dict: OnboardingDictionary;
+
   onSuccess: (data: OnboardingPayload) => void;
 }
 
 const POPULAR_CURRENCY_CODES = ['USD', 'EUR', 'GBP', 'JPY', 'CHF'];
 
-export function PreferencesStep({ languages, currencies, defaultLocale, defaultCurrencyCode, dict, onSuccess }: PreferencesStepProps) {
+export function PreferencesStep({ languages, currencies, defaultLocale, defaultCurrencyCode, onSuccess }: PreferencesStepProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [isPendingLang, startTransition] = useTransition();
 
   const form = useForm<OnboardingPayload>({
@@ -89,10 +90,10 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
       <div className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center justify-center gap-3">
           <Sparkles className="w-8 h-8 text-primary" />
-          {dict.welcome_title || 'Welcome'}
+          {t('onboarding.welcome_title')}
         </h1>
         <p className="text-muted-foreground text-lg">
-          {dict.welcome_subtitle}
+          {t('onboarding.welcome_subtitle')}
         </p>
       </div>
 
@@ -106,7 +107,6 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
             dateFormat={dateFormat}
             currencyCode={currencyCode}
             languageLocale={languageLocale}
-            dict={dict}
           />
         </div>
 
@@ -123,19 +123,19 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                     name="theme"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.theme_label}</FormLabel>
+                        <FormLabel>{t('onboarding.theme_label')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder={dict.theme_placeholder}>
-                                {field.value === 'light' ? dict.theme_light : field.value === 'dark' ? dict.theme_dark : field.value === 'system' ? dict.theme_system : ''}
+                              <SelectValue placeholder={t('onboarding.theme_placeholder')}>
+                                {field.value === 'light' ? t('onboarding.theme_light') : field.value === 'dark' ? t('onboarding.theme_dark') : field.value === 'system' ? t('onboarding.theme_system') : ''}
                               </SelectValue>
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="light">{dict.theme_light}</SelectItem>
-                            <SelectItem value="dark">{dict.theme_dark}</SelectItem>
-                            <SelectItem value="system">{dict.theme_system}</SelectItem>
+                            <SelectItem value="light">{t('onboarding.theme_light')}</SelectItem>
+                            <SelectItem value="dark">{t('onboarding.theme_dark')}</SelectItem>
+                            <SelectItem value="system">{t('onboarding.theme_system')}</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -148,7 +148,7 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                     name="language_locale"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.language_label}</FormLabel>
+                        <FormLabel>{t('onboarding.language_label')}</FormLabel>
                         <Select
                           onValueChange={(val) => {
                             field.onChange(val);
@@ -164,7 +164,7 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                         >
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder={dict.language_placeholder}>
+                              <SelectValue placeholder={t('onboarding.language_placeholder')}>
                                 {languages.find(l => l.locale === field.value)?.native_name}
                               </SelectValue>
                             </SelectTrigger>
@@ -187,11 +187,11 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                     name="date_format"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{dict.date_format_label}</FormLabel>
+                        <FormLabel>{t('onboarding.date_format_label')}</FormLabel>
                         <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="w-full">
-                              <SelectValue placeholder={dict.date_format_placeholder}>
+                              <SelectValue placeholder={t('onboarding.date_format_placeholder')}>
                                 {field.value}
                               </SelectValue>
                             </SelectTrigger>
@@ -212,17 +212,16 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                     name="primary_currency_code"
                     render={({ field }) => (
                       <FormItem className="flex flex-col">
-                        <FormLabel>{dict.currency_label}</FormLabel>
+                        <FormLabel>{t('onboarding.currency_label')}</FormLabel>
                         <FormControl>
                           <CurrencySelector
                             value={field.value}
                             onValueChange={(val) => form.setValue("primary_currency_code", val, { shouldValidate: true })}
                             currencies={currencies}
-                            dict={dict}
                           />
                         </FormControl>
                         <FormDescription>
-                          {dict.currency_description}
+                          {t('onboarding.currency_description')}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -231,9 +230,9 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
 
                   <Alert className="border-orange-500/50 bg-orange-500/10 text-orange-600 dark:text-orange-400 mt-2">
                     <AlertTriangle className="h-4 w-4 stroke-orange-600 dark:stroke-orange-400" />
-                    <AlertTitle>{dict.important_title}</AlertTitle>
+                    <AlertTitle>{t('onboarding.important_title')}</AlertTitle>
                     <AlertDescription>
-                      {dict.important_description_1} <strong>{dict.important_description_bold}</strong>{dict.important_description_2}
+                      {t('onboarding.important_description_1')} <strong>{t('onboarding.important_description_bold')}</strong>{t('onboarding.important_description_2')}
                     </AlertDescription>
                   </Alert>
 
@@ -241,10 +240,10 @@ export function PreferencesStep({ languages, currencies, defaultLocale, defaultC
                     {isPending ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        {dict.btn_saving}
+                        {t('onboarding.btn_saving')}
                       </>
                     ) : (
-                      dict.btn_submit
+                      t('onboarding.btn_submit')
                     )}
                   </Button>
                 </form>

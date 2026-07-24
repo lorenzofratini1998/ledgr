@@ -7,7 +7,7 @@ import { archiveCategoryAction, deleteCategoryAction, unarchiveCategoryAction } 
 import { CategoryDetailView } from '@/features/categories/components/category-detail-view';
 import { CategoryMasterView } from '@/features/categories/components/category-master-view';
 import { CreateCategoryForm } from '@/features/categories/components/create-category-form';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { CategoryWithChildren } from '@/types/models';
 import { useEffect, useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -18,7 +18,7 @@ interface CategoryGridProps {
 
 export function CategoryGrid({ categories }: CategoryGridProps) {
   const [isPending, startTransition] = useTransition();
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
   
   const [activeTab, setActiveTab] = useState<string>('active');
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -102,10 +102,10 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     startTransition(async () => {
       const res = await archiveCategoryAction(selectedCategoryForAction.category_id);
       if (res.success) {
-        toast.success(dictionary.categories.archivedSuccess);
+        toast.success(t('categories.archivedSuccess'));
         setIsArchiveOpen(false);
       } else {
-        toast.error(res.message || dictionary.categories.failedArchive);
+        toast.error(res.message || t('categories.failedArchive'));
       }
     });
   };
@@ -115,7 +115,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     startTransition(async () => {
       const res = await deleteCategoryAction(selectedCategoryForAction.category_id, forceCascade);
       if (res.success) {
-        toast.success(dictionary.categories.deletedSuccess);
+        toast.success(t('categories.deletedSuccess'));
         setIsDeleteOpen(false);
         setIsDeleteAllPromptOpen(false);
         if (selectedCategoryId === selectedCategoryForAction.category_id) {
@@ -126,7 +126,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           setIsDeleteOpen(false);
           setIsDeleteAllPromptOpen(true);
         } else {
-          toast.error(res.message || dictionary.categories.failedDelete);
+          toast.error(res.message || t('categories.failedDelete'));
         }
       }
     });
@@ -136,9 +136,9 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     startTransition(async () => {
       const res = await unarchiveCategoryAction(id);
       if (res.success) {
-        toast.success(dictionary.categories.reactivatedSuccess);
+        toast.success(t('categories.reactivatedSuccess'));
       } else {
-        toast.error(res.message || dictionary.categories.failedReactivate);
+        toast.error(res.message || t('categories.failedReactivate'));
       }
     });
   };
@@ -148,10 +148,10 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full flex flex-col h-full">
         <TabsList className="grid w-full grid-cols-2 mb-6">
           <TabsTrigger value="active">
-            {dictionary.wallets.active}
+            {t('wallets.active')}
           </TabsTrigger>
           <TabsTrigger value="archived">
-            {dictionary.wallets.archived}
+            {t('wallets.archived')}
           </TabsTrigger>
         </TabsList>
 
@@ -195,8 +195,8 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <ResponsiveDrawer
         open={isEditOpen}
         onOpenChange={setIsEditOpen}
-        title={dictionary.categories.editCategory}
-        description={dictionary.categories.editDescription}
+        title={t('categories.editCategory')}
+        description={t('categories.editDescription')}
       >
         {selectedCategoryForAction && (
           <CreateCategoryForm
@@ -211,8 +211,8 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <ResponsiveDrawer
         open={isAddSubcategoryOpen}
         onOpenChange={setIsAddSubcategoryOpen}
-        title={dictionary.categories.newCategory}
-        description={dictionary.categories.descriptionPlaceholder}
+        title={t('categories.newCategory')}
+        description={t('categories.descriptionPlaceholder')}
       >
         {parentForNewSubcategory && (
           <CreateCategoryForm
@@ -227,14 +227,14 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <ActionDialog
         open={isArchiveOpen}
         onOpenChange={setIsArchiveOpen}
-        title={dictionary.categories.archiveCategory}
+        title={t('categories.archiveCategory')}
         description={
           <>
-            {dictionary.categories.archivePrompt1} <strong>{selectedCategoryForAction?.category_name}</strong>{dictionary.categories.archivePrompt2}
+            {t('categories.archivePrompt1')} <strong>{selectedCategoryForAction?.category_name}</strong>{t('categories.archivePrompt2')}
           </>
         }
-        actionText={dictionary.categories.archiveAction}
-        cancelText={dictionary.common.cancel}
+        actionText={t('categories.archiveAction')}
+        cancelText={t('common.cancel')}
         onAction={handleArchive}
         isPending={isPending}
       />
@@ -243,15 +243,15 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <ActionDialog
         open={isDeleteOpen}
         onOpenChange={setIsDeleteOpen}
-        title={dictionary.categories.deletePermanently}
+        title={t('categories.deletePermanently')}
         description={
           <>
-            {dictionary.categories.deletePrompt1}
-            <strong> {selectedCategoryForAction?.category_name}</strong>{dictionary.categories.deletePrompt2}
+            {t('categories.deletePrompt1')}
+            <strong> {selectedCategoryForAction?.category_name}</strong>{t('categories.deletePrompt2')}
           </>
         }
-        actionText={dictionary.common.delete}
-        cancelText={dictionary.common.cancel}
+        actionText={t('common.delete')}
+        cancelText={t('common.cancel')}
         onAction={() => handleDelete(false)}
         isPending={isPending}
         destructive={true}
@@ -261,10 +261,10 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
       <ActionDialog
         open={isDeleteAllPromptOpen}
         onOpenChange={setIsDeleteAllPromptOpen}
-        title={dictionary.categories.deleteAllTitle}
-        description={dictionary.categories.deleteAllPrompt}
-        actionText={dictionary.categories.deleteAllAction}
-        cancelText={dictionary.common.cancel}
+        title={t('categories.deleteAllTitle')}
+        description={t('categories.deleteAllPrompt')}
+        actionText={t('categories.deleteAllAction')}
+        cancelText={t('common.cancel')}
         onAction={() => handleDelete(true)}
         isPending={isPending}
         destructive={true}

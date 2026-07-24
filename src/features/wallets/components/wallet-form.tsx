@@ -8,7 +8,7 @@ import {
 } from '@/features/wallets/constants';
 import { CreateWalletPayload, CreateWalletSchema } from '@/features/wallets/schemas';
 import { useActionMutation } from '@/hooks/use-action-mutation';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { Currency, Wallet } from '@/types/models';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useEffect } from 'react';
@@ -23,7 +23,7 @@ interface WalletFormProps {
 }
 
 export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialData, onSuccess }: WalletFormProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   const form = useForm({
     resolver: zodResolver(CreateWalletSchema),
@@ -60,8 +60,8 @@ export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialDat
       }
       return createWalletAction(data);
     },
-    successMessage: (res) => res.message || (initialData ? dictionary.wallets.updatedSuccess : dictionary.wallets.createdSuccess),
-    errorMessage: (res) => res.message || dictionary.common.error,
+    successMessage: (res) => res.message || (initialData ? t('wallets.updatedSuccess') : t('wallets.createdSuccess')),
+    errorMessage: (res) => res.message || t('common.error'),
     resetOnSuccess: !initialData,
     onSuccess: () => {
       onSuccess?.();
@@ -79,7 +79,7 @@ export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialDat
 
         <div className="pt-4">
           <Button type="submit" className="w-full" disabled={isPending} size="lg">
-            {isPending ? (initialData ? dictionary.wallets.saving : dictionary.wallets.creating) : (initialData ? dictionary.common.saveChanges : dictionary.wallets.createWallet)}
+            {isPending ? (initialData ? t('wallets.saving') : t('wallets.creating')) : (initialData ? t('common.saveChanges') : t('wallets.createWallet'))}
           </Button>
         </div>
       </form>

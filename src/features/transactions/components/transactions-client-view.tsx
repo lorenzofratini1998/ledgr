@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTable, TransactionRow } from "./data-table";
-import { columns } from "./columns";
+import { useColumns } from "./columns";
 
 interface TransactionsClientViewProps {
   transactions: TransactionRow[];
@@ -24,6 +24,7 @@ export function TransactionsClientView({
   currencies,
   primaryCurrencyCode
 }: TransactionsClientViewProps) {
+  const columns = useColumns();
   return (
     <div className="mt-8 pb-32">
       <DataTable 

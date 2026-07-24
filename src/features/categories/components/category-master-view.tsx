@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card';
 import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, CategoryColor, CategoryIcon } from '@/features/categories/constants';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { CategoryWithChildren } from '@/types/models';
 import { ChevronRight, Tag } from 'lucide-react';
 
@@ -19,17 +19,17 @@ export function CategoryMasterView({
   onSelectCategory,
   isArchivedView,
 }: CategoryMasterViewProps) {
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   if (categories.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <Tag className="h-12 w-12 text-muted-foreground mb-4 opacity-30" />
         <h3 className="text-lg font-semibold">
-          {isArchivedView ? dictionary.categories.noArchivedCategories : dictionary.categories.noCategoriesFound}
+          {isArchivedView ? t('categories.noArchivedCategories') : t('categories.noCategoriesFound')}
         </h3>
         <p className="text-sm text-muted-foreground max-w-sm mt-1">
-          {isArchivedView ? dictionary.categories.noArchivedDescription : dictionary.categories.noCategoriesDescription}
+          {isArchivedView ? t('categories.noArchivedDescription') : t('categories.noCategoriesDescription')}
         </p>
       </div>
     );
@@ -63,7 +63,7 @@ export function CategoryMasterView({
                     {parent.category_name}
                   </span>
                   <span className="text-xs text-muted-foreground">
-                    {childCount} {childCount === 1 ? dictionary.categories.subcategorySingular : dictionary.categories.subcategoryPlural}
+                    {childCount} {childCount === 1 ? t('categories.subcategorySingular') : t('categories.subcategoryPlural')}
                   </span>
                 </div>
               </div>

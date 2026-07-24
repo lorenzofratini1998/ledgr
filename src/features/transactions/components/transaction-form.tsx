@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -44,6 +45,7 @@ interface TransactionFormProps {
 export function TransactionForm({ wallets, categories, currencies, tags, defaultCurrency, initialData, onSuccess }: TransactionFormProps) {
   const [isPending, startTransition] = useTransition();
   const [keepOpen, setKeepOpen] = useState(false);
+  const { t } = useTranslation();
 
   const defaultWalletId = wallets.find((w) => w.is_default)?.id || wallets[0]?.id || '';
 
@@ -105,10 +107,10 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
                 <Tabs value={field.value} onValueChange={field.onChange} className="w-full">
                   <TabsList className="grid w-full grid-cols-2">
                     <TabsTrigger value="expense" className="data-[state=active]:bg-red-500/10 data-[state=active]:text-red-600">
-                      Expense
+                      {t('transactions.expense')}
                     </TabsTrigger>
                     <TabsTrigger value="income" className="data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-600">
-                      Income
+                      {t('transactions.income')}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
@@ -123,7 +125,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>{t('common.amount')}</FormLabel>
               <FormControl>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
@@ -167,7 +169,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           name="currency_code"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Currency</FormLabel>
+              <FormLabel>{t('common.currency')}</FormLabel>
               <FormControl>
                 <CurrencySelector
                   value={field.value}
@@ -187,9 +189,9 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>{t('common.description')}</FormLabel>
               <FormControl>
-                <Input placeholder="E.g., Groceries, Salary, Coffee" {...field} />
+                <Input placeholder={t('transactions.descriptionPlaceholder') as string} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -203,11 +205,11 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
             name="wallet_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Wallet</FormLabel>
+                <FormLabel>{t('common.wallet')}</FormLabel>
                 <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select wallet">
+                      <SelectValue placeholder={t('transactions.selectWallet')}>
                         <span className="truncate block text-left">
                           {field.value ? wallets.find(w => w.id === field.value)?.name : null}
                         </span>
@@ -233,7 +235,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
             name="date"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Date</FormLabel>
+                <FormLabel>{t('common.date')}</FormLabel>
                 <FormControl>
                   <Input type="date" {...field} />
                 </FormControl>
@@ -249,11 +251,11 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           name="category_id"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Category (Optional)</FormLabel>
+              <FormLabel>{t('common.categoryOptional')}</FormLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                   <FormControl>
                     <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select category">
+                      <SelectValue placeholder={t('transactions.selectCategory')}>
                         <span className="truncate block text-left">
                           {field.value ? categories.find(c => c.category_id === field.value)?.category_name : null}
                         </span>
@@ -279,7 +281,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           name="tags"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Tags (Optional)</FormLabel>
+              <FormLabel>{t('common.tagsOptional')}</FormLabel>
               <FormControl>
                 <TagSelector
                   tags={tags}
@@ -297,7 +299,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           <div className="flex items-center space-x-3 py-1">
             <Switch id="keep-open" checked={keepOpen} onCheckedChange={setKeepOpen} />
             <Label htmlFor="keep-open" className="text-sm font-normal cursor-pointer">
-              Save & add another
+              {t('transactions.saveAndAddAnother')}
             </Label>
           </div>
         )}
@@ -307,10 +309,10 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           {isPending ? (
             <>
               <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              Saving...
+              {t('common.saving')}
             </>
           ) : (
-            initialData ? 'Update Transaction' : 'Save Transaction'
+            initialData ? t('transactions.updateTransaction') : t('transactions.saveTransaction')
           )}
         </Button>
       </form>

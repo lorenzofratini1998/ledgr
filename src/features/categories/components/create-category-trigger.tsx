@@ -2,7 +2,7 @@
 
 import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Button } from '@/components/ui/button';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { CategoryWithChildren } from '@/types/models';
 import { PlusIcon } from 'lucide-react';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ interface CreateCategoryTriggerProps {
 
 export function CreateCategoryTrigger({ parentCategories }: CreateCategoryTriggerProps) {
   const [open, setOpen] = useState(false);
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   const handleSuccess = () => {
     setOpen(false);
@@ -24,7 +24,7 @@ export function CreateCategoryTrigger({ parentCategories }: CreateCategoryTrigge
     <>
       {/* Desktop Trigger */}
       <Button className="hidden md:flex" onClick={() => setOpen(true)}>
-        <PlusIcon className="mr-2 h-4 w-4" /> {dictionary.categories.newCategory}
+        <PlusIcon className="mr-2 h-4 w-4" /> {t('categories.newCategory')}
       </Button>
 
       {/* Mobile FAB Trigger */}
@@ -35,8 +35,8 @@ export function CreateCategoryTrigger({ parentCategories }: CreateCategoryTrigge
       <ResponsiveDrawer
         open={open}
         onOpenChange={setOpen}
-        title={dictionary.categories.createCategory}
-        description="Create a new parent or subcategory to organize your transactions."
+        title={t('categories.createCategory')}
+        description={t('categories.createDescription')}
       >
         <CreateCategoryForm parentCategories={parentCategories} onSuccess={handleSuccess} />
       </ResponsiveDrawer>

@@ -1,17 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatCurrency } from '@/lib/formatters';
 import { Wallet } from 'lucide-react';
-import { OnboardingDictionary } from './onboarding-form';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 
 interface PreviewCardProps {
     theme: string;
     dateFormat: string;
     currencyCode: string;
     languageLocale: string;
-    dict: OnboardingDictionary;
 }
 
-export function PreviewCard({ theme, dateFormat, currencyCode, languageLocale, dict }: PreviewCardProps) {
+export function PreviewCard({ theme, dateFormat, currencyCode, languageLocale }: PreviewCardProps) {
+    const { t } = useTranslation();
     const today = new Date();
     const formattedDate = dateFormat === 'DD/MM/YYYY'
         ? `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`
@@ -38,10 +38,10 @@ export function PreviewCard({ theme, dateFormat, currencyCode, languageLocale, d
         >
             <CardHeader className="pb-4">
                 <CardDescription className="transition-colors text-muted-foreground">
-                    {formattedDate || dict.date_format_placeholder}
+                    {formattedDate || t('onboarding.date_format_placeholder')}
                 </CardDescription>
                 <CardTitle className="text-2xl flex items-center justify-between">
-                    <span>{dict.preview_net_worth}</span>
+                    <span>{t('onboarding.preview_net_worth')}</span>
                     <Wallet className="w-6 h-6 opacity-50" />
                 </CardTitle>
             </CardHeader>
@@ -51,11 +51,11 @@ export function PreviewCard({ theme, dateFormat, currencyCode, languageLocale, d
                 </div>
                 <div className="mt-8 space-y-3">
                     <div className="flex justify-between items-center text-sm">
-                        <span className="opacity-70">{dict.preview_checking}</span>
+                        <span className="opacity-70">{t('onboarding.preview_checking')}</span>
                         <span className="font-medium">{formatCurrency(4500.00, currencyCode, languageLocale)}</span>
                     </div>
                     <div className="flex justify-between items-center text-sm">
-                        <span className="opacity-70">{dict.preview_savings}</span>
+                        <span className="opacity-70">{t('onboarding.preview_savings')}</span>
                         <span className="font-medium">{formatCurrency(7845.67, currencyCode, languageLocale)}</span>
                     </div>
                 </div>

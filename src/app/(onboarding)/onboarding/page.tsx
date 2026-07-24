@@ -2,7 +2,6 @@ import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getActiveLanguages } from '@/lib/constants/languages';
 import { OnboardingForm } from '@/features/onboarding/components/onboarding-form';
 import { getUserPreferences } from '@/features/preferences/queries';
-import { getLocaleDictionary } from '@/i18n/get-dictionary';
 import { createClient } from '@/lib/supabase/server';
 import { LOCALE_COOKIE_NAME } from '@/i18n/utils';
 import { cookies } from 'next/headers';
@@ -10,7 +9,6 @@ import { cookies } from 'next/headers';
 export default async function OnboardingPage() {
   const { activeLocales, defaultLocale } = await getActiveLanguages();
   const currencies = await getActiveCurrencies();
-  const { dictionary } = await getLocaleDictionary();
 
   const cookieStore = await cookies();
   const cookieLocale = cookieStore.get(LOCALE_COOKIE_NAME)?.value;
@@ -41,7 +39,6 @@ export default async function OnboardingPage() {
           currencies={currencies}
           defaultLocale={currentLocale}
           defaultCurrencyCode={defaultCurrency}
-          dict={dictionary.onboarding}
           initialStep={initialStep as 1 | 2}
         />
       </div>

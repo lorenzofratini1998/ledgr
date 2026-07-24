@@ -17,7 +17,7 @@ import { completeEcosystemOnboarding } from '@/features/onboarding/actions';
 import { EcosystemPayload, ecosystemSchema } from '@/features/onboarding/schemas';
 import { WalletFormFields } from '@/features/wallets/components/wallet-form-fields';
 import { DEFAULT_ONBOARDING_CATEGORIES, DefaultCategoryKey } from '../constants';
-import { OnboardingDictionary } from './onboarding-form';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 
 interface Currency {
   iso_code: string;
@@ -28,11 +28,12 @@ interface Currency {
 interface EcosystemStepProps {
   currencies: Currency[];
   primaryCurrencyCode: string;
-  dict: OnboardingDictionary;
+
 }
 
-export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: EcosystemStepProps) {
+export function EcosystemStep({ currencies, primaryCurrencyCode }: EcosystemStepProps) {
   const router = useRouter();
+  const { t } = useTranslation();
   const [showWallet, setShowWallet] = useState(false);
 
   const form = useForm({
@@ -105,10 +106,10 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
       <div className="text-center space-y-2">
         <h1 className="text-3xl md:text-4xl font-bold tracking-tight flex items-center justify-center gap-3">
           <Sparkles className="w-8 h-8 text-primary" />
-          {dict.ecosystem_title || 'Set up your workspace'}
+          {t('onboarding.ecosystem_title')}
         </h1>
         <p className="text-muted-foreground text-lg">
-          {dict.ecosystem_subtitle}
+          {t('onboarding.ecosystem_subtitle')}
         </p>
       </div>
 
@@ -122,8 +123,8 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
               <CardHeader className="pb-4 border-b">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="space-y-1">
-                    <CardTitle className="text-xl">{dict.categories_section_title}</CardTitle>
-                    <CardDescription className="mt-1">{dict.categories_section_desc}</CardDescription>
+                    <CardTitle className="text-xl">{t('onboarding.categories_section_title')}</CardTitle>
+                    <CardDescription className="mt-1">{t('onboarding.categories_section_desc')}</CardDescription>
                   </div>
                   <Button
                     type="button"
@@ -139,8 +140,8 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
                     }}
                   >
                     {selectedCategories.length === allCategoryKeys.length 
-                      ? dict.categories_deselect_all 
-                      : dict.categories_select_all}
+                      ? t('onboarding.categories_deselect_all') 
+                      : t('onboarding.categories_select_all')}
                   </Button>
                 </div>
               </CardHeader>
@@ -152,7 +153,7 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
                     const colorClasses = CATEGORY_COLOR_MAP[cat.color];
                     const isSelected = selectedCategories.includes(key);
                     // @ts-ignore dynamic indexing
-                    const translatedName = dict.default_categories?.[key] || key;
+                    const translatedName = t(`onboarding.default_categories.${key}` as any) || key;
 
                     return (
                       <button
@@ -178,8 +179,8 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
             <Card>
               <CardHeader className="pb-4 border-b flex flex-row items-start justify-between gap-4">
                 <div className="space-y-1">
-                  <CardTitle className="text-xl">{dict.wallet_section_title}</CardTitle>
-                  <CardDescription>{dict.wallet_section_desc}</CardDescription>
+                  <CardTitle className="text-xl">{t('onboarding.wallet_section_title')}</CardTitle>
+                  <CardDescription>{t('onboarding.wallet_section_desc')}</CardDescription>
                 </div>
                 <Button
                   type="button"
@@ -187,7 +188,7 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
                   onClick={() => setShowWallet(!showWallet)}
                   className="shrink-0"
                 >
-                  {showWallet ? (dict.btn_cancel || "Cancel") : "+ " + (dict.btn_add_wallet || "Add Wallet")}
+                  {showWallet ? t('onboarding.btn_cancel') : "+ " + t('onboarding.btn_add_wallet')}
                 </Button>
               </CardHeader>
               <AnimatePresence>
@@ -215,7 +216,7 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
               disabled={isPending}
               onClick={onSkip}
             >
-              {dict.btn_skip}
+              {t('onboarding.btn_skip')}
             </Button>
             
             <Button
@@ -227,10 +228,10 @@ export function EcosystemStep({ currencies, primaryCurrencyCode, dict }: Ecosyst
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {dict.btn_saving || 'Saving...'}
+                  {t('onboarding.btn_saving')}
                 </>
               ) : (
-                dict.btn_finish || 'Finish Setup'
+                t('onboarding.btn_finish')
               )}
             </Button>
           </div>

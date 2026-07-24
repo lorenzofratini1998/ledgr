@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from 
 import { Input } from "@/components/ui/input";
 import { signInWithEmail, signUpWithEmail } from "@/features/auth/actions";
 import { useActionMutation } from "@/hooks/use-action-mutation";
-import { type Dictionary } from "@/i18n/dictionaries/en";
+import { useTranslation } from "@/i18n/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -17,7 +17,8 @@ import * as z from "zod";
 import { getLoginSchema, getRegisterSchema } from "@/features/auth/schemas";
 
 
-function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['auth']['social'] }) {
+function OAuthProviders({ providers }: { providers: string[] }) {
+  const { t } = useTranslation();
   const socialProviders = providers.filter(p => p !== 'email');
   if (socialProviders.length === 0) return null;
 
@@ -32,7 +33,7 @@ function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['
                 fill="currentColor"
               />
             </svg>
-            {t.apple}
+            {t('auth.social.apple')}
           </Button>
         )}
         {socialProviders.includes("google") && (
@@ -43,7 +44,7 @@ function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['
                 fill="currentColor"
               />
             </svg>
-            {t.google}
+            {t('auth.social.google')}
           </Button>
         )}
         {socialProviders.includes("github") && (
@@ -54,21 +55,22 @@ function OAuthProviders({ providers, t }: { providers: string[], t: Dictionary['
                 fill="currentColor"
               />
             </svg>
-            {t.github}
+            {t('auth.social.github')}
           </Button>
         )}
       </div>
       <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
         <span className="relative z-10 bg-card px-2 text-muted-foreground">
-          {t.orContinueWith}
+          {t('auth.social.orContinueWith')}
         </span>
       </div>
     </>
   );
 }
 
-function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
-  const loginSchema = useMemo(() => getLoginSchema(t.errors), [t.errors]);
+function LoginSubForm() {
+  const { t, dictionary } = useTranslation();
+  const loginSchema = useMemo(() => getLoginSchema(dictionary.auth.login.errors), [dictionary.auth.login.errors]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -99,9 +101,9 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.emailLabel}</FormLabel>
+              <FormLabel>{t('auth.login.emailLabel')}</FormLabel>
               <FormControl>
-                <Input placeholder={t.emailPlaceholder} type="email" {...field} />
+                <Input placeholder={t('auth.login.emailPlaceholder') as string} type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -114,9 +116,9 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
           render={({ field }) => (
             <FormItem>
               <div className="flex items-center justify-between">
-                <FormLabel>{t.passwordLabel}</FormLabel>
+                <FormLabel>{t('auth.login.passwordLabel')}</FormLabel>
                 <Link href="/forgot-password" className="text-sm underline-offset-4 hover:underline">
-                  {t.forgotPassword}
+                  {t('auth.login.forgotPassword')}
                 </Link>
               </div>
               <FormControl>
@@ -129,15 +131,16 @@ function LoginSubForm({ t }: { t: Dictionary['auth']['login'] }) {
 
 
         <Button type="submit" className="w-full mt-2" disabled={isPending}>
-          {isPending ? t.submitting : t.submit}
+          {isPending ? t('auth.login.submitting') : t('auth.login.submit')}
         </Button>
       </form>
     </Form>
   );
 }
 
-function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
-  const registerSchema = useMemo(() => getRegisterSchema(t.errors), [t.errors]);
+function RegisterSubForm() {
+  const { t, dictionary } = useTranslation();
+  const registerSchema = useMemo(() => getRegisterSchema(dictionary.auth.register.errors), [dictionary.auth.register.errors]);
 
   const registerForm = useForm<z.infer<typeof registerSchema>>({
     resolver: zodResolver(registerSchema),
@@ -178,9 +181,9 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t.firstNameLabel} <span className="text-muted-foreground font-normal">{t.optional}</span></FormLabel>
+                <FormLabel>{t('auth.register.firstNameLabel')} <span className="text-muted-foreground font-normal">{t('auth.register.optional')}</span></FormLabel>
                 <FormControl>
-                  <Input placeholder={t.firstNamePlaceholder} {...field} />
+                  <Input placeholder={t('auth.register.firstNamePlaceholder') as string} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -191,9 +194,9 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t.lastNameLabel} <span className="text-muted-foreground font-normal">{t.optional}</span></FormLabel>
+                <FormLabel>{t('auth.register.lastNameLabel')} <span className="text-muted-foreground font-normal">{t('auth.register.optional')}</span></FormLabel>
                 <FormControl>
-                  <Input placeholder={t.lastNamePlaceholder} {...field} />
+                  <Input placeholder={t('auth.register.lastNamePlaceholder') as string} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -206,9 +209,9 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.emailLabel}</FormLabel>
+              <FormLabel>{t('auth.register.emailLabel')}</FormLabel>
               <FormControl>
-                <Input placeholder={t.emailPlaceholder} type="email" {...field} />
+                <Input placeholder={t('auth.register.emailPlaceholder') as string} type="email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -220,7 +223,7 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.passwordLabel}</FormLabel>
+              <FormLabel>{t('auth.register.passwordLabel')}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -234,7 +237,7 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
           name="confirmPassword"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t.confirmPasswordLabel}</FormLabel>
+              <FormLabel>{t('auth.register.confirmPasswordLabel')}</FormLabel>
               <FormControl>
                 <Input type="password" {...field} />
               </FormControl>
@@ -245,7 +248,7 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
 
 
         <Button type="submit" className="w-full mt-2" disabled={isPending}>
-          {isPending ? t.submitting : t.submit}
+          {isPending ? t('auth.register.submitting') : t('auth.register.submit')}
         </Button>
       </form>
     </Form>
@@ -255,11 +258,10 @@ function RegisterSubForm({ t }: { t: Dictionary['auth']['register'] }) {
 export function LoginForm({
   className,
   providers,
-  dictionary,
   ...props
-}: React.ComponentProps<"div"> & { providers: string[], dictionary: Dictionary }) {
+}: React.ComponentProps<"div"> & { providers: string[] }) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<"login" | "register">("login");
-  const t = dictionary.auth;
   const hasSocialProviders = providers.some(p => p !== "email");
 
   const toggleMode = (e: React.MouseEvent) => {
@@ -272,25 +274,25 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">
-            {mode === "login" ? t.login.title : t.register.title}
+            {mode === "login" ? t('auth.login.title') : t('auth.register.title')}
           </CardTitle>
           <CardDescription>
             {mode === "login"
-              ? (hasSocialProviders ? t.login.description : t.login.descriptionEmailOnly)
-              : (hasSocialProviders ? t.register.description : t.register.descriptionEmailOnly)}
+              ? (hasSocialProviders ? t('auth.login.description') : t('auth.login.descriptionEmailOnly'))
+              : (hasSocialProviders ? t('auth.register.description') : t('auth.register.descriptionEmailOnly'))}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-6">
-            <OAuthProviders providers={providers} t={t.social} />
+            <OAuthProviders providers={providers} />
 
-            {mode === "login" ? <LoginSubForm t={t.login} /> : <RegisterSubForm t={t.register} />}
+            {mode === "login" ? <LoginSubForm /> : <RegisterSubForm />}
 
             <div className="mt-4 text-center text-sm text-muted-foreground">
-              {mode === "login" ? t.login.noAccount : t.register.hasAccount}
+              {mode === "login" ? t('auth.login.noAccount') : t('auth.register.hasAccount')}
               {" "}
               <button type="button" onClick={toggleMode} className="underline underline-offset-4 hover:text-foreground">
-                {mode === "login" ? t.login.switchToSignUp : t.register.switchToLogin}
+                {mode === "login" ? t('auth.login.switchToSignUp') : t('auth.register.switchToLogin')}
               </button>
             </div>
           </div>
@@ -298,13 +300,13 @@ export function LoginForm({
       </Card>
 
       <p className="px-6 text-center text-sm text-muted-foreground">
-        {t.terms.agreement}{" "}
+        {t('auth.terms.agreement')}{" "}
         <a href="#" className="underline underline-offset-4 hover:text-foreground">
-          {t.terms.tos}
+          {t('auth.terms.tos')}
         </a>{" "}
-        {t.terms.and}{" "}
+        {t('auth.terms.and')}{" "}
         <a href="#" className="underline underline-offset-4 hover:text-foreground">
-          {t.terms.privacy}
+          {t('auth.terms.privacy')}
         </a>
         .
       </p>

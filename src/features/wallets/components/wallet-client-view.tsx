@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
-import { useDictionary } from '@/i18n/dictionary-provider';
+import { useTranslation } from '@/i18n/hooks/use-translation';
 import { Currency, Wallet } from '@/types/models';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { WalletCard } from './wallet-card';
@@ -27,7 +27,7 @@ export function WalletsClientView({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const dictionary = useDictionary();
+  const { t } = useTranslation();
 
   const initialView = searchParams.get('view') === 'archived' ? 'archived' : 'active';
   const [view, setView] = useState(initialView);
@@ -50,8 +50,8 @@ export function WalletsClientView({
   return (
     <Tabs value={view} onValueChange={handleTabChange} className="w-full">
       <TabsList className="mb-6 grid w-full grid-cols-2">
-        <TabsTrigger value="active">{dictionary.wallets.active}</TabsTrigger>
-        <TabsTrigger value="archived">{dictionary.wallets.archived}</TabsTrigger>
+        <TabsTrigger value="active">{t('wallets.active')}</TabsTrigger>
+        <TabsTrigger value="archived">{t('wallets.archived')}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="active" className="space-y-8 mt-0">
@@ -60,16 +60,16 @@ export function WalletsClientView({
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
               <span className="text-2xl">🏦</span>
             </div>
-            <h3 className="text-xl font-medium">{dictionary.wallets.noActiveWallets}</h3>
+            <h3 className="text-xl font-medium">{t('wallets.noActiveWallets')}</h3>
             <p className="text-muted-foreground max-w-sm mt-2">
-              {dictionary.wallets.noActiveDescription}
+              {t('wallets.noActiveDescription')}
             </p>
           </div>
         ) : (
           <>
             {regularWallets.length > 0 && (
               <section>
-                <h2 className="text-lg font-medium mb-4">{dictionary.wallets.types.regular}</h2>
+                <h2 className="text-lg font-medium mb-4">{t('wallets.types.regular')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {regularWallets.map((wallet) => (
                     <WalletCard key={wallet.id} wallet={wallet} currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
@@ -80,7 +80,7 @@ export function WalletsClientView({
 
             {savingsWallets.length > 0 && (
               <section>
-                <h2 className="text-lg font-medium mb-4">{dictionary.wallets.types.savings}</h2>
+                <h2 className="text-lg font-medium mb-4">{t('wallets.types.savings')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {savingsWallets.map((wallet) => (
                     <WalletCard key={wallet.id} wallet={wallet} currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
@@ -91,7 +91,7 @@ export function WalletsClientView({
 
             {investmentWallets.length > 0 && (
               <section>
-                <h2 className="text-lg font-medium mb-4">{dictionary.wallets.types.investment}</h2>
+                <h2 className="text-lg font-medium mb-4">{t('wallets.types.investment')}</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {investmentWallets.map((wallet) => (
                     <WalletCard key={wallet.id} wallet={wallet} currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
@@ -109,9 +109,9 @@ export function WalletsClientView({
             <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
               <span className="text-2xl opacity-50">📦</span>
             </div>
-            <h3 className="text-xl font-medium">{dictionary.wallets.noArchivedWallets}</h3>
+            <h3 className="text-xl font-medium">{t('wallets.noArchivedWallets')}</h3>
             <p className="text-muted-foreground max-w-sm mt-2">
-              {dictionary.wallets.noArchivedDescription}
+              {t('wallets.noArchivedDescription')}
             </p>
           </div>
         ) : (
