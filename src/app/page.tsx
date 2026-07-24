@@ -1,9 +1,3 @@
-
-import { createClient } from "@/lib/supabase/server";
-import { logger } from "@/utils/logger";
-import { Suspense } from "react";
-
-
 /*export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -67,23 +61,19 @@ import { Suspense } from "react";
     </div>
   );
 }*/
+import { Suspense } from "react";
+import { getActiveLanguages } from "@/lib/constants/languages";
+import { logger } from "@/lib/utils/logger";
+
 async function InstrumentsData() {
   console.log("URL Supabase in uso:", process.env.NEXT_PUBLIC_SUPABASE_URL);
 
-  const supabase = await createClient();
-  const { data: instruments } = await supabase.from("languages").select();
+  const { activeLocales } = await getActiveLanguages();
+  
+  await logger.info("Dati ricevuti", { data: activeLocales });
 
-  const { data, error } = await supabase
-    .from('languages')
-    .select('*')
-    .limit(1);
-
-  await logger.info("Dati ricevuti", { data });
-
-  return <pre>{JSON.stringify(instruments, null, 2)}</pre>;
+  return <pre>{JSON.stringify(activeLocales, null, 2)}</pre>;
 }
-
-
 
 export default function Instruments() {
   return (

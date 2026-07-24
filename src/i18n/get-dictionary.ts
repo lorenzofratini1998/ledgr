@@ -1,4 +1,4 @@
-import { LOCALE_COOKIE_NAME } from '@/utils/locale';
+import { LOCALE_COOKIE_NAME } from '@/i18n/utils';
 import { cookies } from "next/headers";
 import 'server-only';
 import { type Dictionary } from './dictionaries/en';

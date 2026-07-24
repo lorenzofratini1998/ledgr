@@ -1,5 +1,5 @@
-import { getActiveCurrencies } from '@/data/currencies';
-import { getUserPreferences } from '@/data/user-preferences';
+import { getActiveCurrencies } from '@/lib/constants/currencies';
+import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
 import { WalletsClientView } from '@/features/wallets/components/wallet-client-view';
 import { getArchivedWallets, getWallets } from '@/features/wallets/queries';

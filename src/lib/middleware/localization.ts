@@ -1,5 +1,5 @@
-import { getActiveLanguages } from "@/data/languages";
-import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS, resolveLocale } from "@/utils/locale";
+import { getActiveLanguages } from "@/lib/constants/languages";
+import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS, resolveLocale } from "@/i18n/utils";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function applyLocalization(request: NextRequest, response: NextResponse) {

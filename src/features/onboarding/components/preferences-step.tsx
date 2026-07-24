@@ -15,7 +15,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useActionMutation } from '@/hooks/use-action-mutation';
 
-import { setLocale } from '@/actions/locale';
+import { setLocale } from '@/i18n/actions';
 import { completeBasicOnboarding } from '@/features/onboarding/actions';
 import { OnboardingPayload, onboardingSchema } from '@/features/onboarding/schemas';
 import { OnboardingDictionary } from './onboarding-form';

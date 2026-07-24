@@ -1,30 +1,14 @@
 'use server';
 
-import { createClient, getUser } from '@/lib/supabase/server';
-import { formatZodErrors } from '@/lib/utils/action-utils';
+import { createClient } from '@/lib/supabase/server';
+import { executeAction, executeValidatedAction } from '@/lib/utils/action-utils';
 import { ActionResponse } from '@/types/actions';
-import { revalidatePath, revalidateTag } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { CreateTransactionPayload, createTransactionSchema } from './schemas';
-import { getExchangeRateForCurrency, getPrimaryCurrencyCode, insertTransaction, updateTransaction, deleteTransaction, bulkDeleteTransactions, getTransactions } from './queries';
+import { getExchangeRateForCurrency, getPrimaryCurrencyCode, insertTransaction, updateTransaction, deleteTransaction, bulkDeleteTransactions } from './queries';
 
 export async function createTransactionAction(payload: CreateTransactionPayload): Promise<ActionResponse> {
-  try {
-    const { data: { user } } = await getUser();
-
-    if (!user) {
-      return { success: false, message: 'Unauthorized' };
-    }
-
-    const result = createTransactionSchema.safeParse(payload);
-    if (!result.success) {
-      return {
-        success: false,
-        message: 'Invalid transaction data',
-        errors: formatZodErrors(result.error)
-      };
-    }
-
-    const data = result.data;
+  return executeValidatedAction(createTransactionSchema, payload, async (user, data) => {
     const supabaseServer = await createClient();
 
     // Determine final amount (positive for income, negative for expense)
@@ -70,34 +54,15 @@ export async function createTransactionAction(payload: CreateTransactionPayload)
     revalidatePath('/wallets'); // Balances change implicitly
 
     // Invalidate unstable_cache tags
-    revalidateTag(`transactions-${user.id}`, undefined as any);
-    revalidateTag(`wallets-${user.id}`, undefined as any);
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
 
     return { success: true, message: 'Transaction created successfully' };
-  } catch (error) {
-    console.error('Failed to create transaction:', error);
-    return { success: false, message: 'An unexpected error occurred while creating the transaction' };
-  }
+  });
 }
 
 export async function updateTransactionAction(id: string, payload: CreateTransactionPayload): Promise<ActionResponse> {
-  try {
-    const { data: { user } } = await getUser();
-
-    if (!user) {
-      return { success: false, message: 'Unauthorized' };
-    }
-
-    const result = createTransactionSchema.safeParse(payload);
-    if (!result.success) {
-      return {
-        success: false,
-        message: 'Invalid transaction data',
-        errors: formatZodErrors(result.error)
-      };
-    }
-
-    const data = result.data;
+  return executeValidatedAction(createTransactionSchema, payload, async (user, data) => {
     const supabaseServer = await createClient();
 
     // Determine final amount (positive for income, negative for expense)
@@ -140,24 +105,15 @@ export async function updateTransactionAction(id: string, payload: CreateTransac
     revalidatePath('/dashboard');
     revalidatePath('/wallets'); 
 
-    revalidateTag(`transactions-${user.id}`, undefined as any);
-    revalidateTag(`wallets-${user.id}`, undefined as any);
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
 
     return { success: true, message: 'Transaction updated successfully' };
-  } catch (error) {
-    console.error('Failed to update transaction:', error);
-    return { success: false, message: 'An unexpected error occurred while updating the transaction' };
-  }
+  });
 }
 
 export async function deleteTransactionAction(id: string): Promise<ActionResponse> {
-  try {
-    const { data: { user } } = await getUser();
-
-    if (!user) {
-      return { success: false, message: 'Unauthorized' };
-    }
-
+  return executeAction(async (user) => {
     const supabaseServer = await createClient();
     await deleteTransaction(supabaseServer, user.id, id);
 
@@ -165,24 +121,15 @@ export async function deleteTransactionAction(id: string): Promise<ActionRespons
     revalidatePath('/dashboard');
     revalidatePath('/wallets'); 
 
-    revalidateTag(`transactions-${user.id}`, undefined as any);
-    revalidateTag(`wallets-${user.id}`, undefined as any);
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
 
     return { success: true, message: 'Transaction deleted successfully' };
-  } catch (error) {
-    console.error('Failed to delete transaction:', error);
-    return { success: false, message: 'An unexpected error occurred while deleting the transaction' };
-  }
+  });
 }
 
 export async function bulkDeleteTransactionsAction(ids: string[]): Promise<ActionResponse> {
-  try {
-    const { data: { user } } = await getUser();
-
-    if (!user) {
-      return { success: false, message: 'Unauthorized' };
-    }
-
+  return executeAction(async (user) => {
     const supabaseServer = await createClient();
     await bulkDeleteTransactions(supabaseServer, user.id, ids);
 
@@ -190,13 +137,10 @@ export async function bulkDeleteTransactionsAction(ids: string[]): Promise<Actio
     revalidatePath('/dashboard');
     revalidatePath('/wallets'); 
 
-    revalidateTag(`transactions-${user.id}`, undefined as any);
-    revalidateTag(`wallets-${user.id}`, undefined as any);
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
 
     return { success: true, message: `${ids.length} transactions deleted successfully` };
-  } catch (error) {
-    console.error('Failed to bulk delete transactions:', error);
-    return { success: false, message: 'An unexpected error occurred while deleting the transactions' };
-  }
+  });
 }
 

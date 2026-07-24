@@ -2,7 +2,7 @@ import { getUser, createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getWallets } from '@/features/wallets/queries';
 import { getCategories } from '@/features/categories/queries';
-import { getActiveCurrencies } from '@/data/currencies';
+import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getPrimaryCurrencyCode, getTransactions } from '@/features/transactions/queries';
 import { getTags } from '@/features/tags/queries';
 import { CreateTransactionTrigger } from '@/features/transactions/components/create-transaction-trigger';

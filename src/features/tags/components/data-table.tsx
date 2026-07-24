@@ -43,6 +43,8 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { toast } from "sonner";
 import { deleteTagAction, bulkDeleteTagsAction } from "../actions";
 import { ResponsiveDrawer } from "@/components/shared/responsive-drawer";
+import { DataGrid } from "@/components/shared/data-grid/data-grid";
+import { DataGridPagination } from "@/components/shared/data-grid/data-grid-pagination";
 import { TagForm } from "./tag-form";
 import { Badge } from "@/components/ui/badge";
 import { TAG_COLOR_MAP, TagColor } from "../constants";
@@ -157,156 +159,81 @@ export function DataTable<TData, TValue>({
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block rounded-md border bg-card relative">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center text-muted-foreground"
-                >
-                  No tags found.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+      <DataGrid 
+        table={table}
+        columnsLength={columns.length}
+        isPending={isPending}
+        noResultsMessage="No tags found."
+        renderMobileItem={(tag) => {
+          const typedTag = tag as unknown as TagRow;
+          const colorClass = typedTag.color && TAG_COLOR_MAP[typedTag.color as TagColor] 
+            ? TAG_COLOR_MAP[typedTag.color as TagColor].text 
+            : "";
+          const bgClass = typedTag.color && TAG_COLOR_MAP[typedTag.color as TagColor]
+            ? TAG_COLOR_MAP[typedTag.color as TagColor].bg.replace('bg-', 'border-').replace('500', '200')
+            : "";
 
-      {/* Mobile Card List View */}
-      <div className="md:hidden flex flex-col gap-3">
-        {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => {
-            const tag = row.original as unknown as TagRow;
-            
-            const colorClass = tag.color && TAG_COLOR_MAP[tag.color as TagColor] 
-              ? TAG_COLOR_MAP[tag.color as TagColor].text 
-              : "";
-            const bgClass = tag.color && TAG_COLOR_MAP[tag.color as TagColor]
-              ? TAG_COLOR_MAP[tag.color as TagColor].bg.replace('bg-', 'border-').replace('500', '200')
-              : "";
-
-            return (
-              <div key={row.id} className="p-4 rounded-xl border bg-card flex items-start gap-3 shadow-sm">
-                <div className="pt-1 shrink-0">
-                  <Checkbox
-                    checked={row.getIsSelected()}
-                    onCheckedChange={(value) => row.toggleSelected(!!value)}
-                    aria-label="Select row"
-                  />
+          return (
+            <div className="p-4 rounded-xl border bg-card flex items-start gap-3 shadow-sm">
+              <div className="pt-1 shrink-0">
+                <Checkbox
+                  checked={table.getRowModel().rows.find(r => r.original === tag)?.getIsSelected()}
+                  onCheckedChange={(value) => table.getRowModel().rows.find(r => r.original === tag)?.toggleSelected(!!value)}
+                  aria-label="Select row"
+                />
+              </div>
+              
+              <div className="flex-1 flex justify-between items-start gap-2">
+                <div className="flex flex-col space-y-1">
+                  <div className="font-medium">
+                    <Badge 
+                      variant="outline" 
+                      className={`text-xs h-6 font-normal bg-background/50 ${colorClass} ${bgClass}`}
+                    >
+                      {typedTag.tag_name}
+                    </Badge>
+                  </div>
+                  {typedTag.tag_description && (
+                    <div className="text-sm text-muted-foreground line-clamp-2">
+                      {typedTag.tag_description}
+                    </div>
+                  )}
                 </div>
                 
-                <div className="flex-1 flex justify-between items-start gap-2">
-                  <div className="flex flex-col space-y-1">
-                    <div className="font-medium">
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs h-6 font-normal bg-background/50 ${colorClass} ${bgClass}`}
-                      >
-                        {tag.tag_name}
-                      </Badge>
-                    </div>
-                    {tag.tag_description && (
-                      <div className="text-sm text-muted-foreground line-clamp-2">
-                        {tag.tag_description}
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center shrink-0">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger render={
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      } />
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => setEditTag(tag)}>
-                          <Pencil className="mr-2 h-4 w-4" />
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onClick={() => setDeleteTag(tag)} className="text-red-600 focus:bg-red-500/10 focus:text-red-600">
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                <div className="flex items-center shrink-0">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger render={
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    } />
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setEditTag(typedTag)}>
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => setDeleteTag(typedTag)} className="text-red-600 focus:bg-red-500/10 focus:text-red-600">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </div>
               </div>
-            );
-          })
-        ) : (
-          <div className="text-center p-8 text-muted-foreground border rounded-xl bg-card">
-            No tags found.
-          </div>
-        )}
-      </div>
+            </div>
+          );
+        }}
+      />
 
-      {/* Mobile Compact Pagination */}
-      <div className="md:hidden flex justify-center mt-6">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                href="#" 
-                text=""
-                onClick={(e) => { e.preventDefault(); if (currentPage > 1 && !isPending) handlePageChange(currentPage - 1); }}
-                className={currentPage <= 1 || isPending ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-            
-            <PaginationItem className="px-4 text-sm font-medium text-muted-foreground">
-              Page {currentPage} of {totalPages}
-            </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext 
-                href="#" 
-                text=""
-                onClick={(e) => { e.preventDefault(); if (currentPage < totalPages && !isPending) handlePageChange(currentPage + 1); }}
-                className={currentPage >= totalPages || isPending ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      <div className="md:hidden">
+        <DataGridPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          isPending={isPending}
+        />
       </div>
 
       {/* Desktop Pagination Controls */}
@@ -314,57 +241,12 @@ export function DataTable<TData, TValue>({
         <div className="text-sm text-muted-foreground flex items-center">
           Showing {data.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} to {Math.min(currentPage * pageSize, totalCount)} of {totalCount}
         </div>
-        <Pagination className="w-auto mx-0">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); if (currentPage > 1 && !isPending) handlePageChange(currentPage - 1); }}
-                className={currentPage <= 1 || isPending ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-            
-            {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-              let pageNum = currentPage;
-              if (totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (currentPage <= 3) {
-                pageNum = i + 1;
-              } else if (currentPage >= totalPages - 2) {
-                pageNum = totalPages - 4 + i;
-              } else {
-                pageNum = currentPage - 2 + i;
-              }
-
-              return (
-                <PaginationItem key={pageNum}>
-                  <PaginationLink 
-                    href="#" 
-                    onClick={(e) => { e.preventDefault(); if (!isPending) handlePageChange(pageNum); }}
-                    isActive={currentPage === pageNum}
-                    className={isPending ? "pointer-events-none" : "cursor-pointer"}
-                  >
-                    {pageNum}
-                  </PaginationLink>
-                </PaginationItem>
-              );
-            })}
-
-            {totalPages > 5 && currentPage < totalPages - 2 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
-
-            <PaginationItem>
-              <PaginationNext 
-                href="#" 
-                onClick={(e) => { e.preventDefault(); if (currentPage < totalPages && !isPending) handlePageChange(currentPage + 1); }}
-                className={currentPage >= totalPages || isPending ? "pointer-events-none opacity-50" : "cursor-pointer"}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+        <DataGridPagination 
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          isPending={isPending}
+        />
       </div>
 
       {/* Edit Drawer */}

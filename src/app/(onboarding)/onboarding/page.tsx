@@ -1,12 +1,13 @@
-import { getActiveCurrencies } from '@/data/currencies';
-import { getActiveLanguages } from '@/data/languages';
+import { getActiveCurrencies } from '@/lib/constants/currencies';
+import { getActiveLanguages } from '@/lib/constants/languages';
 import { OnboardingForm } from '@/features/onboarding/components/onboarding-form';
+import { getUserPreferences } from '@/features/preferences/queries';
 import { getLocaleDictionary } from '@/i18n/get-dictionary';
 import { createClient } from '@/lib/supabase/server';
-import { LOCALE_COOKIE_NAME } from '@/utils/locale';
+import { LOCALE_COOKIE_NAME } from '@/i18n/utils';
 import { cookies } from 'next/headers';
 
-export default async function OnboardingPßßage() {
+export default async function OnboardingPage() {
   const { activeLocales, defaultLocale } = await getActiveLanguages();
   const currencies = await getActiveCurrencies();
   const { dictionary } = await getLocaleDictionary();
@@ -23,11 +24,7 @@ export default async function OnboardingPßßage() {
 
   let prefs = null;
   if (user) {
-    const { data: profile } = await supabase.from('profiles').select('id').eq('id', user.id).single();
-    if (profile) {
-      const { data } = await supabase.from('user_preferences').select('*').eq('profile_id', profile.id).single();
-      prefs = data;
-    }
+    prefs = await getUserPreferences(user.id);
   }
 
   const defaultCurrency = prefs?.primary_currency_code ||

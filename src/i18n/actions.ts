@@ -1,6 +1,6 @@
 'use server';
 
-import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS } from '@/utils/locale';
+import { LOCALE_COOKIE_NAME, LOCALE_COOKIE_OPTIONS } from '@/i18n/utils';
 import { cookies } from 'next/headers';
 
 export async function setLocale(locale: string) {

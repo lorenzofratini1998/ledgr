@@ -1,14 +1,15 @@
 import { OnboardingPayload } from '@/features/onboarding/schemas';
 import { createClient } from '@/lib/supabase/server';
 import { createStaticClient } from '@/lib/supabase/static';
+import { Database } from '@/types/database.types';
+import { SupabaseClient } from '@supabase/supabase-js';
 import { unstable_cache } from 'next/cache';
 
 export async function completeOnboarding(
+  supabase: SupabaseClient<Database>,
   userId: string,
   payload: OnboardingPayload
 ) {
-  const supabase = await createClient();
-
   // Fetch the profile_id for this user
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
@@ -35,8 +36,6 @@ export async function completeOnboarding(
     throw new Error(`Failed to update preferences: ${updateError.message}`);
   }
 }
-
-
 
 export async function getUserPreferences(userId: string) {
   const supabaseServer = await createClient();
