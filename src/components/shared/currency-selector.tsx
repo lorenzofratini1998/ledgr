@@ -33,6 +33,7 @@ interface CurrencySelectorProps {
   className?: string;
   trigger?: React.ReactElement;
   disabled?: boolean;
+  hideIcon?: boolean;
 }
 
 export function CurrencySelector({
@@ -43,7 +44,8 @@ export function CurrencySelector({
   dict = {},
   className,
   trigger,
-  disabled
+  disabled,
+  hideIcon = false
 }: CurrencySelectorProps) {
   const [open, setOpen] = useState(false);
   const selected = currencies.find((c) => c.iso_code === value);
@@ -71,7 +73,7 @@ export function CurrencySelector({
       {selected
         ? `${selected.iso_code} - ${selected.name} (${selected.symbol})`
         : placeholder}
-      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+      {!hideIcon && <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />}
     </Button>
   );
 

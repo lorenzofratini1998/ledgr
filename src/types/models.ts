@@ -6,7 +6,8 @@ export type Currency = Tables<'currencies'>;
 export type Language = Tables<'languages'>;
 export type Wallet = Tables<'wallets'>;
 export type Category = Tables<'categories'>;
-
+export type Tag = Tables<'tags'>;
+export type Transaction = Tables<'transactions'>;
 export type CategoryWithChildren = Category & {
   children?: Category[];
 };

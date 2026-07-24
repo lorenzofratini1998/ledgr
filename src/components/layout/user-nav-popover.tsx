@@ -3,9 +3,10 @@
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { LogOut, User as UserIcon } from 'lucide-react';
+import { LogOut, User as UserIcon, Hash } from 'lucide-react';
 import { ReactElement } from 'react';
 import { useLogout } from '@/hooks/use-logout';
+import { useRouter } from 'next/navigation';
 
 interface UserNavPopoverProps {
   triggerRender: ReactElement;
@@ -16,6 +17,7 @@ interface UserNavPopoverProps {
 
 export function UserNavPopover({ triggerRender, align = "end", side = "right", sideOffset = 16 }: UserNavPopoverProps) {
   const { logout, isPending } = useLogout();
+  const router = useRouter();
 
   return (
     <Popover>
@@ -26,6 +28,14 @@ export function UserNavPopover({ triggerRender, align = "end", side = "right", s
         <Button variant="ghost" className="w-full justify-start h-9 px-2 font-normal">
           <UserIcon className="mr-2 h-4 w-4" />
           Profile
+        </Button>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start h-9 px-2 font-normal md:hidden"
+          onClick={() => router.push('/tags')}
+        >
+          <Hash className="mr-2 h-4 w-4" />
+          Tags
         </Button>
         <Button 
           variant="ghost" 

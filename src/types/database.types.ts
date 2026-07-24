@@ -100,13 +100,6 @@ export type Database = {
             referencedRelation: "categories"
             referencedColumns: ["category_id"]
           },
-          {
-            foreignKeyName: "categories_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          }
         ]
       }
       currencies: {
@@ -144,6 +137,45 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      exchange_rates: {
+        Row: {
+          base_currency: string
+          created_at: string
+          date: string
+          quote_currency: string
+          rate: number
+        }
+        Insert: {
+          base_currency: string
+          created_at?: string
+          date: string
+          quote_currency: string
+          rate: number
+        }
+        Update: {
+          base_currency?: string
+          created_at?: string
+          date?: string
+          quote_currency?: string
+          rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "exchange_rates_base_currency_fkey"
+            columns: ["base_currency"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+          {
+            foreignKeyName: "exchange_rates_quote_currency_fkey"
+            columns: ["quote_currency"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+        ]
       }
       languages: {
         Row: {
@@ -189,7 +221,6 @@ export type Database = {
           email: string
           id: string
           updated_at: string
-          user_id: string
           username: string
         }
         Insert: {
@@ -197,9 +228,8 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           email: string
-          id?: string
+          id: string
           updated_at?: string
-          user_id: string
           username: string
         }
         Update: {
@@ -209,10 +239,151 @@ export type Database = {
           email?: string
           id?: string
           updated_at?: string
-          user_id?: string
           username?: string
         }
         Relationships: []
+      }
+      tags: {
+        Row: {
+          color: string | null
+          created_at: string
+          icon: string | null
+          is_active: boolean
+          tag_description: string | null
+          tag_id: string
+          tag_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          is_active?: boolean
+          tag_description?: string | null
+          tag_id?: string
+          tag_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          color?: string | null
+          created_at?: string
+          icon?: string | null
+          is_active?: boolean
+          tag_description?: string | null
+          tag_id?: string
+          tag_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          currency_code: string
+          date: string
+          description: string
+          exchange_rate: number
+          normalized_amount: number
+          transaction_id: string
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          currency_code: string
+          date: string
+          description: string
+          exchange_rate?: number
+          normalized_amount: number
+          transaction_id?: string
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          currency_code?: string
+          date?: string
+          description?: string
+          exchange_rate?: number
+          normalized_amount?: number
+          transaction_id?: string
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "transactions_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+          {
+            foreignKeyName: "transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      transactions_tags: {
+        Row: {
+          created_at: string
+          tag_id: string
+          transaction_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          tag_id: string
+          transaction_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          tag_id?: string
+          transaction_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_tags_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "tags"
+            referencedColumns: ["tag_id"]
+          },
+          {
+            foreignKeyName: "transactions_tags_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "transactions"
+            referencedColumns: ["transaction_id"]
+          },
+        ]
       }
       user_auth_providers: {
         Row: {
@@ -254,7 +425,6 @@ export type Database = {
           biometric_lock_enabled: boolean
           budget_alert_threshold: number
           created_at: string
-          created_by: string | null
           date_format: Database["public"]["Enums"]["app_date_format_type"]
           default_dashboard_range: Database["public"]["Enums"]["dashboard_range_type"]
           language_locale: string
@@ -265,13 +435,11 @@ export type Database = {
           profile_id: string
           theme: Database["public"]["Enums"]["app_theme_type"]
           updated_at: string
-          updated_by: string | null
         }
         Insert: {
           biometric_lock_enabled?: boolean
           budget_alert_threshold?: number
           created_at?: string
-          created_by?: string | null
           date_format?: Database["public"]["Enums"]["app_date_format_type"]
           default_dashboard_range?: Database["public"]["Enums"]["dashboard_range_type"]
           language_locale?: string
@@ -282,13 +450,11 @@ export type Database = {
           profile_id: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
           updated_at?: string
-          updated_by?: string | null
         }
         Update: {
           biometric_lock_enabled?: boolean
           budget_alert_threshold?: number
           created_at?: string
-          created_by?: string | null
           date_format?: Database["public"]["Enums"]["app_date_format_type"]
           default_dashboard_range?: Database["public"]["Enums"]["dashboard_range_type"]
           language_locale?: string
@@ -299,7 +465,6 @@ export type Database = {
           profile_id?: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
           updated_at?: string
-          updated_by?: string | null
         }
         Relationships: [
           {
@@ -364,7 +529,6 @@ export type Database = {
         Row: {
           color: string | null
           created_at: string
-          created_by: string | null
           currency_code: string
           description: string | null
           exclude_from_net_worth: boolean
@@ -376,13 +540,11 @@ export type Database = {
           name: string
           type: Database["public"]["Enums"]["wallet_type"]
           updated_at: string
-          updated_by: string | null
           user_id: string
         }
         Insert: {
           color?: string | null
           created_at?: string
-          created_by?: string | null
           currency_code: string
           description?: string | null
           exclude_from_net_worth?: boolean
@@ -394,13 +556,11 @@ export type Database = {
           name: string
           type?: Database["public"]["Enums"]["wallet_type"]
           updated_at?: string
-          updated_by?: string | null
           user_id: string
         }
         Update: {
           color?: string | null
           created_at?: string
-          created_by?: string | null
           currency_code?: string
           description?: string | null
           exclude_from_net_worth?: boolean
@@ -412,7 +572,6 @@ export type Database = {
           name?: string
           type?: Database["public"]["Enums"]["wallet_type"]
           updated_at?: string
-          updated_by?: string | null
           user_id?: string
         }
         Relationships: [
