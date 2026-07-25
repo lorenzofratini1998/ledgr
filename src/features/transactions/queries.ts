@@ -233,7 +233,13 @@ export async function getTransactions(
         query = query.in("wallet_id", params.walletIds);
       }
       if (params?.categoryIds && params.categoryIds.length > 0) {
-        query = query.in("category_id", params.categoryIds);
+        // Resolve child categories
+        const { data: children } = await supabase.from('categories').select('category_id').in('parent_id', params.categoryIds);
+        const resolvedCategoryIds = [...params.categoryIds];
+        if (children) {
+          children.forEach((c: any) => resolvedCategoryIds.push(c.category_id));
+        }
+        query = query.in("category_id", resolvedCategoryIds);
       }
       if (params?.tagIds && params.tagIds.length > 0) {
         query = query.in("transactions_tags.tag_id", params.tagIds);

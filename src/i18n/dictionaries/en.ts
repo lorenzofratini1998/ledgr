@@ -331,6 +331,36 @@ export const en = {
     settings: "Settings",
     notifications: "Notifications",
     unreadMessages: "You have 2 unread messages."
+  },
+  dashboard: {
+    hello: "Hello, {name} 👋",
+    periods: {
+      "7d": "Last 7 Days",
+      "30d": "Last 30 Days",
+      "90d": "Last 3 Months",
+      "6m": "Last 6 Months",
+      "1y": "Last Year",
+      "ytd": "Year to Date",
+      "custom": "Custom Range",
+      "select": "Select period",
+      "pick_date": "Pick a date",
+      "apply": "Apply",
+      "cancel": "Cancel"
+    },
+    widgets: {
+      net_worth: "Total Net Worth",
+      cashflow: "Cashflow",
+      balance_trend: "Balance Trend",
+      cashflow_trend: "Cashflow Trend",
+      category_breakdown: "Category Breakdown",
+      income_vs_expenses: "Income vs Expenses",
+      wallet_balances: "Wallet Balances",
+      recent_transactions: "Recent Transactions",
+      no_active_wallets: "No active wallets.",
+      no_transactions: "No recent transactions found.",
+      income_in_period: "Income in Period",
+      expenses_in_period: "Expenses in Period"
+    }
   }
 };
 

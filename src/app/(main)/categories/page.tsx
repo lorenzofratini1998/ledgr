@@ -13,7 +13,15 @@ export async function generateMetadata() {
   };
 }
 
-export default async function CategoriesPage() {
+import { CategoryDetailDashboard } from '@/features/categories/components/category-detail-dashboard';
+import { parsePeriod } from '@/features/dashboard/utils';
+
+export default async function CategoriesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoryId?: string; period?: string; from?: string; to?: string }>;
+}) {
+  const resolvedParams = await searchParams;
   const { t } = await getTranslator();
   const { data: { user } } = await getUser();
 
@@ -22,6 +30,8 @@ export default async function CategoriesPage() {
   }
 
   const categories = await getCategories(user.id);
+  
+  const { from, to, resolvedPeriod } = await parsePeriod(resolvedParams?.period, resolvedParams?.from, resolvedParams?.to);
 
   // For the dropdown, we only want top-level categories that can be parents
   const parentCategories = categories.filter((c) => c.parent_id === null && c.is_active);
@@ -40,7 +50,19 @@ export default async function CategoriesPage() {
         </div>
       </div>
 
-      <CategoryGrid categories={categories} />
+      <CategoryGrid 
+        categories={categories} 
+        activeCategoryId={resolvedParams?.categoryId}
+      >
+        {resolvedParams?.categoryId ? (
+          <CategoryDetailDashboard 
+            categoryId={resolvedParams.categoryId} 
+            period={resolvedPeriod}
+            fromParam={from}
+            toParam={to}
+          />
+        ) : null}
+      </CategoryGrid>
 
       {/* Mobile trigger */}
       <div className="md:hidden">

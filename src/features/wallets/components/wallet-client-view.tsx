@@ -3,15 +3,15 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/i18n/hooks/use-translation';
-import { Currency, Wallet } from '@/types/models';
+import { Currency, WalletWithBalance } from '@/types/models';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { WalletCard } from './wallet-card';
 
 interface WalletsClientViewProps {
-  regularWallets: Wallet[];
-  savingsWallets: Wallet[];
-  investmentWallets: Wallet[];
-  archivedWallets: Wallet[];
+  regularWallets: WalletWithBalance[];
+  savingsWallets: WalletWithBalance[];
+  investmentWallets: WalletWithBalance[];
+  archivedWallets: WalletWithBalance[];
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   defaultCurrencyCode: string;
 }

@@ -9,19 +9,25 @@ import { CategoryMasterView } from '@/features/categories/components/category-ma
 import { CreateCategoryForm } from '@/features/categories/components/create-category-form';
 import { useTranslation } from '@/i18n/hooks/use-translation';
 import { CategoryWithChildren } from '@/types/models';
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState, useTransition, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface CategoryGridProps {
   categories: CategoryWithChildren[];
+  activeCategoryId?: string;
+  children?: ReactNode;
 }
 
-export function CategoryGrid({ categories }: CategoryGridProps) {
+export function CategoryGrid({ categories, activeCategoryId, children }: CategoryGridProps) {
   const [isPending, startTransition] = useTransition();
   const { t } = useTranslation();
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   
   const [activeTab, setActiveTab] = useState<string>('active');
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  const selectedCategoryId = activeCategoryId || null;
   
   const [selectedCategoryForAction, setSelectedCategoryForAction] = useState<CategoryWithChildren | null>(null);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -57,24 +63,32 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
     }
   }
 
-  // Clear selection if the item disappears from the current tab
+  // If selection is invalid for current tab, clear URL param
   useEffect(() => {
     if (selectedCategoryId && !selectedParentCategoryFiltered) {
-      setSelectedCategoryId(null);
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('categoryId');
+      router.push(`${pathname}?${params.toString()}`, { scroll: false });
     }
-  }, [selectedCategoryId, selectedParentCategoryFiltered]);
+  }, [selectedCategoryId, selectedParentCategoryFiltered, pathname, router, searchParams]);
 
   const handleSelectCategory = (category: CategoryWithChildren) => {
-    setSelectedCategoryId(category.category_id);
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('categoryId', category.category_id);
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleBack = () => {
-    setSelectedCategoryId(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('categoryId');
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const handleTabChange = (value: string) => {
     setActiveTab(value);
-    setSelectedCategoryId(null);
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('categoryId');
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
   };
 
   const openEdit = (category: CategoryWithChildren) => {
@@ -119,7 +133,7 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
         setIsDeleteOpen(false);
         setIsDeleteAllPromptOpen(false);
         if (selectedCategoryId === selectedCategoryForAction.category_id) {
-          setSelectedCategoryId(null);
+          handleBack();
         }
       } else {
         if (res.message === 'HAS_CHILDREN') {
@@ -177,7 +191,8 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
           </div>
 
           {/* Detail Pane */}
-          <div className={`w-full md:w-3/5 md:block flex-1 bg-muted/10 overflow-y-auto p-4 md:p-6 ${selectedCategoryId ? 'block' : 'hidden'}`}>
+          <div className={`w-full md:w-3/5 md:flex flex-col flex-1 bg-muted/10 overflow-y-auto p-4 md:p-6 ${selectedCategoryId ? 'block' : 'hidden'}`}>
+            {/* The Management component */}
             <CategoryDetailView
               category={selectedParentCategoryFiltered}
               onBack={handleBack}
@@ -187,6 +202,12 @@ export function CategoryGrid({ categories }: CategoryGridProps) {
               onUnarchive={handleUnarchive}
               onAddSubcategory={openAddSubcategory}
             />
+            {/* The Analytics/Server Component part passed via children */}
+            {children && selectedParentCategoryFiltered && (
+              <div className="mt-8 border-t border-border pt-6">
+                {children}
+              </div>
+            )}
           </div>
         </div>
       </Tabs>

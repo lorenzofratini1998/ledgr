@@ -333,5 +333,35 @@ export const it: Dictionary = {
     settings: "Impostazioni",
     notifications: "Notifiche",
     unreadMessages: "Hai 2 messaggi non letti."
+  },
+  dashboard: {
+    hello: "Ciao, {name} 👋",
+    periods: {
+      "7d": "Ultimi 7 Giorni",
+      "30d": "Ultimi 30 Giorni",
+      "90d": "Ultimi 3 Mesi",
+      "6m": "Ultimi 6 Mesi",
+      "1y": "Ultimo Anno",
+      "ytd": "Da Inizio Anno",
+      "custom": "Intervallo Personalizzato",
+      "select": "Seleziona periodo",
+      "pick_date": "Scegli una data",
+      "apply": "Applica",
+      "cancel": "Annulla"
+    },
+    widgets: {
+      net_worth: "Patrimonio Netto Totale",
+      cashflow: "Flusso di Cassa",
+      balance_trend: "Andamento del Saldo",
+      cashflow_trend: "Andamento del Flusso di Cassa",
+      category_breakdown: "Ripartizione per Categoria",
+      income_vs_expenses: "Entrate vs Uscite",
+      wallet_balances: "Saldi dei Portafogli",
+      recent_transactions: "Transazioni Recenti",
+      no_active_wallets: "Nessun portafoglio attivo.",
+      no_transactions: "Nessuna transazione recente trovata.",
+      income_in_period: "Entrate nel Periodo",
+      expenses_in_period: "Uscite nel Periodo"
+    }
   }
 };

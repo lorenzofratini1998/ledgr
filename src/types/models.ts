@@ -5,6 +5,9 @@ export type Profile = Tables<'profiles'>;
 export type Currency = Tables<'currencies'>;
 export type Language = Tables<'languages'>;
 export type Wallet = Tables<'wallets'>;
+export type WalletWithBalance = Wallet & {
+  balance?: number;
+};
 export type Category = Tables<'categories'>;
 export type Tag = Tables<'tags'>;
 export type Transaction = Tables<'transactions'>;

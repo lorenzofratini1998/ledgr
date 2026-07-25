@@ -23,7 +23,21 @@ export async function getWallets(userId: string) {
         throw new Error(`Failed to fetch wallets: ${error.message}`);
       }
 
-      return wallets || [];
+      // Fetch dynamic balances
+      const supabaseClient: any = supabase;
+      const { data: balancesData } = await supabaseClient.rpc('get_wallet_balances', {
+        p_user_id: userId,
+      });
+
+      const walletsWithBalances = wallets?.map(wallet => {
+        const b = balancesData?.find((bd: any) => bd.wallet_id === wallet.id);
+        return {
+          ...wallet,
+          balance: b ? b.balance : wallet.initial_balance
+        };
+      });
+
+      return walletsWithBalances || [];
     },
     [`wallets-${userId}`],
     { tags: [`wallets-${userId}`] }
@@ -100,7 +114,22 @@ export async function getArchivedWallets(userId: string) {
         throw new Error(`Failed to fetch archived wallets: ${error.message}`);
       }
 
-      return wallets || [];
+      // Fetch dynamic balances
+      const supabaseClient: any = supabase;
+      const { data: balancesData } = await supabaseClient.rpc('get_wallet_balances', {
+        p_user_id: userId,
+        p_is_active: false,
+      });
+
+      const walletsWithBalances = wallets?.map(wallet => {
+        const b = balancesData?.find((bd: any) => bd.wallet_id === wallet.id);
+        return {
+          ...wallet,
+          balance: b ? b.balance : wallet.initial_balance
+        };
+      });
+
+      return walletsWithBalances || [];
     },
     [`archived-wallets-${userId}`],
     { tags: [`archived-wallets-${userId}`] }

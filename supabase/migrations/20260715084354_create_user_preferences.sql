@@ -1,6 +1,6 @@
 CREATE TYPE public.app_theme_type AS ENUM ('light', 'dark', 'system');
 CREATE TYPE public.app_date_format_type AS ENUM ('DD/MM/YYYY', 'YYYY-MM-DD', 'MM/DD/YYYY');
-CREATE TYPE public.dashboard_range_type AS ENUM ('current_month', 'last_30_days', 'current_week', 'current_year');
+CREATE TYPE public.dashboard_range_type AS ENUM ('7d', '30d', '90d', '6m', '1y', 'ytd', 'custom');
 
 CREATE TABLE public.user_preferences (
     profile_id UUID PRIMARY KEY REFERENCES public.profiles(id) ON DELETE CASCADE,
@@ -8,7 +8,7 @@ CREATE TABLE public.user_preferences (
     primary_currency_code CHAR(3) REFERENCES public.currencies(iso_code),
     date_format public.app_date_format_type NOT NULL DEFAULT 'DD/MM/YYYY',
     theme public.app_theme_type NOT NULL DEFAULT 'system',
-    default_dashboard_range public.dashboard_range_type NOT NULL DEFAULT 'last_30_days',
+    default_dashboard_range public.dashboard_range_type NOT NULL DEFAULT '30d',
     biometric_lock_enabled BOOLEAN NOT NULL DEFAULT FALSE,
     lock_timeout_seconds INT NOT NULL DEFAULT 10,
     notify_budget_breach BOOLEAN NOT NULL DEFAULT TRUE,

@@ -14,7 +14,8 @@ import { WalletForm } from '@/features/wallets/components/wallet-form';
 import { WALLET_COLOR_MAP, WALLET_ICON_MAP } from '@/features/wallets/constants';
 import { formatCurrency } from '@/lib/formatters';
 import { cn } from '@/lib/utils';
-import { Currency, Wallet } from '@/types/models';
+import { Currency, WalletWithBalance } from '@/types/models';
+import Link from 'next/link';
 import { Wallet as DefaultWalletIcon, Star, EyeOff } from 'lucide-react';
 import { useState, useTransition } from 'react';
 import { toast } from 'sonner';
@@ -22,7 +23,7 @@ import { useTranslation } from '@/i18n/hooks/use-translation';
 import { WalletActions } from './wallet-actions';
 
 interface WalletCardProps {
-  wallet: Wallet;
+  wallet: WalletWithBalance;
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   defaultCurrencyCode: string;
 }
@@ -94,19 +95,21 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
     <>
       <Card className={cn('relative transition-all', isPending && 'opacity-50 pointer-events-none', wallet.is_default && 'border-primary ring-1 ring-primary')}>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium flex items-center gap-2">
-            <div className={cn("p-2 rounded-md", colorClass)}>
-              <Icon className="w-4 h-4" />
-            </div>
-            {wallet.name}
-            {wallet.is_default && (
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500 ml-1" />
-            )}
-            {wallet.exclude_from_net_worth && (
-              <div title="Excluded from Net Worth" className="flex items-center justify-center p-1 bg-muted rounded-full ml-1">
-                <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">
+            <Link href={`/wallets/${wallet.id}`} className="flex items-center gap-2 hover:underline">
+              <div className={cn("p-2 rounded-md", colorClass)}>
+                <Icon className="w-4 h-4" />
               </div>
-            )}
+              {wallet.name}
+              {wallet.is_default && (
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500 ml-1" />
+              )}
+              {wallet.exclude_from_net_worth && (
+                <div title="Excluded from Net Worth" className="flex items-center justify-center p-1 bg-muted rounded-full ml-1">
+                  <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />
+                </div>
+              )}
+            </Link>
           </CardTitle>
           <WalletActions
             isActive={wallet.is_active}
@@ -119,9 +122,11 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
           />
         </CardHeader>
         <CardContent>
-          <div className={cn("text-2xl font-bold", !wallet.is_active && "text-muted-foreground")}>
-            {formatCurrency(Number(wallet.initial_balance), wallet.currency_code)}
-          </div>
+          <Link href={`/wallets/${wallet.id}`} className="block">
+            <div className={cn("text-2xl font-bold hover:text-primary transition-colors", !wallet.is_active && "text-muted-foreground")}>
+              {formatCurrency(Number(wallet.balance ?? wallet.initial_balance), wallet.currency_code)}
+            </div>
+          </Link>
         </CardContent>
       </Card>
 

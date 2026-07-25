@@ -167,7 +167,7 @@ INSERT INTO public.user_preferences (
     'EUR',
     'DD/MM/YYYY',
     'system',
-    'last_30_days',
+    '30d',
     FALSE,
     10,
     TRUE,
