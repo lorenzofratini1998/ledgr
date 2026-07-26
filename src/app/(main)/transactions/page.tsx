@@ -5,6 +5,7 @@ import { getCategories } from '@/features/categories/queries';
 import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getPrimaryCurrencyCode, getTransactions } from '@/features/transactions/queries';
 import { getTags } from '@/features/tags/queries';
+import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateTransactionTrigger } from '@/features/transactions/components/create-transaction-trigger';
 import { TransactionsClientView } from '@/features/transactions/components/transactions-client-view';
 import { Metadata } from 'next';
@@ -52,6 +53,7 @@ export default async function TransactionsPage(
     currencies,
     primaryCurrencyCode,
     tags,
+    preferences,
     { t }
   ] = await Promise.all([
     getTransactions(user.id, { 
@@ -63,6 +65,7 @@ export default async function TransactionsPage(
     getActiveCurrencies(),
     getPrimaryCurrencyCode(supabase, user.id),
     getTags(user.id, { pageSize: 1000 }),
+    getUserPreferences(user.id),
     getTranslator()
   ]);
 
@@ -110,6 +113,8 @@ export default async function TransactionsPage(
         tags={tags.data as any}
         currencies={currencies as any}
         primaryCurrencyCode={primaryCurrencyCode}
+        dateFormatPreference={preferences?.date_format || 'DD/MM/YYYY'}
+        locale={preferences?.language_locale || 'en-US'}
       />
 
       {/* Mobile trigger */}

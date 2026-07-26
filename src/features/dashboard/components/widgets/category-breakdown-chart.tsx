@@ -12,10 +12,11 @@ import { CATEGORY_ICON_MAP, CATEGORY_COLOR_MAP } from '@/features/categories/con
 interface CategoryBreakdownChartProps {
   data: { category_id: string; category_name: string; color: string; icon: string; amount: number }[];
   currencyCode: string;
+  locale?: string;
   className?: string;
 }
 
-export function CategoryBreakdownChart({ data, currencyCode, className }: CategoryBreakdownChartProps) {
+export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', className }: CategoryBreakdownChartProps) {
   const totalAmount = useMemo(() => {
     return data.reduce((sum, item) => sum + Math.abs(item.amount), 0);
   }, [data]);
@@ -86,7 +87,7 @@ export function CategoryBreakdownChart({ data, currencyCode, className }: Catego
                 <PieChart>
                   <ChartTooltip
                     cursor={false}
-                    content={<ChartTooltipContent hideLabel />}
+                    content={<ChartTooltipContent hideLabel valueFormatter={(value: any) => formatCurrency(Number(value), currencyCode, locale)} />}
                   />
                   <Pie
                     data={displayData}
@@ -130,7 +131,7 @@ export function CategoryBreakdownChart({ data, currencyCode, className }: Catego
                       </div>
                       <div className="flex flex-col items-end">
                         <span className="font-semibold text-sm">
-                          {formatCurrency(Math.abs(category.amount), currencyCode)}
+                          {formatCurrency(Math.abs(category.amount), currencyCode, locale)}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {percentage.toFixed(1)}%

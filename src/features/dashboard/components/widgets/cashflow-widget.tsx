@@ -2,7 +2,9 @@ import { fetchCashflowAction } from '@/features/dashboard/actions';
 import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { getTranslator } from '@/i18n/server';
 
-export async function CashflowWidget({ from, to }: { from: string, to: string }) {
+import { formatCurrency } from '@/lib/formatters';
+
+export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 'en-US' }: { from: string, to: string, currencyCode?: string, locale?: string }) {
   const cashflowRes = await fetchCashflowAction(from, to);
   const cashflow = cashflowRes.success && cashflowRes.data ? cashflowRes.data : { income: 0, expense: 0, net: 0 };
   const { t } = await getTranslator();
@@ -14,7 +16,7 @@ export async function CashflowWidget({ from, to }: { from: string, to: string })
         className="bg-card"
       >
         <div className="text-2xl font-semibold text-emerald-500">
-          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(cashflow.income)}
+          {formatCurrency(cashflow.income, currencyCode, locale)}
         </div>
       </WidgetCard>
       
@@ -23,7 +25,7 @@ export async function CashflowWidget({ from, to }: { from: string, to: string })
         className="bg-card"
       >
         <div className="text-2xl font-semibold text-rose-500">
-          {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(Math.abs(cashflow.expense))}
+          {formatCurrency(Math.abs(cashflow.expense), currencyCode, locale)}
         </div>
       </WidgetCard>
     </div>

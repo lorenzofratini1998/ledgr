@@ -5,15 +5,20 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { cn } from '@/lib/utils';
 
+import { formatDate, formatCompactCurrency, formatCurrency } from '@/lib/formatters';
+
 interface BalanceTrendChartProps {
   data: { day: string; balance: number }[];
+  dateFormatPreference?: string;
+  currencyCode?: string;
+  locale?: string;
 }
 
-export function BalanceTrendChart({ data, className }: BalanceTrendChartProps & { className?: string }) {
+export function BalanceTrendChart({ data, className, dateFormatPreference = 'DD/MM/YYYY', currencyCode = 'USD', locale = 'en-US' }: BalanceTrendChartProps & { className?: string }) {
   const config = {
     balance: {
       label: 'Balance',
-      color: 'hsl(var(--primary))',
+      color: 'var(--color-primary)',
     },
   };
 
@@ -38,20 +43,20 @@ export function BalanceTrendChart({ data, className }: BalanceTrendChartProps & 
                 tickLine={false}
                 axisLine={false}
                 tickMargin={8}
-                tickFormatter={(value) => {
-                  const date = new Date(value);
-                  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                }}
+                tickFormatter={(value) => formatDate(value, dateFormatPreference)}
               />
               <YAxis 
                 tickLine={false}
                 axisLine={false}
-                tickFormatter={(value) => {
-                  if (value >= 1000) return `€${(value / 1000).toFixed(1)}k`;
-                  return `€${value}`;
-                }}
+                tickFormatter={(value) => formatCompactCurrency(value, currencyCode, locale)}
               />
-              <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+              <ChartTooltip 
+                cursor={false} 
+                content={<ChartTooltipContent 
+                  labelFormatter={(label) => formatDate(label, dateFormatPreference)} 
+                  valueFormatter={(value: any) => formatCurrency(Number(value), currencyCode, locale)}
+                />} 
+              />
               <Area
                 type="monotone"
                 dataKey="balance"

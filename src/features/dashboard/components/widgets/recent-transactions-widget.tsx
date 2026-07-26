@@ -3,10 +3,12 @@ import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import { ArrowRight, Receipt } from 'lucide-react';
-import { format } from 'date-fns';
 import { getTranslator } from '@/i18n/server';
+import { formatDate } from '@/lib/formatters';
 
-export async function RecentTransactionsWidget({ walletId, categoryId }: { walletId?: string, categoryId?: string }) {
+import { formatCurrency } from '@/lib/formatters';
+
+export async function RecentTransactionsWidget({ walletId, categoryId, dateFormatPreference = 'DD/MM/YYYY', locale = 'en-US' }: { walletId?: string, categoryId?: string, dateFormatPreference?: string, locale?: string }) {
   const res = await fetchRecentTransactionsAction(5, walletId, categoryId);
   const transactions = res.success && res.data ? res.data : [];
   const { t } = await getTranslator();
@@ -44,13 +46,13 @@ export async function RecentTransactionsWidget({ walletId, categoryId }: { walle
                 <div>
                   <p className="font-medium leading-none">{tx.description}</p>
                   <p className="text-sm text-muted-foreground mt-1">
-                    {format(new Date(tx.date), 'MMM d, yyyy')} • {tx.wallets?.name || 'Unknown Wallet'}
+                    {formatDate(tx.date, dateFormatPreference)} • {tx.wallets?.name || 'Unknown Wallet'}
                   </p>
                 </div>
               </div>
               <div className={`font-semibold ${tx.normalized_amount > 0 ? 'text-emerald-500' : ''}`}>
                 {tx.normalized_amount > 0 ? '+' : ''}
-                {new Intl.NumberFormat('en-US', { style: 'currency', currency: tx.currency_code }).format(tx.amount)}
+                {formatCurrency(tx.amount, tx.currency_code, locale)}
               </div>
             </div>
           ))}

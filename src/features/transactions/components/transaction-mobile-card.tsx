@@ -12,11 +12,14 @@ import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 import { TransactionRow } from "./data-table"
 import { Row } from "@tanstack/react-table"
 import { useTranslation } from "@/i18n/hooks/use-translation"
+import { formatDate, formatCurrency } from "@/lib/formatters"
 
 interface TransactionMobileCardProps {
   row: Row<any>
   transaction: TransactionRow
   primaryCurrencyCode: string
+  dateFormatPreference: string
+  locale?: string
   onEdit: (tx: TransactionRow) => void
   onDelete: (tx: TransactionRow) => void
 }
@@ -25,23 +28,19 @@ export function TransactionMobileCard({
   row,
   transaction: tx,
   primaryCurrencyCode,
+  dateFormatPreference,
+  locale = 'en-US',
   onEdit,
   onDelete
 }: TransactionMobileCardProps) {
   const amount = parseFloat(tx.amount as unknown as string);
   const normalizedAmount = parseFloat(tx.normalized_amount as unknown as string);
   const currency = tx.currency_code;
-  const formatted = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: currency,
-  }).format(Math.abs(amount));
+  const formatted = formatCurrency(Math.abs(amount), currency, locale);
   const { t } = useTranslation();
 
   const isConverted = amount !== normalizedAmount && primaryCurrencyCode;
-  const formattedNormalized = isConverted ? new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: primaryCurrencyCode,
-  }).format(Math.abs(normalizedAmount)) : null;
+  const formattedNormalized = isConverted ? formatCurrency(Math.abs(normalizedAmount), primaryCurrencyCode, locale) : null;
 
   return (
     <div className="p-4 rounded-xl border bg-card flex items-start gap-3 shadow-sm">
@@ -72,7 +71,7 @@ export function TransactionMobileCard({
           
           <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
             <span className="text-xs text-muted-foreground whitespace-nowrap">
-              {new Date(tx.date).toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' })}
+              {formatDate(tx.date, dateFormatPreference)}
             </span>
             {tx.transactions_tags.map(tt => (
               <Badge 

@@ -62,6 +62,8 @@ interface DataTableProps<TData, TValue> {
   tags?: any[];
   currencies?: any[];
   primaryCurrencyCode?: string;
+  dateFormatPreference?: string;
+  locale?: string;
 }
 
 export function DataTable<TData, TValue>({
@@ -73,7 +75,9 @@ export function DataTable<TData, TValue>({
   categories = [],
   tags = [],
   currencies = [],
-  primaryCurrencyCode = "EUR"
+  primaryCurrencyCode = "EUR",
+  dateFormatPreference = "DD/MM/YYYY",
+  locale = "en-US"
 }: DataTableProps<TData, TValue>) {
   const router = useRouter();
   const pathname = usePathname();
@@ -266,7 +270,9 @@ export function DataTable<TData, TValue>({
     meta: {
       onEdit: setEditTransaction,
       onDelete: setDeleteTransaction,
-      primaryCurrencyCode: primaryCurrencyCode
+      primaryCurrencyCode: primaryCurrencyCode,
+      dateFormatPreference: dateFormatPreference,
+      locale: locale
     }
   });
 
@@ -410,6 +416,8 @@ export function DataTable<TData, TValue>({
             row={table.getRowModel().rows.find(r => r.original === tx)!}
             transaction={tx as unknown as TransactionRow}
             primaryCurrencyCode={primaryCurrencyCode}
+            dateFormatPreference={dateFormatPreference}
+            locale={locale}
             onEdit={(tx) => setEditTransaction(tx)}
             onDelete={(tx) => setDeleteTransaction(tx)}
           />

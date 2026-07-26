@@ -12,6 +12,8 @@ interface TransactionsClientViewProps {
   tags: any[];
   currencies: any[];
   primaryCurrencyCode: string;
+  dateFormatPreference: string;
+  locale?: string;
 }
 
 export function TransactionsClientView({ 
@@ -22,9 +24,11 @@ export function TransactionsClientView({
   categories,
   tags,
   currencies,
-  primaryCurrencyCode
+  primaryCurrencyCode,
+  dateFormatPreference,
+  locale = 'en-US'
 }: TransactionsClientViewProps) {
-  const columns = useColumns();
+  const columns = useColumns(locale);
   return (
     <div className="mt-8 pb-32">
       <DataTable 
@@ -37,6 +41,8 @@ export function TransactionsClientView({
         tags={tags}
         currencies={currencies}
         primaryCurrencyCode={primaryCurrencyCode}
+        dateFormatPreference={dateFormatPreference}
+        locale={locale}
       />
     </div>
   );

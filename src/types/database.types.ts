@@ -110,6 +110,7 @@ export type Database = {
           iso_code: string
           iso_numeric: string
           name: string
+          sort_order: number
           start_date: string
           symbol: string
           updated_at: string
@@ -121,6 +122,7 @@ export type Database = {
           iso_code: string
           iso_numeric: string
           name: string
+          sort_order?: number
           start_date: string
           symbol: string
           updated_at?: string
@@ -132,6 +134,7 @@ export type Database = {
           iso_code?: string
           iso_numeric?: string
           name?: string
+          sort_order?: number
           start_date?: string
           symbol?: string
           updated_at?: string
@@ -434,6 +437,13 @@ export type Database = {
           primary_currency_code: string | null
           profile_id: string
           theme: Database["public"]["Enums"]["app_theme_type"]
+          theme_base_color: string
+          theme_body_font: string
+          theme_chart_color: string
+          theme_heading_font: string
+          theme_primary_color: string
+          theme_radius: number
+          theme_style: string
           updated_at: string
         }
         Insert: {
@@ -449,6 +459,13 @@ export type Database = {
           primary_currency_code?: string | null
           profile_id: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
+          theme_base_color?: string
+          theme_body_font?: string
+          theme_chart_color?: string
+          theme_heading_font?: string
+          theme_primary_color?: string
+          theme_radius?: number
+          theme_style?: string
           updated_at?: string
         }
         Update: {
@@ -464,6 +481,13 @@ export type Database = {
           primary_currency_code?: string | null
           profile_id?: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
+          theme_base_color?: string
+          theme_body_font?: string
+          theme_chart_color?: string
+          theme_heading_font?: string
+          theme_primary_color?: string
+          theme_radius?: number
+          theme_style?: string
           updated_at?: string
         }
         Relationships: [
@@ -589,16 +613,86 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_balance_trend: {
+        Args: {
+          p_category_id?: string
+          p_from: string
+          p_to: string
+          p_user_id: string
+          p_wallet_id?: string
+        }
+        Returns: {
+          balance: number
+          day: string
+        }[]
+      }
+      get_cashflow_summary: {
+        Args: {
+          p_category_id?: string
+          p_from: string
+          p_to: string
+          p_user_id: string
+          p_wallet_id?: string
+        }
+        Returns: {
+          expense: number
+          income: number
+          net: number
+        }[]
+      }
+      get_category_breakdown: {
+        Args: {
+          p_category_id?: string
+          p_from: string
+          p_to: string
+          p_user_id: string
+          p_wallet_id?: string
+        }
+        Returns: {
+          amount: number
+          category_id: string
+          category_name: string
+          color: string
+          icon: string
+        }[]
+      }
+      get_monthly_cashflow: {
+        Args: {
+          p_category_id?: string
+          p_from: string
+          p_to: string
+          p_user_id: string
+          p_wallet_id?: string
+        }
+        Returns: {
+          expense: number
+          income: number
+          month: string
+        }[]
+      }
+      get_wallet_balances: {
+        Args: { p_is_active?: boolean; p_user_id: string }
+        Returns: {
+          balance: number
+          color: string
+          icon: string
+          name: string
+          type: Database["public"]["Enums"]["wallet_type"]
+          wallet_id: string
+        }[]
+      }
     }
     Enums: {
       app_date_format_type: "DD/MM/YYYY" | "YYYY-MM-DD" | "MM/DD/YYYY"
       app_theme_type: "light" | "dark" | "system"
       dashboard_range_type:
-        | "current_month"
-        | "last_30_days"
-        | "current_week"
-        | "current_year"
+        | "7d"
+        | "30d"
+        | "90d"
+        | "6m"
+        | "1y"
+        | "ytd"
+        | "custom"
       wallet_type: "regular" | "savings" | "investment"
     }
     CompositeTypes: {
@@ -732,12 +826,7 @@ export const Constants = {
     Enums: {
       app_date_format_type: ["DD/MM/YYYY", "YYYY-MM-DD", "MM/DD/YYYY"],
       app_theme_type: ["light", "dark", "system"],
-      dashboard_range_type: [
-        "current_month",
-        "last_30_days",
-        "current_week",
-        "current_year",
-      ],
+      dashboard_range_type: ["7d", "30d", "90d", "6m", "1y", "ytd", "custom"],
       wallet_type: ["regular", "savings", "investment"],
     },
   },

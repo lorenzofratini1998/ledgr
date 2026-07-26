@@ -130,6 +130,7 @@ function ChartTooltipContent({
   color,
   nameKey,
   labelKey,
+  valueFormatter,
 }: React.ComponentProps<typeof RechartsPrimitive.Tooltip> &
   React.ComponentProps<"div"> & {
     hideLabel?: boolean
@@ -143,7 +144,9 @@ function ChartTooltipContent({
       TooltipNameType
     >,
     "accessibilityLayer"
-  >) {
+  > & {
+    valueFormatter?: (value: number | string | any) => React.ReactNode
+  }) {
   const { config } = useChart()
 
   const tooltipLabel = React.useMemo(() => {
@@ -254,7 +257,9 @@ function ChartTooltipContent({
                       </div>
                       {item.value != null && (
                         <span className="font-mono font-medium text-foreground tabular-nums">
-                          {typeof item.value === "number"
+                          {valueFormatter
+                            ? valueFormatter(item.value)
+                            : typeof item.value === "number"
                             ? item.value.toLocaleString()
                             : String(item.value)}
                         </span>

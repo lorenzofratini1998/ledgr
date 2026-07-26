@@ -1,6 +1,7 @@
 'use client';
 
 import { useTransition, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
@@ -46,6 +47,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
   const [isPending, startTransition] = useTransition();
   const [keepOpen, setKeepOpen] = useState(false);
   const { t } = useTranslation();
+  const router = useRouter();
 
   const defaultWalletId = wallets.find((w) => w.is_default)?.id || wallets[0]?.id || '';
 
@@ -81,6 +83,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           description: '',
           tags: [],
         });
+        router.refresh();
         if (!keepOpen && onSuccess) onSuccess();
       } else {
         toast.error(response.message);

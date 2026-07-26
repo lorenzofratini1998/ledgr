@@ -81,17 +81,6 @@ export function Sidebar({ user }: SidebarProps) {
           </PopoverContent>
         </Popover>
 
-        <Link
-          href="/settings"
-          className="flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-          title={isCollapsed ? t('navigation.settings') : undefined}
-        >
-          <Settings className="h-5 w-5 shrink-0 mx-auto md:mx-0" />
-          <span className={`font-medium whitespace-nowrap overflow-hidden transition-all ${isCollapsed ? 'hidden' : 'block'}`}>
-            {t('navigation.settings')}
-          </span>
-        </Link>
-        
         <UserNavPopover
           side="right"
           sideOffset={16}

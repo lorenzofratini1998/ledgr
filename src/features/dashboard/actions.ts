@@ -1,5 +1,7 @@
 'use server';
 
+import { updateTag } from 'next/cache';
+
 import { getBalanceTrend, getCashflowSummary, getCategoryBreakdown, getMonthlyCashflow, getWalletBalances, getRecentTransactions } from './queries';
 import { executeAction } from '@/lib/utils/action-utils';
 import { ActionResponse } from '@/types/actions';
@@ -50,5 +52,14 @@ export async function fetchRecentTransactionsAction(limit: number = 5, walletId?
     logger.info('Fetching recent transactions', { userId: user.id, limit, walletId, categoryId });
     const data = await getRecentTransactions(user.id, limit, walletId, categoryId);
     return { success: true, data };
+  });
+}
+
+export async function invalidateDashboardCacheAction(): Promise<ActionResponse<void>> {
+  return executeAction(async (user) => {
+    logger.info('Invalidating dashboard cache from realtime subscriber', { userId: user.id });
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
+    return { success: true };
   });
 }

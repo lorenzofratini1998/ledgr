@@ -68,3 +68,25 @@ export async function getUserPreferences(userId: string) {
 
   return fetchPrefs();
 }
+
+export async function getUserProfile(userId: string) {
+  const supabaseServer = await createClient();
+  const { data: { session } } = await supabaseServer.auth.getSession();
+  const token = session?.access_token;
+
+  const fetchProfile = unstable_cache(
+    async () => {
+      const supabase = createStaticClient(token);
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+      return profile;
+    },
+    [`profile-${userId}`],
+    { tags: [`profile-${userId}`] }
+  );
+
+  return fetchProfile();
+}

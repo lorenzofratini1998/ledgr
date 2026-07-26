@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useTranslation } from "@/i18n/hooks/use-translation";
+import { formatDate, formatCurrency } from "@/lib/formatters";
 
 export const useColumns = (): ColumnDef<TransactionRow>[] => {
   const { t } = useTranslation();
@@ -41,9 +42,10 @@ export const useColumns = (): ColumnDef<TransactionRow>[] => {
   {
     accessorKey: "date",
     header: t('common.date'),
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const dateStr = row.getValue("date") as string;
-      return <div className="text-muted-foreground whitespace-nowrap">{new Date(dateStr).toLocaleDateString("en-GB", { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>;
+      const dateFormatPreference = (table.options.meta as any)?.dateFormatPreference;
+      return <div className="text-muted-foreground whitespace-nowrap">{formatDate(dateStr, dateFormatPreference)}</div>;
     },
   },
   {
@@ -112,17 +114,12 @@ export const useColumns = (): ColumnDef<TransactionRow>[] => {
       const normalizedAmount = parseFloat(row.original.normalized_amount as unknown as string);
       const currency = row.original.currency_code;
       const primaryCurrencyCode = (table.options.meta as any)?.primaryCurrencyCode;
+      const locale = (table.options.meta as any)?.locale || 'en-US';
 
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: currency,
-      }).format(Math.abs(amount));
+      const formatted = formatCurrency(Math.abs(amount), currency, locale);
 
       const isConverted = amount !== normalizedAmount && primaryCurrencyCode;
-      const formattedNormalized = isConverted ? new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: primaryCurrencyCode,
-      }).format(Math.abs(normalizedAmount)) : null;
+      const formattedNormalized = isConverted ? formatCurrency(Math.abs(normalizedAmount), primaryCurrencyCode, locale) : null;
 
       return (
         <div className="flex flex-col items-end">

@@ -3,7 +3,7 @@ import { IncomeVsExpensesChart } from './income-vs-expenses-chart';
 import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { getTranslator } from '@/i18n/server';
 
-export async function IncomeVsExpensesWidget({ from, to, walletId, categoryId, className }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string }) {
+export async function IncomeVsExpensesWidget({ from, to, walletId, categoryId, className, dateFormatPreference = 'DD/MM/YYYY', currencyCode = 'USD', locale = 'en-US' }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string, dateFormatPreference?: string, currencyCode?: string, locale?: string }) {
   const res = await fetchMonthlyCashflowAction(from, to, walletId, categoryId);
   const rawData = res.success && res.data ? res.data : [];
   const { t } = await getTranslator();
@@ -17,7 +17,7 @@ export async function IncomeVsExpensesWidget({ from, to, walletId, categoryId, c
 
   return (
     <WidgetCard title={t('dashboard.widgets.income_vs_expenses')} className={className}>
-      <IncomeVsExpensesChart data={data} />
+      <IncomeVsExpensesChart data={data} dateFormatPreference={dateFormatPreference} currencyCode={currencyCode} locale={locale} />
     </WidgetCard>
   );
 }

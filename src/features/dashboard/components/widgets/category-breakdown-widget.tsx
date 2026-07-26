@@ -5,22 +5,21 @@ import { getTranslator } from '@/i18n/server';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { getUser } from '@/lib/supabase/server';
 
-export async function CategoryBreakdownWidget({ from, to, walletId, categoryId, className }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string }) {
+export async function CategoryBreakdownWidget({ from, to, walletId, categoryId, className, currencyCode = 'USD', locale = 'en-US' }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string, currencyCode?: string, locale?: string }) {
   const breakdownRes = await fetchCategoryBreakdownAction(from, to, walletId, categoryId);
   const rawBreakdown = breakdownRes.success && breakdownRes.data ? breakdownRes.data : [];
   const { t } = await getTranslator();
   
-  const { data: { user } } = await getUser();
-  const prefs = user ? await getUserPreferences(user.id) : null;
-
   const breakdown = rawBreakdown.map((b: any) => ({
     ...b,
+    category_id: b.category_id || 'uncategorized',
+    category_name: b.category_name === 'Uncategorized' ? t('dashboard.widgets.uncategorized') : b.category_name,
     amount: Number(b.amount)
   }));
 
   return (
     <WidgetCard title={t('dashboard.widgets.category_breakdown')} className={className}>
-      <CategoryBreakdownChart data={breakdown} currencyCode={prefs?.primary_currency_code || 'USD'} />
+      <CategoryBreakdownChart data={breakdown} currencyCode={currencyCode} locale={locale} />
     </WidgetCard>
   );
 }

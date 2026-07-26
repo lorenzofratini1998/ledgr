@@ -5,7 +5,8 @@ import { cookies } from 'next/headers';
 export async function parsePeriod(
   period: string | null | undefined,
   paramFrom?: string | null,
-  paramTo?: string | null
+  paramTo?: string | null,
+  defaultFallback?: string
 ): Promise<{ from: string; to: string; resolvedPeriod: string }> {
   const cookieStore = await cookies();
 
@@ -21,7 +22,7 @@ export async function parsePeriod(
   }
 
   if (!activePeriod) {
-    activePeriod = '30d';
+    activePeriod = defaultFallback || '30d';
   }
 
   if (activePeriod === 'custom' && activeFrom && activeTo) {
@@ -52,8 +53,8 @@ export async function parsePeriod(
       break;
     case 'custom':
     default:
-      from = subDays(to, 30); // Default to 30d
-      activePeriod = '30d';
+      from = subDays(to, 30); // Default custom error fallback
+      activePeriod = defaultFallback || '30d';
       break;
   }
 

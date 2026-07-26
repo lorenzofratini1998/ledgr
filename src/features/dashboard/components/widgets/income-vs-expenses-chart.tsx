@@ -5,13 +5,17 @@ import { ComposedChart, Bar, Line, AreaChart, Area, CartesianGrid, XAxis, YAxis,
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
+import { formatDate, formatCurrency, formatCompactCurrency } from '@/lib/formatters';
 
 interface IncomeVsExpensesChartProps {
   data: { month: string; income: number; expense: number }[];
   className?: string;
+  dateFormatPreference?: string;
+  currencyCode?: string;
+  locale?: string;
 }
 
-export function IncomeVsExpensesChart({ data, className }: IncomeVsExpensesChartProps) {
+export function IncomeVsExpensesChart({ data, className, dateFormatPreference = 'DD/MM/YYYY', currencyCode = 'USD', locale = 'en-US' }: IncomeVsExpensesChartProps) {
   const config = {
     income: {
       label: 'Income',
@@ -52,24 +56,27 @@ export function IncomeVsExpensesChart({ data, className }: IncomeVsExpensesChart
             <ChartContainer config={config} className="h-[300px] w-full aspect-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={formattedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground)/0.2)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
                   <XAxis 
                     dataKey="month" 
                     tickLine={false} 
                     axisLine={false} 
                     tickMargin={8}
-                    tickFormatter={(value) => {
-                      const date = new Date(value + '-01');
-                      return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-                    }}
+                    tickFormatter={(value) => formatDate(value + '-01', dateFormatPreference)}
                   />
                   <YAxis 
                     tickLine={false} 
                     axisLine={false} 
-                    tickFormatter={(value) => `$${value}`} 
+                    tickFormatter={(value) => formatCompactCurrency(value, currencyCode, locale)} 
                     width={50}
                   />
-                  <ChartTooltip cursor={{ fill: 'hsl(var(--muted)/0.5)' }} content={<ChartTooltipContent />} />
+                  <ChartTooltip 
+                    cursor={{ fill: 'var(--color-muted)', opacity: 0.5 }} 
+                    content={<ChartTooltipContent 
+                      labelFormatter={(label) => formatDate(label + '-01', dateFormatPreference)} 
+                      valueFormatter={(value: any) => formatCurrency(Number(value), currencyCode, locale)}
+                    />} 
+                  />
                   <Legend iconType="circle" />
                   <Bar dataKey="income" fill="var(--color-income)" radius={[4, 4, 0, 0]} name="Income" />
                   <Bar dataKey="expenseAbs" fill="var(--color-expense)" radius={[4, 4, 0, 0]} name="Expense" />
@@ -88,24 +95,27 @@ export function IncomeVsExpensesChart({ data, className }: IncomeVsExpensesChart
                       <stop offset="95%" stopColor="var(--color-net)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--muted-foreground)/0.2)" />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-border)" />
                   <XAxis 
                     dataKey="month" 
                     tickLine={false} 
                     axisLine={false} 
                     tickMargin={8}
-                    tickFormatter={(value) => {
-                      const date = new Date(value + '-01');
-                      return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-                    }}
+                    tickFormatter={(value) => formatDate(value + '-01', dateFormatPreference)}
                   />
                   <YAxis 
                     tickLine={false} 
                     axisLine={false} 
-                    tickFormatter={(value) => `$${value}`} 
+                    tickFormatter={(value) => formatCompactCurrency(value, currencyCode, locale)} 
                     width={50}
                   />
-                  <ChartTooltip cursor={{ fill: 'hsl(var(--muted)/0.5)' }} content={<ChartTooltipContent />} />
+                  <ChartTooltip 
+                    cursor={{ fill: 'var(--color-muted)', opacity: 0.5 }} 
+                    content={<ChartTooltipContent 
+                      labelFormatter={(label) => formatDate(label + '-01', dateFormatPreference)} 
+                      valueFormatter={(value: any) => formatCurrency(Number(value), currencyCode, locale)}
+                    />} 
+                  />
                   <Area 
                     type="monotone" 
                     dataKey="net" 

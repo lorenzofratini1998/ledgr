@@ -10,6 +10,7 @@ import { CalendarIcon } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import { DateRange } from 'react-day-picker';
 import { cn } from '@/lib/utils';
+import { formatDate } from '@/lib/formatters';
 
 import { useTranslation } from '@/i18n/hooks/use-translation';
 
@@ -27,9 +28,10 @@ interface PeriodSelectorProps {
   defaultPeriod?: string;
   defaultFrom?: string;
   defaultTo?: string;
+  dateFormatPreference?: string;
 }
 
-export function PeriodSelector({ defaultPeriod = '30d', defaultFrom, defaultTo }: PeriodSelectorProps) {
+export function PeriodSelector({ defaultPeriod = '30d', defaultFrom, defaultTo, dateFormatPreference = 'DD/MM/YYYY' }: PeriodSelectorProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -153,11 +155,11 @@ export function PeriodSelector({ defaultPeriod = '30d', defaultFrom, defaultTo }
               {date?.from ? (
                 date.to ? (
                   <>
-                    {format(date.from, "LLL dd, y")} -{" "}
-                    {format(date.to, "LLL dd, y")}
+                    {formatDate(date.from, dateFormatPreference)} -{" "}
+                    {formatDate(date.to, dateFormatPreference)}
                   </>
                 ) : (
-                  format(date.from, "LLL dd, y")
+                  formatDate(date.from, dateFormatPreference)
                 )
               ) : (
                 <span>{t('dashboard.periods.pick_date')}</span>

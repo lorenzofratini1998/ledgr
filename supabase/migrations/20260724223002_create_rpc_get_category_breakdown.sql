@@ -18,12 +18,12 @@ BEGIN
     RETURN QUERY
     SELECT 
         c.category_id,
-        c.category_name,
-        c.color,
-        c.icon,
+        COALESCE(c.category_name, 'Uncategorized') as category_name,
+        COALESCE(c.color, 'slate') as color,
+        COALESCE(c.icon, 'HelpCircle') as icon,
         SUM(t.normalized_amount)::NUMERIC as amount
     FROM public.transactions t
-    JOIN public.categories c ON t.category_id = c.category_id
+    LEFT JOIN public.categories c ON t.category_id = c.category_id
     WHERE t.user_id = p_user_id
       AND t.date >= p_from 
       AND t.date <= p_to

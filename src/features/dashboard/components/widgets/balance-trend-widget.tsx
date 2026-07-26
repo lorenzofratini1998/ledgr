@@ -3,7 +3,7 @@ import { BalanceTrendChart } from './balance-trend-chart';
 import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { getTranslator } from '@/i18n/server';
 
-export async function BalanceTrendWidget({ from, to, walletId, categoryId, className }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string }) {
+export async function BalanceTrendWidget({ from, to, walletId, categoryId, className, dateFormatPreference = 'DD/MM/YYYY', currencyCode = 'USD', locale = 'en-US' }: { from: string, to: string, walletId?: string, categoryId?: string, className?: string, dateFormatPreference?: string, currencyCode?: string, locale?: string }) {
   const trendRes = await fetchBalanceTrendAction(from, to, walletId, categoryId);
   const rawTrend = trendRes.success && trendRes.data ? trendRes.data : [];
   const { t } = await getTranslator();
@@ -17,7 +17,7 @@ export async function BalanceTrendWidget({ from, to, walletId, categoryId, class
 
   return (
     <WidgetCard title={title} className={className}>
-      <BalanceTrendChart data={trend} />
+      <BalanceTrendChart data={trend} dateFormatPreference={dateFormatPreference} currencyCode={currencyCode} locale={locale} />
     </WidgetCard>
   );
 }

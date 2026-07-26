@@ -3,7 +3,9 @@ import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { Wallet } from 'lucide-react';
 import { getTranslator } from '@/i18n/server';
 
-export async function WalletBalancesWidget() {
+import { formatCurrency } from '@/lib/formatters';
+
+export async function WalletBalancesWidget({ locale = 'en-US' }: { locale?: string } = {}) {
   const res = await fetchWalletBalancesAction();
   const balances = res.success && res.data ? res.data : [];
   const { t } = await getTranslator();
@@ -28,7 +30,7 @@ export async function WalletBalancesWidget() {
               </div>
             </div>
             <div className="font-semibold text-sm">
-              {new Intl.NumberFormat('en-US', { style: 'currency', currency: 'EUR' }).format(wallet.balance)}
+              {formatCurrency(wallet.balance, wallet.currency_code || 'USD', locale)}
             </div>
           </div>
         ))
