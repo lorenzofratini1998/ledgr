@@ -2,13 +2,13 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
+import { Area, Line, ComposedChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { cn } from '@/lib/utils';
 
 import { formatDate, formatCompactCurrency, formatCurrency } from '@/lib/formatters';
 
 interface BalanceTrendChartProps {
-  data: { day: string; balance: number }[];
+  data: { day: string; balance: number; compareDay?: string; compareBalance?: number }[];
   dateFormatPreference?: string;
   currencyCode?: string;
   locale?: string;
@@ -17,9 +17,13 @@ interface BalanceTrendChartProps {
 export function BalanceTrendChart({ data, className, dateFormatPreference = 'DD/MM/YYYY', currencyCode = 'USD', locale = 'en-US' }: BalanceTrendChartProps & { className?: string }) {
   const config = {
     balance: {
-      label: 'Balance',
+      label: 'Current',
       color: 'var(--color-primary)',
     },
+    compareBalance: {
+      label: 'Previous',
+      color: 'hsl(var(--muted-foreground))',
+    }
   };
 
   return (
@@ -30,7 +34,7 @@ export function BalanceTrendChart({ data, className, dateFormatPreference = 'DD/
       <CardContent>
         <div className="h-[300px] w-full">
           <ChartContainer config={config} className="h-full w-full aspect-auto">
-            <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+            <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="fillBalance" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor="var(--color-balance)" stopOpacity={0.3} />
@@ -64,7 +68,18 @@ export function BalanceTrendChart({ data, className, dateFormatPreference = 'DD/
                 fillOpacity={1}
                 fill="url(#fillBalance)"
               />
-            </AreaChart>
+              <Line
+                type="monotone"
+                dataKey="compareBalance"
+                stroke="var(--muted-foreground)"
+                strokeOpacity={0.7}
+                strokeWidth={2}
+                strokeDasharray="4 4"
+                dot={false}
+                activeDot={false}
+                connectNulls={true}
+              />
+            </ComposedChart>
           </ChartContainer>
         </div>
       </CardContent>

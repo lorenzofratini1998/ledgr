@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { DASHBOARD_PERIODS, THEMES } from '@/lib/constants/core';
 
 export const updateProfileSchema = z.object({
   username: z.string().min(3).max(30),
@@ -9,12 +10,12 @@ export type UpdateProfilePayload = z.infer<typeof updateProfileSchema>;
 export const updateGeneralPreferencesSchema = z.object({
   language_locale: z.string().length(5),
   date_format: z.enum(['DD/MM/YYYY', 'YYYY-MM-DD', 'MM/DD/YYYY']),
-  default_dashboard_range: z.enum(['7d', '30d', '90d', '6m', '1y', 'ytd', 'custom']),
+  default_dashboard_range: z.enum(DASHBOARD_PERIODS),
 });
 export type UpdateGeneralPreferencesPayload = z.infer<typeof updateGeneralPreferencesSchema>;
 
 export const updateAppearancePreferencesSchema = z.object({
-  theme: z.enum(['light', 'dark', 'system']),
+  theme: z.enum(THEMES),
 });
 export type UpdateAppearancePreferencesPayload = z.infer<typeof updateAppearancePreferencesSchema>;
 

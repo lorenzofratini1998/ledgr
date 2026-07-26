@@ -361,7 +361,8 @@ export const en = {
       no_transactions: "No recent transactions found.",
       income_in_period: "Income in Period",
       expenses_in_period: "Expenses in Period",
-      uncategorized: "Uncategorized"
+      uncategorized: "Uncategorized",
+      vs_previous: "vs prev"
     }
   },
   settings: {

@@ -8,15 +8,17 @@ import { cn } from '@/lib/utils';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell } from 'recharts';
 import { CATEGORY_ICON_MAP, CATEGORY_COLOR_MAP } from '@/features/categories/constants';
+import { PercentageBadge } from '@/components/ui/percentage-badge';
 
 interface CategoryBreakdownChartProps {
-  data: { category_id: string; category_name: string; color: string; icon: string; amount: number }[];
+  data: { category_id: string; category_name: string; color: string; icon: string; amount: number; compareAmount?: number }[];
   currencyCode: string;
   locale?: string;
   className?: string;
+  vsPreviousLabel?: string;
 }
 
-export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', className }: CategoryBreakdownChartProps) {
+export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', className, vsPreviousLabel }: CategoryBreakdownChartProps) {
   const totalAmount = useMemo(() => {
     return data.reduce((sum, item) => sum + Math.abs(item.amount), 0);
   }, [data]);
@@ -36,8 +38,9 @@ export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', c
         (acc, curr) => ({
           ...acc,
           amount: acc.amount + curr.amount,
+          compareAmount: (acc.compareAmount || 0) + (curr.compareAmount || 0),
         }),
-        { category_id: 'others', category_name: 'Others', color: '#94a3b8', icon: 'MoreHorizontal', amount: 0 }
+        { category_id: 'others', category_name: 'Others', color: '#94a3b8', icon: 'MoreHorizontal', amount: 0, compareAmount: 0 }
       );
       processed = [...top4, others];
     }
@@ -133,9 +136,22 @@ export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', c
                         <span className="font-semibold text-sm">
                           {formatCurrency(Math.abs(category.amount), currencyCode, locale)}
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {percentage.toFixed(1)}%
-                        </span>
+                        <div className="flex items-center space-x-1.5 mt-0.5">
+                          <span className="text-xs text-muted-foreground">
+                            {percentage.toFixed(1)}%
+                          </span>
+                          {category.compareAmount !== undefined && Math.abs(category.compareAmount) > 0 && (
+                            <>
+                              <span className="text-muted-foreground/30 text-[10px]">•</span>
+                              <PercentageBadge 
+                                current={Math.abs(category.amount)} 
+                                previous={Math.abs(category.compareAmount)} 
+                                invertColors 
+                                className="mt-0"
+                              />
+                            </>
+                          )}
+                        </div>
                       </div>
                     </div>
                     <div className="w-full bg-muted rounded-full h-1.5 overflow-hidden">

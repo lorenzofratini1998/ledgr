@@ -4,6 +4,7 @@ import { Label } from "@/components/ui/label"
 import { cn } from "@/lib/utils"
 import { MultiSelect } from "@/components/shared/multi-select"
 import { useTranslation } from "@/i18n/hooks/use-translation"
+import { DASHBOARD_PERIODS } from "@/lib/constants/core"
 
 interface TransactionFiltersProps {
   localFilters: {
@@ -76,10 +77,19 @@ export function TransactionFilters({
       <div className="space-y-3">
         <Label>{t('transactions.dateRange')}</Label>
         <div className="flex flex-wrap gap-2">
-          <Badge variant={localFilters.datePreset === 'this-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-month')}>{t('transactions.thisMonth')}</Badge>
-          <Badge variant={localFilters.datePreset === 'last-month' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('last-month')}>{t('transactions.lastMonth')}</Badge>
-          <Badge variant={localFilters.datePreset === 'this-year' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => applyDatePreset('this-year')}>{t('transactions.thisYear')}</Badge>
-          <Badge variant={localFilters.datePreset === 'custom' ? 'default' : 'secondary'} className="cursor-pointer" onClick={() => setLocalFilters((p: any) => ({ ...p, datePreset: 'custom' }))}>{t('transactions.custom')}</Badge>
+          {DASHBOARD_PERIODS.map(preset => (
+            <Badge 
+              key={preset}
+              variant={localFilters.datePreset === preset ? 'default' : 'secondary'} 
+              className="cursor-pointer" 
+              onClick={() => {
+                if (preset === 'custom') setLocalFilters((p: any) => ({ ...p, datePreset: 'custom' }))
+                else applyDatePreset(preset)
+              }}
+            >
+              {preset === 'custom' ? t('transactions.custom') : t(`dashboard.periods.${preset}`)}
+            </Badge>
+          ))}
         </div>
         
         {localFilters.datePreset === 'custom' && (

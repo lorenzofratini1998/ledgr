@@ -3,10 +3,19 @@ import { WidgetCard, WidgetCardSkeleton } from './widget-card';
 import { getTranslator } from '@/i18n/server';
 
 import { formatCurrency } from '@/lib/formatters';
+import { calculateComparePeriod } from '@/features/dashboard/utils';
+import { PercentageBadge } from '@/components/ui/percentage-badge';
 
 export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 'en-US' }: { from: string, to: string, currencyCode?: string, locale?: string }) {
-  const cashflowRes = await fetchCashflowAction(from, to);
+  const { compareFrom, compareTo } = calculateComparePeriod(from, to);
+
+  const [cashflowRes, compareCashflowRes] = await Promise.all([
+    fetchCashflowAction(from, to),
+    fetchCashflowAction(compareFrom, compareTo)
+  ]);
+
   const cashflow = cashflowRes.success && cashflowRes.data ? cashflowRes.data : { income: 0, expense: 0, net: 0 };
+  const compareCashflow = compareCashflowRes.success && compareCashflowRes.data ? compareCashflowRes.data : { income: 0, expense: 0, net: 0 };
   const { t } = await getTranslator();
 
   return (
@@ -18,6 +27,7 @@ export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 
         <div className="text-2xl font-semibold text-emerald-500">
           {formatCurrency(cashflow.income, currencyCode, locale)}
         </div>
+        <PercentageBadge current={cashflow.income} previous={compareCashflow.income} label={t('dashboard.widgets.vs_previous')} />
       </WidgetCard>
       
       <WidgetCard 
@@ -27,6 +37,7 @@ export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 
         <div className="text-2xl font-semibold text-rose-500">
           {formatCurrency(Math.abs(cashflow.expense), currencyCode, locale)}
         </div>
+        <PercentageBadge current={Math.abs(cashflow.expense)} previous={Math.abs(compareCashflow.expense)} invertColors label={t('dashboard.widgets.vs_previous')} />
       </WidgetCard>
     </div>
   );

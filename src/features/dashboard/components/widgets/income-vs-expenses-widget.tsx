@@ -16,7 +16,7 @@ export async function IncomeVsExpensesWidget({ from, to, walletId, categoryId, c
   }));
 
   return (
-    <WidgetCard title={t('dashboard.widgets.income_vs_expenses')} className={className}>
+    <WidgetCard className={className}>
       <IncomeVsExpensesChart data={data} dateFormatPreference={dateFormatPreference} currencyCode={currencyCode} locale={locale} />
     </WidgetCard>
   );

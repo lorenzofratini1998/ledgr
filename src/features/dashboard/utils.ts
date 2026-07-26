@@ -1,6 +1,6 @@
-import { subDays, subMonths, subYears, startOfYear, format } from 'date-fns';
-
+import { subDays, parseISO, differenceInDays, format } from 'date-fns';
 import { cookies } from 'next/headers';
+import { getDateRangeForPeriod } from '@/lib/date-utils';
 
 export async function parsePeriod(
   period: string | null | undefined,
@@ -29,41 +29,7 @@ export async function parsePeriod(
     return { from: activeFrom, to: activeTo, resolvedPeriod: 'custom' };
   }
 
-  const to = new Date();
-  let from = new Date();
-
-  switch (activePeriod) {
-    case '7d':
-      from = subDays(to, 7);
-      break;
-    case '30d':
-      from = subDays(to, 30);
-      break;
-    case '90d':
-      from = subDays(to, 90);
-      break;
-    case '6m':
-      from = subMonths(to, 6);
-      break;
-    case '1y':
-      from = subYears(to, 1);
-      break;
-    case 'ytd':
-      from = startOfYear(to);
-      break;
-    case 'custom':
-    default:
-      from = subDays(to, 30); // Default custom error fallback
-      activePeriod = defaultFallback || '30d';
-      break;
-  }
-
-  // Format as YYYY-MM-DD
-  return {
-    from: format(from, 'yyyy-MM-dd'),
-    to: format(to, 'yyyy-MM-dd'),
-    resolvedPeriod: activePeriod,
-  };
+  return getDateRangeForPeriod(activePeriod, defaultFallback);
 }
 
 export function flattenCategoriesForSelect(nestedCategories: any[]) {
@@ -81,3 +47,29 @@ export function flattenCategoriesForSelect(nestedCategories: any[]) {
 export function getDisplayName(user: any) {
   return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
 }
+
+export function calculateComparePeriod(from: string, to: string) {
+  const fromDate = parseISO(from);
+  const toDate = parseISO(to);
+  const daysDiff = differenceInDays(toDate, fromDate) + 1;
+
+  const compareTo = subDays(fromDate, 1);
+  const compareFrom = subDays(compareTo, daysDiff - 1);
+
+  return {
+    compareFrom: format(compareFrom, 'yyyy-MM-dd'),
+    compareTo: format(compareTo, 'yyyy-MM-dd')
+  };
+}
+
+export function mergeTrendData(currentTrend: any[], compareTrend: any[]) {
+  return currentTrend.map((item, index) => {
+    const compareItem = compareTrend[index];
+    return {
+      ...item,
+      compareDay: compareItem?.day,
+      compareBalance: compareItem ? Number(compareItem.balance) : undefined
+    };
+  });
+}
+

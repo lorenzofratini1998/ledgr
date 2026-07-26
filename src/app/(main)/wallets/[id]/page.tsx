@@ -98,7 +98,7 @@ export default async function WalletDetailsPage({
       {/* Widgets Grid */}
       <div className="space-y-6">
         {/* Trend & Breakdown Row */}
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1">
           <Suspense fallback={<BalanceTrendWidgetSkeleton />} key={`trend-${walletId}-${from}-${to}`}>
              <BalanceTrendWidget from={from} to={to} walletId={walletId} />
           </Suspense>

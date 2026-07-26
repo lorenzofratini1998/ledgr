@@ -363,7 +363,8 @@ export const it: Dictionary = {
       no_transactions: "Nessuna transazione recente trovata.",
       income_in_period: "Entrate nel Periodo",
       expenses_in_period: "Uscite nel Periodo",
-      uncategorized: "Non categorizzate"
+      uncategorized: "Non categorizzate",
+      vs_previous: "vs prec"
     }
   },
   settings: {

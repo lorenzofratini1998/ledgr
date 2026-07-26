@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { DASHBOARD_PERIODS } from "@/lib/constants/core";
 import { updateGeneralPreferences } from "@/features/preferences/actions";
 import { updateGeneralPreferencesSchema, UpdateGeneralPreferencesPayload } from "@/features/preferences/schemas";
 
@@ -172,24 +173,18 @@ export function GeneralForm({ preferences, activeLocales }: GeneralFormProps) {
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder={t("settings.general.dashboard_range_placeholder")}>
-                      {{
-                        "7d": t("dashboard.periods.7d"),
-                        "30d": t("dashboard.periods.30d"),
-                        "90d": t("dashboard.periods.90d"),
-                        "6m": t("dashboard.periods.6m"),
-                        "1y": t("dashboard.periods.1y"),
-                        "ytd": t("dashboard.periods.ytd"),
-                      }[field.value as string] || t("settings.general.dashboard_range_placeholder")}
+                      {field.value === 'custom' 
+                        ? t("dashboard.periods.custom") 
+                        : t(`dashboard.periods.${field.value}`) || t("settings.general.dashboard_range_placeholder")}
                     </SelectValue>
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="7d">{t("dashboard.periods.7d")}</SelectItem>
-                  <SelectItem value="30d">{t("dashboard.periods.30d")}</SelectItem>
-                  <SelectItem value="90d">{t("dashboard.periods.90d")}</SelectItem>
-                  <SelectItem value="6m">{t("dashboard.periods.6m")}</SelectItem>
-                  <SelectItem value="1y">{t("dashboard.periods.1y")}</SelectItem>
-                  <SelectItem value="ytd">{t("dashboard.periods.ytd")}</SelectItem>
+                  {DASHBOARD_PERIODS.filter(p => p !== 'custom').map((period) => (
+                    <SelectItem key={period} value={period}>
+                      {t(`dashboard.periods.${period}`)}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormDescription>

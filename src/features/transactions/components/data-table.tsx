@@ -22,6 +22,7 @@ import { ActionDialog } from "@/components/shared/action-dialog";
 import { DataGrid } from "@/components/shared/data-grid/data-grid";
 import { DataGridPagination } from "@/components/shared/data-grid/data-grid-pagination";
 import { TransactionFilters } from "./transaction-filters";
+import { getDateRangeForPeriod } from "@/lib/date-utils";
 import { TransactionMobileCard } from "./transaction-mobile-card";
 import { useTranslation } from "@/i18n/hooks/use-translation";
 
@@ -219,19 +220,13 @@ export function DataTable<TData, TValue>({
   };
 
   const applyDatePreset = (preset: string) => {
-    const now = new Date();
     let start = "";
     let end = "";
     
-    if (preset === "this-month") {
-      start = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split("T")[0];
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split("T")[0];
-    } else if (preset === "last-month") {
-      start = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString().split("T")[0];
-      end = new Date(now.getFullYear(), now.getMonth(), 0).toISOString().split("T")[0];
-    } else if (preset === "this-year") {
-      start = new Date(now.getFullYear(), 0, 1).toISOString().split("T")[0];
-      end = new Date(now.getFullYear(), 11, 31).toISOString().split("T")[0];
+    if (preset !== 'custom') {
+      const range = getDateRangeForPeriod(preset);
+      start = range.from;
+      end = range.to;
     }
 
     setLocalFilters(prev => ({
@@ -315,7 +310,7 @@ export function DataTable<TData, TValue>({
                 )}
               </Button>
             } />
-            <SheetContent className="w-full sm:max-w-md overflow-y-auto">
+            <SheetContent className="w-full sm:max-w-md flex flex-col h-full">
               <SheetHeader>
                 <SheetTitle>{t('transactions.advancedFiltersTitle')}</SheetTitle>
                 <SheetDescription>
@@ -323,6 +318,7 @@ export function DataTable<TData, TValue>({
                 </SheetDescription>
               </SheetHeader>
               
+              <div className="shrink overflow-y-auto py-2 pr-2 -mr-2">
               <TransactionFilters 
                 localFilters={localFilters}
                 setLocalFilters={setLocalFilters}
@@ -342,12 +338,13 @@ export function DataTable<TData, TValue>({
                 }}
                 toggleArrayItem={toggleArrayItem}
               />
+              </div>
 
-              <SheetFooter className="mt-auto sm:flex-row gap-2 pb-6 sm:pb-0 px-6 sm:px-2">
-                <Button variant="outline" className="w-full sm:w-auto" onClick={clearFilters}>
+              <SheetFooter className="mt-6 pt-4 sm:flex-row gap-3 pb-8 px-2 w-full justify-center">
+                <Button variant="outline" className="flex-1" onClick={clearFilters}>
                   {t('transactions.clearAll')}
                 </Button>
-                <Button className="w-full sm:w-auto" onClick={handleApplyFilters}>
+                <Button className="flex-1" onClick={handleApplyFilters}>
                   {t('transactions.showResults')}
                 </Button>
               </SheetFooter>
@@ -366,7 +363,7 @@ export function DataTable<TData, TValue>({
                 )}
               </Button>
             } />
-            <DrawerContent className="max-h-[90vh]">
+            <DrawerContent className="max-h-[90vh] flex flex-col">
               <DrawerHeader className="text-left px-6">
                 <DrawerTitle>{t('transactions.advancedFiltersTitle')}</DrawerTitle>
                 <DrawerDescription>
@@ -374,7 +371,7 @@ export function DataTable<TData, TValue>({
                 </DrawerDescription>
               </DrawerHeader>
               
-              <div className="overflow-y-auto pb-4">
+              <div className="shrink overflow-y-auto px-2">
                 <TransactionFilters 
                   localFilters={localFilters}
                   setLocalFilters={setLocalFilters}
@@ -392,13 +389,13 @@ export function DataTable<TData, TValue>({
                       return { ...prev, [field]: parsed.toFixed(2) };
                     });
                   }}
-                  toggleArrayItem={toggleArrayItem}
+                toggleArrayItem={toggleArrayItem}
                 />
               </div>
 
-              <DrawerFooter className="pt-2 pb-8 px-6">
-                <Button onClick={handleApplyFilters}>{t('transactions.showResults')}</Button>
-                <Button variant="outline" onClick={clearFilters}>{t('transactions.clearAll')}</Button>
+              <DrawerFooter className="mt-6 pt-4 pb-12 px-6 gap-3">
+                <Button onClick={handleApplyFilters} className="w-full" size="lg">{t('transactions.showResults')}</Button>
+                <Button variant="outline" onClick={clearFilters} className="w-full" size="lg">{t('transactions.clearAll')}</Button>
               </DrawerFooter>
             </DrawerContent>
           </Drawer>
