@@ -163,13 +163,8 @@ function RegisterSubForm() {
   });
 
   const onRegisterSubmit = (values: z.infer<typeof registerSchema>) => {
-    mutate({
-      email: values.email,
-      password: values.password,
-      confirmPassword: values.confirmPassword,
-      firstName: values.firstName || "",
-      lastName: values.lastName || "",
-    });
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    mutate({ ...values, timezone });
   };
 
   return (

@@ -14,6 +14,7 @@ CREATE TABLE public.user_preferences (
     notify_budget_breach BOOLEAN NOT NULL DEFAULT TRUE,
     notify_recurring_reminder BOOLEAN NOT NULL DEFAULT TRUE,
     budget_alert_threshold INT NOT NULL DEFAULT 80,
+    timezone TEXT NOT NULL DEFAULT 'UTC',
     created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

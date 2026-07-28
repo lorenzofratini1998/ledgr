@@ -6,6 +6,7 @@ DECLARE
     counter INT := 1;
     current_provider TEXT;
     system_default_locale VARCHAR(5);
+    user_tz TEXT;
 BEGIN
     current_provider := COALESCE(NEW.raw_app_meta_data->>'provider', 'email');
     base_username := split_part(NEW.email, '@', 1);
@@ -26,8 +27,10 @@ BEGIN
     SELECT locale INTO system_default_locale FROM public.languages WHERE is_default = true LIMIT 1;
     IF system_default_locale IS NULL THEN system_default_locale := 'en-US'; END IF;
 
-    INSERT INTO public.user_preferences (profile_id, language_locale)
-    VALUES (NEW.id, system_default_locale);
+    user_tz := COALESCE(NEW.raw_user_meta_data->>'timezone', 'UTC');
+
+    INSERT INTO public.user_preferences (profile_id, language_locale, timezone)
+    VALUES (NEW.id, system_default_locale, user_tz);
 
     INSERT INTO public.user_auth_providers (user_id, provider_id, is_active)
     VALUES (NEW.id, current_provider, true);

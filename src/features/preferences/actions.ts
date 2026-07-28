@@ -66,6 +66,7 @@ export async function updateGeneralPreferences(payload: UpdateGeneralPreferences
       language_locale: parsed.language_locale,
       date_format: parsed.date_format,
       default_dashboard_range: parsed.default_dashboard_range,
+      timezone: parsed.timezone,
     })
     .eq('profile_id', user.id);
 

@@ -11,6 +11,7 @@ export const updateGeneralPreferencesSchema = z.object({
   language_locale: z.string().length(5),
   date_format: z.enum(['DD/MM/YYYY', 'YYYY-MM-DD', 'MM/DD/YYYY']),
   default_dashboard_range: z.enum(DASHBOARD_PERIODS),
+  timezone: z.string().min(1),
 });
 export type UpdateGeneralPreferencesPayload = z.infer<typeof updateGeneralPreferencesSchema>;
 

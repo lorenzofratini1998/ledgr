@@ -28,7 +28,7 @@ export function TransactionsClientView({
   dateFormatPreference,
   locale = 'en-US'
 }: TransactionsClientViewProps) {
-  const columns = useColumns(locale);
+  const columns = useColumns();
   return (
     <div className="mt-8 pb-32">
       <DataTable 

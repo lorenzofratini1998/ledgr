@@ -16,9 +16,10 @@ interface CategoryBreakdownChartProps {
   locale?: string;
   className?: string;
   vsPreviousLabel?: string;
+  hideComparison?: boolean;
 }
 
-export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', className, vsPreviousLabel }: CategoryBreakdownChartProps) {
+export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', className, vsPreviousLabel, hideComparison = false }: CategoryBreakdownChartProps) {
   const totalAmount = useMemo(() => {
     return data.reduce((sum, item) => sum + Math.abs(item.amount), 0);
   }, [data]);
@@ -140,7 +141,7 @@ export function CategoryBreakdownChart({ data, currencyCode, locale = 'en-US', c
                           <span className="text-xs text-muted-foreground">
                             {percentage.toFixed(1)}%
                           </span>
-                          {category.compareAmount !== undefined && Math.abs(category.compareAmount) > 0 && (
+                          {!hideComparison && category.compareAmount !== undefined && Math.abs(category.compareAmount) > 0 && (
                             <>
                               <span className="text-muted-foreground/30 text-[10px]">•</span>
                               <PercentageBadge 

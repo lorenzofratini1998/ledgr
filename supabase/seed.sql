@@ -160,7 +160,8 @@ INSERT INTO public.user_preferences (
     lock_timeout_seconds,
     notify_budget_breach,
     notify_recurring_reminder,
-    budget_alert_threshold
+    budget_alert_threshold,
+    timezone
 ) VALUES (
     'e0a75f82-3b1a-42c9-9481-8930b2c1f9d2',
     'en-US',
@@ -172,7 +173,8 @@ INSERT INTO public.user_preferences (
     10,
     TRUE,
     TRUE,
-    80
+    80,
+    'UTC'
 ) ON CONFLICT (profile_id) DO UPDATE 
 SET primary_currency_code = EXCLUDED.primary_currency_code;
 

@@ -444,6 +444,7 @@ export type Database = {
           theme_primary_color: string
           theme_radius: number
           theme_style: string
+          timezone: string
           updated_at: string
         }
         Insert: {
@@ -466,6 +467,7 @@ export type Database = {
           theme_primary_color?: string
           theme_radius?: number
           theme_style?: string
+          timezone?: string
           updated_at?: string
         }
         Update: {
@@ -486,8 +488,8 @@ export type Database = {
           theme_chart_color?: string
           theme_heading_font?: string
           theme_primary_color?: string
-          theme_radius?: number
           theme_style?: string
+          timezone?: string
           updated_at?: string
         }
         Relationships: [

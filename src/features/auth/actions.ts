@@ -46,6 +46,7 @@ export async function signUpWithEmail(payload: Record<string, string>): Promise<
     }
 
     const fullName = [firstName, lastName].filter(Boolean).join(" ");
+    const timezone = payload.timezone;
 
     const supabase = await createClient();
     const { error } = await supabase.auth.signUp({
@@ -54,6 +55,7 @@ export async function signUpWithEmail(payload: Record<string, string>): Promise<
       options: {
         data: {
           full_name: fullName || undefined,
+          timezone: timezone || undefined,
         }
       }
     });

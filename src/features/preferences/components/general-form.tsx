@@ -43,8 +43,11 @@ export function GeneralForm({ preferences, activeLocales }: GeneralFormProps) {
       language_locale: preferences.language_locale,
       date_format: preferences.date_format,
       default_dashboard_range: preferences.default_dashboard_range,
+      timezone: preferences.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
   });
+
+  const timezones = Intl.supportedValuesOf('timeZone');
 
   const currentLocale = form.watch("language_locale");
   const currentDateFormat = form.watch("date_format");
@@ -189,6 +192,36 @@ export function GeneralForm({ preferences, activeLocales }: GeneralFormProps) {
               </Select>
               <FormDescription>
                 {t("settings.general.dashboard_range_desc")}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="timezone"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t("settings.general.timezone_label" as any) || "Timezone"}</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select timezone">
+                      {field.value}
+                    </SelectValue>
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {timezones.map((tz) => (
+                    <SelectItem key={tz} value={tz}>
+                      {tz}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                {t("settings.general.timezone_desc" as any) || "The timezone used for calculating automated background jobs, like recurring budgets."}
               </FormDescription>
               <FormMessage />
             </FormItem>
