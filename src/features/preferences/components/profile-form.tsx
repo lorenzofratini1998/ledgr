@@ -7,6 +7,7 @@ import { useTransition } from "react";
 import { useTranslation } from "@/i18n/hooks/use-translation";
 
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/shared/submit-button";
 import {
   Form,
   FormControl,
@@ -96,9 +97,9 @@ export function ProfileForm({ profile, email }: ProfileFormProps) {
           )}
         />
         
-        <Button type="submit" disabled={isPending}>
-          {isPending ? t("settings.profile.updating_btn") : t("settings.profile.update_btn")}
-        </Button>
+        <SubmitButton isPending={isPending} loadingText={t("settings.profile.updating_btn")} className="w-auto">
+          {t("settings.profile.update_btn")}
+        </SubmitButton>
       </form>
     </Form>
   );

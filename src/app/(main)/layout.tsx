@@ -1,6 +1,10 @@
 import { Shell } from '@/components/layout/shell';
 import { UpcomingList } from '@/components/layout/upcoming-list';
+import { CalendarWidget } from '@/components/layout/calendar-widget';
+import { ScheduleProvider } from '@/components/layout/schedule-context';
 import { getUser } from '@/lib/supabase/server';
+import { getRecurringPayments } from '@/features/recurring/queries';
+import { getUserPreferences } from '@/features/preferences/queries';
 import { redirect } from 'next/navigation';
 import { ReactNode } from 'react';
 
@@ -22,20 +26,37 @@ export default async function MainLayout({ children }: MainLayoutProps) {
     email: user.email || '',
   };
 
-  // Extract mock components to act as "Server Components" representing data fetching logic
+  // Fetch upcoming recurring payments and user preferences
+  const [recurringResponse, preferences] = await Promise.all([
+    getRecurringPayments(user.id, { status: 'active', pageSize: 50 }),
+    getUserPreferences(user.id)
+  ]);
+
+  const activePayments = recurringResponse.data || [];
+  
+  // Sort payments by nearest next_execution_date
+  const sortedPayments = [...activePayments].sort((a, b) => 
+    new Date(a.next_execution_date).getTime() - new Date(b.next_execution_date).getTime()
+  );
+
+  // We only show the next 5 upcoming payments in the list
+  const upcomingPaymentsList = sortedPayments.slice(0, 5);
+
+  const dateFormat = preferences?.date_format || 'DD/MM/YYYY';
+
   const calendarSlot = (
-    <div className="bg-muted rounded-xl aspect-square flex items-center justify-center border border-border/50">
-      <p className="text-muted-foreground text-sm">Calendar Widget</p>
-    </div>
+    <CalendarWidget payments={sortedPayments} />
   );
 
   return (
-    <Shell 
-      user={userProfile} 
-      calendarSlot={calendarSlot} 
-      upcomingSlot={<UpcomingList />}
-    >
-      {children}
-    </Shell>
+    <ScheduleProvider>
+      <Shell 
+        user={userProfile} 
+        calendarSlot={calendarSlot} 
+        upcomingSlot={<UpcomingList payments={sortedPayments} dateFormatPreference={dateFormat} />}
+      >
+        {children}
+      </Shell>
+    </ScheduleProvider>
   );
 }

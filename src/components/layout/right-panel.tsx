@@ -15,7 +15,7 @@ function PanelContent({ calendarSlot, upcomingSlot }: { calendarSlot: ReactNode,
   return (
     <div className="flex flex-col h-full bg-background w-full shrink-0">
       <div className="p-6">
-        <h3 className="font-semibold text-lg mb-4">Calendar</h3>
+        <h3 className="font-semibold text-lg mb-4">Scheduled Payments</h3>
         {calendarSlot}
       </div>
 

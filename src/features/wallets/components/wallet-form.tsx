@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { SubmitButton } from '@/components/shared/submit-button';
 import { Form, } from '@/components/ui/form';
 import { createWalletAction, updateWalletAction } from '@/features/wallets/actions';
 import {
@@ -78,9 +79,9 @@ export function WalletForm({ currencies, defaultCurrencyCode = 'USD', initialDat
         <WalletFormFields currencies={currencies} isEditMode={!!initialData} />
 
         <div className="pt-4">
-          <Button type="submit" className="w-full" disabled={isPending} size="lg">
-            {isPending ? (initialData ? t('wallets.saving') : t('wallets.creating')) : (initialData ? t('common.saveChanges') : t('wallets.createWallet'))}
-          </Button>
+          <SubmitButton isPending={isPending} loadingText={initialData ? t('wallets.saving') : t('wallets.creating')} size="lg">
+            {initialData ? t('common.saveChanges') : t('wallets.createWallet')}
+          </SubmitButton>
         </div>
       </form>
     </Form>

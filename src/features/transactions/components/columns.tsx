@@ -5,7 +5,7 @@ import { TransactionRow } from "./data-table";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, Check } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -55,7 +55,12 @@ export const useColumns = (): ColumnDef<TransactionRow>[] => {
       const tx = row.original;
       return (
         <div className="min-w-[150px]">
-          <p className="font-medium">{tx.description}</p>
+          <p className="font-medium flex items-center gap-2">
+            {tx.description}
+            {(tx as any).status === 'pending' && (
+              <Badge variant="outline" className="text-[9px] h-4 px-1 uppercase bg-yellow-500/10 text-yellow-600 border-yellow-500/20">Pending</Badge>
+            )}
+          </p>
           <div className="flex flex-wrap items-center gap-1 mt-1">
             {tx.transactions_tags.map(tt => (
               <Badge 
@@ -150,6 +155,12 @@ export const useColumns = (): ColumnDef<TransactionRow>[] => {
             </Button>
           } />
           <DropdownMenuContent align="end">
+            {(tx as any).status === 'pending' && (
+              <DropdownMenuItem onClick={() => meta?.onConfirm?.(tx)} className="text-emerald-600 focus:bg-emerald-500/10 focus:text-emerald-600">
+                <Check className="mr-2 h-4 w-4" />
+                Confirm Amount
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={() => meta?.onEdit?.(tx)}>
               <Pencil className="mr-2 h-4 w-4" />
               {t('common.edit')}

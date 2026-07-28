@@ -3,6 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/shared/submit-button";
 import {
   Form,
   FormControl,
@@ -149,12 +150,9 @@ export function TagForm({ initialData, onSuccess }: TagFormProps) {
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? (
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          ) : null}
+        <SubmitButton isPending={isPending}>
           {initialData ? 'Update Tag' : 'Create Tag'}
-        </Button>
+        </SubmitButton>
       </form>
     </Form>
   );

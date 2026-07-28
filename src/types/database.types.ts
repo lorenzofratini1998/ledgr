@@ -55,6 +55,104 @@ export type Database = {
         }
         Relationships: []
       }
+      budget_categories: {
+        Row: {
+          allocation_amount: number | null
+          budget_id: string
+          category_id: string
+        }
+        Insert: {
+          allocation_amount?: number | null
+          budget_id: string
+          category_id: string
+        }
+        Update: {
+          allocation_amount?: number | null
+          budget_id?: string
+          category_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budget_categories_budget_id_fkey"
+            columns: ["budget_id"]
+            isOneToOne: false
+            referencedRelation: "budgets"
+            referencedColumns: ["budget_id"]
+          },
+          {
+            foreignKeyName: "budget_categories_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+        ]
+      }
+      budgets: {
+        Row: {
+          amount: number
+          budget_id: string
+          created_at: string
+          currency_code: string
+          deleted_at: string | null
+          description: string | null
+          end_date: string
+          is_global: boolean
+          is_rolled_over: boolean
+          name: string
+          recurrence: string | null
+          spent_amount: number
+          start_date: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          budget_id?: string
+          created_at?: string
+          currency_code: string
+          deleted_at?: string | null
+          description?: string | null
+          end_date: string
+          is_global?: boolean
+          is_rolled_over?: boolean
+          name: string
+          recurrence?: string | null
+          spent_amount?: number
+          start_date: string
+          type?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          budget_id?: string
+          created_at?: string
+          currency_code?: string
+          deleted_at?: string | null
+          description?: string | null
+          end_date?: string
+          is_global?: boolean
+          is_rolled_over?: boolean
+          name?: string
+          recurrence?: string | null
+          spent_amount?: number
+          start_date?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "budgets_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+        ]
+      }
       categories: {
         Row: {
           category_description: string | null
@@ -246,6 +344,85 @@ export type Database = {
         }
         Relationships: []
       }
+      recurring_payments: {
+        Row: {
+          amount: number
+          category_id: string | null
+          created_at: string
+          currency_code: string
+          description: string
+          end_date: string | null
+          frequency: Database["public"]["Enums"]["recurring_frequency_type"]
+          id: string
+          last_execution_date: string | null
+          next_execution_date: string
+          start_date: string
+          status: Database["public"]["Enums"]["recurring_status_type"]
+          type: Database["public"]["Enums"]["recurring_amount_type"]
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          created_at?: string
+          currency_code: string
+          description: string
+          end_date?: string | null
+          frequency: Database["public"]["Enums"]["recurring_frequency_type"]
+          id?: string
+          last_execution_date?: string | null
+          next_execution_date: string
+          start_date: string
+          status?: Database["public"]["Enums"]["recurring_status_type"]
+          type?: Database["public"]["Enums"]["recurring_amount_type"]
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          created_at?: string
+          currency_code?: string
+          description?: string
+          end_date?: string | null
+          frequency?: Database["public"]["Enums"]["recurring_frequency_type"]
+          id?: string
+          last_execution_date?: string | null
+          next_execution_date?: string
+          start_date?: string
+          status?: Database["public"]["Enums"]["recurring_status_type"]
+          type?: Database["public"]["Enums"]["recurring_amount_type"]
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recurring_payments_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "recurring_payments_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+          {
+            foreignKeyName: "recurring_payments_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tags: {
         Row: {
           color: string | null
@@ -292,6 +469,8 @@ export type Database = {
           description: string
           exchange_rate: number
           normalized_amount: number
+          recurring_id: string | null
+          status: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id: string
           updated_at: string
           user_id: string
@@ -306,6 +485,8 @@ export type Database = {
           description: string
           exchange_rate?: number
           normalized_amount: number
+          recurring_id?: string | null
+          status?: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id?: string
           updated_at?: string
           user_id: string
@@ -320,12 +501,21 @@ export type Database = {
           description?: string
           exchange_rate?: number
           normalized_amount?: number
+          recurring_id?: string | null
+          status?: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id?: string
           updated_at?: string
           user_id?: string
           wallet_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "fk_recurring_id"
+            columns: ["recurring_id"]
+            isOneToOne: false
+            referencedRelation: "recurring_payments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "transactions_category_id_fkey"
             columns: ["category_id"]
@@ -437,13 +627,6 @@ export type Database = {
           primary_currency_code: string | null
           profile_id: string
           theme: Database["public"]["Enums"]["app_theme_type"]
-          theme_base_color: string
-          theme_body_font: string
-          theme_chart_color: string
-          theme_heading_font: string
-          theme_primary_color: string
-          theme_radius: number
-          theme_style: string
           timezone: string
           updated_at: string
         }
@@ -460,13 +643,6 @@ export type Database = {
           primary_currency_code?: string | null
           profile_id: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
-          theme_base_color?: string
-          theme_body_font?: string
-          theme_chart_color?: string
-          theme_heading_font?: string
-          theme_primary_color?: string
-          theme_radius?: number
-          theme_style?: string
           timezone?: string
           updated_at?: string
         }
@@ -483,12 +659,6 @@ export type Database = {
           primary_currency_code?: string | null
           profile_id?: string
           theme?: Database["public"]["Enums"]["app_theme_type"]
-          theme_base_color?: string
-          theme_body_font?: string
-          theme_chart_color?: string
-          theme_heading_font?: string
-          theme_primary_color?: string
-          theme_style?: string
           timezone?: string
           updated_at?: string
         }
@@ -628,6 +798,24 @@ export type Database = {
           day: string
         }[]
       }
+      get_budget_category_breakdown: {
+        Args: { p_budget_id: string }
+        Returns: {
+          amount: number
+          category_id: string
+          category_name: string
+          color: string
+          compareAmount: number
+          icon: string
+        }[]
+      }
+      get_budget_daily_pacing: {
+        Args: { p_budget_id: string }
+        Returns: {
+          balance: number
+          day: string
+        }[]
+      }
       get_cashflow_summary: {
         Args: {
           p_category_id?: string
@@ -658,6 +846,14 @@ export type Database = {
           icon: string
         }[]
       }
+      get_latest_exchange_rate: {
+        Args: {
+          p_base_currency: string
+          p_date: string
+          p_quote_currency: string
+        }
+        Returns: number
+      }
       get_monthly_cashflow: {
         Args: {
           p_category_id?: string
@@ -672,6 +868,14 @@ export type Database = {
           month: string
         }[]
       }
+      get_next_recurring_date: {
+        Args: {
+          p_current_target: string
+          p_frequency: Database["public"]["Enums"]["recurring_frequency_type"]
+          p_start_date: string
+        }
+        Returns: string
+      }
       get_wallet_balances: {
         Args: { p_is_active?: boolean; p_user_id: string }
         Returns: {
@@ -683,6 +887,9 @@ export type Database = {
           wallet_id: string
         }[]
       }
+      process_hourly_recurring_payments: { Args: never; Returns: undefined }
+      process_recurring_budgets: { Args: never; Returns: undefined }
+      recalculate_budget: { Args: { p_budget_id: string }; Returns: undefined }
     }
     Enums: {
       app_date_format_type: "DD/MM/YYYY" | "YYYY-MM-DD" | "MM/DD/YYYY"
@@ -695,6 +902,15 @@ export type Database = {
         | "1y"
         | "ytd"
         | "custom"
+      recurring_amount_type: "fixed" | "variable"
+      recurring_frequency_type:
+        | "once"
+        | "daily"
+        | "weekly"
+        | "monthly"
+        | "yearly"
+      recurring_status_type: "active" | "paused" | "completed"
+      transaction_status_type: "pending" | "completed"
       wallet_type: "regular" | "savings" | "investment"
     }
     CompositeTypes: {
@@ -829,6 +1045,16 @@ export const Constants = {
       app_date_format_type: ["DD/MM/YYYY", "YYYY-MM-DD", "MM/DD/YYYY"],
       app_theme_type: ["light", "dark", "system"],
       dashboard_range_type: ["7d", "30d", "90d", "6m", "1y", "ytd", "custom"],
+      recurring_amount_type: ["fixed", "variable"],
+      recurring_frequency_type: [
+        "once",
+        "daily",
+        "weekly",
+        "monthly",
+        "yearly",
+      ],
+      recurring_status_type: ["active", "paused", "completed"],
+      transaction_status_type: ["pending", "completed"],
       wallet_type: ["regular", "savings", "investment"],
     },
   },

@@ -134,7 +134,7 @@ export async function getWalletBalances(userId: string) {
   return fetchBalances();
 }
 
-export async function getRecentTransactions(userId: string, limit: number = 5, walletId?: string, categoryId?: string) {
+export async function getRecentTransactions(userId: string, limit: number = 5, walletId?: string, categoryId?: string, recurringId?: string) {
   const supabaseServer = await createClient();
   const { data: { session } } = await supabaseServer.auth.getSession();
   const token = session?.access_token;
@@ -166,6 +166,10 @@ export async function getRecentTransactions(userId: string, limit: number = 5, w
         query = query.in('category_id', categoryIds);
       }
 
+      if (recurringId) {
+        query = query.eq('recurring_id', recurringId);
+      }
+
       const { data, error } = await query
         .order('date', { ascending: false })
         .order('created_at', { ascending: false })
@@ -174,7 +178,7 @@ export async function getRecentTransactions(userId: string, limit: number = 5, w
       if (error) throw new Error(`Failed to fetch recent transactions: ${error.message}`);
       return data || [];
     },
-    [`recent-transactions-${userId}-${limit}-${walletId || 'all'}-${categoryId || 'all'}`],
+    [`recent-transactions-${userId}-${limit}-${walletId || 'all'}-${categoryId || 'all'}-${recurringId || 'all'}`],
     { tags: [`transactions-${userId}`] }
   );
 

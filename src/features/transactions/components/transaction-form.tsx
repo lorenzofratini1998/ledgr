@@ -19,6 +19,8 @@ import { Label } from '@/components/ui/label';
 
 import { createTransactionAction, updateTransactionAction } from '../actions';
 import { CreateTransactionPayload, createTransactionSchema } from '../schemas';
+import { TransactionTypeToggle } from '@/components/shared/transaction-type-toggle';
+import { SubmitButton } from '@/components/shared/submit-button';
 import { CurrencySelector } from '@/components/shared/currency-selector';
 import { TagSelector } from '@/components/shared/tag-selector';
 import { Currency, Tag } from '@/types/models';
@@ -107,16 +109,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           render={({ field }) => (
             <FormItem>
               <FormControl>
-                <Tabs value={field.value} onValueChange={field.onChange} className="w-full">
-                  <TabsList className="grid w-full grid-cols-2">
-                    <TabsTrigger value="expense" className="data-[state=active]:bg-red-500/10 data-[state=active]:text-red-600">
-                      {t('transactions.expense')}
-                    </TabsTrigger>
-                    <TabsTrigger value="income" className="data-[state=active]:bg-emerald-500/10 data-[state=active]:text-emerald-600">
-                      {t('transactions.income')}
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
+                <TransactionTypeToggle value={field.value} onValueChange={field.onChange} />
               </FormControl>
             </FormItem>
           )}
@@ -308,16 +301,9 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
         )}
 
         {/* Submit Button */}
-        <Button type="submit" className="w-full mt-2" disabled={isPending}>
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              {t('common.saving')}
-            </>
-          ) : (
-            initialData ? t('transactions.updateTransaction') : t('transactions.saveTransaction')
-          )}
-        </Button>
+        <SubmitButton isPending={isPending} loadingText={t('common.saving')} className="mt-2">
+          {initialData ? t('transactions.updateTransaction') : t('transactions.saveTransaction')}
+        </SubmitButton>
       </form>
     </Form>
   );

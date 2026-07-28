@@ -332,6 +332,7 @@ export const it: Dictionary = {
     wallets: "Portafogli",
     categories: "Categorie",
     transactions: "Transazioni",
+    scheduled: "Programmati",
     budgets: "Budget",
     analytics: "Analisi",
     settings: "Impostazioni",

@@ -195,6 +195,7 @@ export async function getTransactions(
     minAmount?: number;
     maxAmount?: number;
     type?: 'income' | 'expense' | 'all';
+    recurringId?: string;
   }
 ) {
   const supabaseServer = await createClient();
@@ -246,6 +247,9 @@ export async function getTransactions(
       }
       if (params?.currencyCodes && params.currencyCodes.length > 0) {
         query = query.in("currency_code", params.currencyCodes);
+      }
+      if (params?.recurringId) {
+        query = query.eq("recurring_id", params.recurringId);
       }
       if (params?.type === 'income') {
         query = query.gt("amount", 0);

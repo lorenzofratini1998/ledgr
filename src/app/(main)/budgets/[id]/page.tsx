@@ -1,3 +1,5 @@
+import { PageContainer } from '@/components/layout/page-container';
+import { DetailHeader } from '@/components/shared/detail-header';
 import { getBudgetById, getBudgetCategoryBreakdown, getBudgetDailyPacing } from '@/features/budgets/queries';
 import { getTransactions } from '@/features/transactions/queries';
 import { getCategories } from '@/features/categories/queries';
@@ -15,6 +17,7 @@ import { Button, buttonVariants } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Receipt } from 'lucide-react';
 import Link from 'next/link';
 import { formatDate, formatCurrency } from '@/lib/formatters';
+import { TransactionListItem } from '@/features/transactions/components/transaction-list-item';
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { t } = await getTranslator();
@@ -89,20 +92,12 @@ export default async function BudgetDetailsPage({
   });
 
   return (
-    <div className="flex flex-col h-full space-y-6 pt-safe pb-safe pb-24 md:pb-6 px-4 md:px-8">
-      <div className="flex items-center space-x-4 mt-4">
-        <Link href="/budgets">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{budget.name}</h1>
-          <p className="text-sm text-muted-foreground">
-            {t('budgets.detailsTitle' as any)}
-          </p>
-        </div>
-      </div>
+    <PageContainer>
+      <DetailHeader
+        backHref="/budgets"
+        title={budget.name}
+        subtitle={t('budgets.detailsTitle' as any)}
+      />
 
       <BudgetKpiCards 
         amount={budget.amount}
@@ -160,31 +155,17 @@ export default async function BudgetDetailsPage({
             ) : (
               <div className="space-y-4">
                 {(transactions as any[]).slice(0, 5).map((tx: any) => (
-                  <div key={tx.transaction_id} className="flex items-center justify-between border-b last:border-0 pb-4 last:pb-0">
-                    <div className="flex items-center space-x-4">
-                      <div 
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0" 
-                        style={{ backgroundColor: tx.categories?.color || '#94a3b8' }}
-                      >
-                         <Receipt size={20} />
-                      </div>
-                      <div>
-                        <p className="font-medium leading-none">{tx.description}</p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {formatDate(tx.date, dateFormat)} • {tx.wallets?.name || 'Unknown Wallet'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className={`font-semibold ${tx.normalized_amount > 0 ? 'text-emerald-500' : ''}`}>
-                      {tx.normalized_amount > 0 ? '+' : ''}
-                      {formatCurrency(tx.amount, tx.currency_code, 'en-US')}
-                    </div>
-                  </div>
+                  <TransactionListItem 
+                    key={tx.transaction_id} 
+                    transaction={tx} 
+                    dateFormatPreference={dateFormat} 
+                    locale={'en-US'} 
+                  />
                 ))}
               </div>
             )}
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

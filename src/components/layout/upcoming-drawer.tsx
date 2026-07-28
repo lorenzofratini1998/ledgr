@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/drawer';
 import { CalendarClock } from 'lucide-react';
 import { ReactNode } from 'react';
+import Link from 'next/link';
 
 interface UpcomingDrawerProps {
   children: ReactNode;
@@ -27,13 +28,17 @@ export function UpcomingDrawer({ children }: UpcomingDrawerProps) {
         <div className="mx-auto w-full max-w-sm">
           <DrawerHeader>
             <DrawerTitle>Upcoming Payments</DrawerTitle>
-            <DrawerDescription>Your scheduled transactions for the next 7 days.</DrawerDescription>
+            <DrawerDescription>Your next scheduled transactions.</DrawerDescription>
           </DrawerHeader>
-          <div className="p-4 pb-0">
+          <div className="p-4 pb-4 max-h-[60vh] overflow-y-auto">
             {children}
           </div>
           <DrawerFooter>
-            <Button className="w-full">View All Schedules</Button>
+            <DrawerClose nativeButton={false} render={
+              <Button className="w-full" render={<Link href="/scheduled" />} nativeButton={false} />
+            }>
+              View All Schedules
+            </DrawerClose>
             <DrawerClose render={<Button variant="outline" />}>
               Close
             </DrawerClose>

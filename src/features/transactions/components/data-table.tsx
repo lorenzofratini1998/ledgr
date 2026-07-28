@@ -11,7 +11,7 @@ import { useState, useEffect, useTransition } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Filter, Trash2 } from "lucide-react";
+import { Loader2, Filter, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { toast } from "sonner";
@@ -19,6 +19,8 @@ import { deleteTransactionAction, bulkDeleteTransactionsAction } from "../action
 import { ResponsiveDrawer } from "@/components/shared/responsive-drawer";
 import { TransactionForm } from "./transaction-form";
 import { ActionDialog } from "@/components/shared/action-dialog";
+import { confirmPendingTransactionAction } from "../actions";
+import { Label } from "@/components/ui/label";
 import { DataGrid } from "@/components/shared/data-grid/data-grid";
 import { DataGridPagination } from "@/components/shared/data-grid/data-grid-pagination";
 import { TransactionFilters } from "./transaction-filters";
@@ -92,6 +94,8 @@ export function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const [editTransaction, setEditTransaction] = useState<TransactionRow | null>(null);
   const [deleteTransaction, setDeleteTransaction] = useState<TransactionRow | null>(null);
+  const [confirmTransaction, setConfirmTransaction] = useState<TransactionRow | null>(null);
+  const [confirmAmountStr, setConfirmAmountStr] = useState("");
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
 
   const [localFilters, setLocalFilters] = useState({
@@ -265,11 +269,24 @@ export function DataTable<TData, TValue>({
     meta: {
       onEdit: setEditTransaction,
       onDelete: setDeleteTransaction,
+      onConfirm: (tx: TransactionRow) => {
+        setConfirmTransaction(tx);
+        setConfirmAmountStr(Math.abs(Number(tx.amount)).toFixed(2));
+      },
       primaryCurrencyCode: primaryCurrencyCode,
       dateFormatPreference: dateFormatPreference,
       locale: locale
     }
   });
+
+  const clearRecurringFilter = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+    currentParams.delete("recurringId");
+    currentParams.set("page", "1");
+    startTransition(() => {
+      router.push(`${pathname}?${currentParams.toString()}`, { scroll: false });
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -403,6 +420,15 @@ export function DataTable<TData, TValue>({
         </div>
       </div>
 
+      {searchParams.get("recurringId") && (
+        <div className="flex items-center gap-2 text-sm mt-2">
+          <span className="text-muted-foreground">Filtered by a Scheduled Payment</span>
+          <Badge variant="secondary" className="cursor-pointer hover:bg-secondary/80 flex items-center gap-1" onClick={clearRecurringFilter}>
+            Clear <X className="h-3 w-3" />
+          </Badge>
+        </div>
+      )}
+
       <DataGrid 
         table={table}
         columnsLength={columns.length}
@@ -417,6 +443,10 @@ export function DataTable<TData, TValue>({
             locale={locale}
             onEdit={(tx) => setEditTransaction(tx)}
             onDelete={(tx) => setDeleteTransaction(tx)}
+            onConfirm={(tx) => {
+              setConfirmTransaction(tx as unknown as TransactionRow);
+              setConfirmAmountStr(Math.abs(Number(tx.amount)).toFixed(2));
+            }}
           />
         )}
       />
@@ -498,6 +528,64 @@ export function DataTable<TData, TValue>({
           }
         }}
       />
+
+      {confirmTransaction && (
+        <ActionDialog
+          open={!!confirmTransaction}
+          onOpenChange={(open) => !open && setConfirmTransaction(null)}
+          title="Confirm Pending Transaction"
+          description="Enter the exact amount to confirm this transaction. It will then impact your wallet balance."
+          actionText="Confirm"
+          isPending={isPending}
+          onAction={() => {
+            const amount = parseFloat(confirmAmountStr);
+            if (!isNaN(amount) && amount >= 0) {
+              startTransition(async () => {
+                const res = await confirmPendingTransactionAction(confirmTransaction.transaction_id, amount);
+                if (res.success) {
+                  toast.success(res.message);
+                  setConfirmTransaction(null);
+                } else {
+                  toast.error(res.message);
+                }
+              });
+            }
+          }}
+        >
+          <div className="py-4">
+            <Label htmlFor="confirmAmount">Exact Amount</Label>
+            <div className="relative mt-2">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
+                {currencies.find(c => c.iso_code === confirmTransaction.currency_code)?.symbol || confirmTransaction.currency_code}
+              </div>
+              <Input 
+                id="confirmAmount" 
+                type="number" 
+                step="0.01"
+                min="0.01"
+                value={confirmAmountStr} 
+                onChange={(e) => {
+                  let val = e.target.value;
+                  if (val.includes('.')) {
+                    const parts = val.split('.');
+                    if (parts[1].length > 2) {
+                      val = `${parts[0]}.${parts[1].slice(0, 2)}`;
+                    }
+                  }
+                  setConfirmAmountStr(val);
+                }} 
+                onBlur={(e) => {
+                  const val = e.target.value;
+                  if (val && !isNaN(Number(val))) {
+                    setConfirmAmountStr(Number(val).toFixed(2));
+                  }
+                }}
+                className="pl-8 text-lg font-medium"
+              />
+            </div>
+          </div>
+        </ActionDialog>
+      )}
 
       <ActionDialog
         open={bulkDeleteDialogOpen}

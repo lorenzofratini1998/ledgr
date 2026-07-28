@@ -144,3 +144,69 @@ export async function bulkDeleteTransactionsAction(ids: string[]): Promise<Actio
   });
 }
 
+export async function confirmPendingTransactionAction(id: string, exactAmount: number): Promise<ActionResponse> {
+  return executeAction(async (user) => {
+    const supabaseServer = await createClient();
+
+    // Fetch the transaction to get details needed for recalculating normalized amount
+    const { data: tx, error: fetchError } = await supabaseServer
+      .from('transactions')
+      .select('amount, currency_code, date, status')
+      .eq('transaction_id', id)
+      .eq('user_id', user.id)
+      .single();
+
+    if (fetchError || !tx) {
+      return { success: false, message: 'Transaction not found' };
+    }
+
+    if (tx.status !== 'pending') {
+      return { success: false, message: 'Transaction is not pending' };
+    }
+
+    // Determine sign based on original amount's sign (since DB amount is negative for expense)
+    const finalAmount = tx.amount < 0 ? -Math.abs(exactAmount) : Math.abs(exactAmount);
+
+    const primaryCurrency = await getPrimaryCurrencyCode(supabaseServer, user.id);
+    if (!primaryCurrency) {
+      return { success: false, message: 'Primary currency not configured' };
+    }
+
+    let crossRate = 1.0;
+    if (tx.currency_code !== primaryCurrency) {
+      const primaryRateToEUR = await getExchangeRateForCurrency(supabaseServer, primaryCurrency, tx.date);
+      const txRateToEUR = await getExchangeRateForCurrency(supabaseServer, tx.currency_code, tx.date);
+
+      if (primaryRateToEUR && txRateToEUR) {
+        crossRate = primaryRateToEUR / txRateToEUR;
+      }
+    }
+
+    const normalizedAmount = finalAmount * crossRate;
+
+    const { error: updateError } = await supabaseServer
+      .from('transactions')
+      .update({
+        amount: finalAmount,
+        normalized_amount: normalizedAmount,
+        exchange_rate: crossRate,
+        status: 'completed'
+      })
+      .eq('transaction_id', id)
+      .eq('user_id', user.id);
+
+    if (updateError) {
+      return { success: false, message: `Failed to confirm transaction: ${updateError.message}` };
+    }
+
+    revalidatePath('/transactions');
+    revalidatePath('/dashboard');
+    revalidatePath('/wallets'); 
+
+    updateTag(`transactions-${user.id}`);
+    updateTag(`wallets-${user.id}`);
+
+    return { success: true, message: 'Transaction confirmed successfully' };
+  });
+}
+

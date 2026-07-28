@@ -22,6 +22,7 @@ interface TransactionMobileCardProps {
   locale?: string
   onEdit: (tx: TransactionRow) => void
   onDelete: (tx: TransactionRow) => void
+  onConfirm: (tx: TransactionRow) => void
 }
 
 export function TransactionMobileCard({
@@ -31,7 +32,8 @@ export function TransactionMobileCard({
   dateFormatPreference,
   locale = 'en-US',
   onEdit,
-  onDelete
+  onDelete,
+  onConfirm
 }: TransactionMobileCardProps) {
   const amount = parseFloat(tx.amount as unknown as string);
   const normalizedAmount = parseFloat(tx.normalized_amount as unknown as string);
@@ -65,6 +67,11 @@ export function TransactionMobileCard({
               </Badge>
             ) : (
               <span className="text-[10px] text-muted-foreground uppercase tracking-wider font-semibold">{t('transactions.uncategorized')}</span>
+            )}
+            {tx.status === 'pending' && (
+              <Badge variant="outline" className="text-[10px] h-4 px-1 font-normal bg-amber-500/10 text-amber-500 border-amber-500/20">
+                Pending
+              </Badge>
             )}
           </div>
           <span className="font-semibold text-sm truncate">{tx.description}</span>
@@ -116,6 +123,14 @@ export function TransactionMobileCard({
                 </Button>
               } />
               <DropdownMenuContent align="end">
+                {tx.status === 'pending' && (
+                  <>
+                    <DropdownMenuItem onClick={() => onConfirm(tx)} className="text-emerald-600 focus:bg-emerald-500/10 focus:text-emerald-600">
+                      Confirm Execution
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
                 <DropdownMenuItem onClick={() => onEdit(tx)}>
                   <Pencil className="mr-2 h-4 w-4" />
                   {t('common.edit')}

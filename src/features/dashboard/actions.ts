@@ -47,10 +47,10 @@ export async function fetchWalletBalancesAction(): Promise<ActionResponse<any>> 
   });
 }
 
-export async function fetchRecentTransactionsAction(limit: number = 5, walletId?: string, categoryId?: string): Promise<ActionResponse<any>> {
+export async function fetchRecentTransactionsAction(limit: number = 5, walletId?: string, categoryId?: string, recurringId?: string): Promise<ActionResponse<any>> {
   return executeAction(async (user) => {
-    logger.info('Fetching recent transactions', { userId: user.id, limit, walletId, categoryId });
-    const data = await getRecentTransactions(user.id, limit, walletId, categoryId);
+    logger.info('Fetching recent transactions', { userId: user.id, limit, walletId, categoryId, recurringId });
+    const data = await getRecentTransactions(user.id, limit, walletId, categoryId, recurringId);
     return { success: true, data };
   });
 }

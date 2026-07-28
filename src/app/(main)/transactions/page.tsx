@@ -1,3 +1,5 @@
+import { PageContainer } from '@/components/layout/page-container';
+import { PageHeader } from '@/components/shared/page-header';
 import { getUser, createClient } from '@/lib/supabase/server';
 import { redirect } from 'next/navigation';
 import { getWallets } from '@/features/wallets/queries';
@@ -37,6 +39,7 @@ export default async function TransactionsPage(
   const minAmount = searchParams?.minAmount ? parseFloat(searchParams.minAmount as string) : undefined;
   const maxAmount = searchParams?.maxAmount ? parseFloat(searchParams.maxAmount as string) : undefined;
   const type = (searchParams?.type as 'income' | 'expense' | 'all') || 'all';
+  const recurringId = searchParams?.recurringId as string | undefined;
   const { data: { user } } = await getUser();
 
   if (!user) {
@@ -58,7 +61,7 @@ export default async function TransactionsPage(
   ] = await Promise.all([
     getTransactions(user.id, { 
       page, pageSize: 20, search, walletIds, categoryIds, tagIds, currencyCodes,
-      startDate, endDate, minAmount, maxAmount, type 
+      startDate, endDate, minAmount, maxAmount, type, recurringId 
     }),
     getWallets(user.id),
     getCategories(user.id),
@@ -84,25 +87,23 @@ export default async function TransactionsPage(
     return acc;
   }, [] as { category_id: string; category_name: string }[]);
 
+  const trigger = (
+    <CreateTransactionTrigger 
+      wallets={wallets as any} 
+      categories={categories}
+      currencies={currencies as any}
+      tags={tags.data as any}
+      defaultCurrency={primaryCurrencyCode}
+    />
+  );
+
   return (
-    <div className="flex flex-col h-full space-y-6 pt-safe pb-safe pb-24 md:pb-6 px-4 md:px-8">
-      <div className="flex items-center justify-between mt-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('transactions.title')}</h1>
-          <p className="text-sm text-muted-foreground">
-            {t('transactions.description')}
-          </p>
-        </div>
-        <div className="hidden md:block">
-          <CreateTransactionTrigger 
-            wallets={wallets as any} 
-            categories={categories}
-            currencies={currencies as any}
-            tags={tags.data as any}
-            defaultCurrency={primaryCurrencyCode}
-          />
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader 
+        title={t('transactions.title')}
+        description={t('transactions.description')}
+        action={trigger}
+      />
 
       <TransactionsClientView 
         transactions={transactionsResponse.data as any} 
@@ -119,14 +120,8 @@ export default async function TransactionsPage(
 
       {/* Mobile trigger */}
       <div className="md:hidden">
-        <CreateTransactionTrigger 
-          wallets={wallets as any} 
-          categories={categories}
-          currencies={currencies as any}
-          tags={tags.data as any}
-          defaultCurrency={primaryCurrencyCode}
-        />
+        {trigger}
       </div>
-    </div>
+    </PageContainer>
   );
 }

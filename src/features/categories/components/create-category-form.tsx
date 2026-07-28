@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { SubmitButton } from '@/components/shared/submit-button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -173,9 +174,9 @@ export function CreateCategoryForm({ parentCategories, initialData, initialParen
           )}
         />
 
-        <Button type="submit" className="w-full" disabled={isSubmitting}>
-          {isSubmitting ? (initialData ? t('categories.updating') : t('categories.creating')) : (initialData ? t('common.saveChanges') : t('categories.createCategory'))}
-        </Button>
+        <SubmitButton isPending={isSubmitting} loadingText={initialData ? t('categories.updating') : t('categories.creating')}>
+          {initialData ? t('common.saveChanges') : t('categories.createCategory')}
+        </SubmitButton>
       </form>
     </Form>
   );

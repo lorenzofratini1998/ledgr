@@ -330,6 +330,7 @@ export const en = {
     wallets: "Wallets",
     categories: "Categories",
     transactions: "Transactions",
+    scheduled: "Scheduled",
     budgets: "Budgets",
     analytics: "Analytics",
     settings: "Settings",

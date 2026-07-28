@@ -1,3 +1,5 @@
+import { PageContainer } from '@/components/layout/page-container';
+import { PageHeader } from '@/components/shared/page-header';
 import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateWalletTrigger } from '@/features/wallets/components/create-wallet-trigger';
@@ -41,19 +43,17 @@ export default async function WalletsPage() {
   const savingsWallets = wallets.filter((w) => w.type === 'savings');
   const investmentWallets = wallets.filter((w) => w.type === 'investment');
 
+  const trigger = (
+    <CreateWalletTrigger currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
+  );
+
   return (
-    <div className="flex flex-col h-full space-y-6 pt-safe pb-safe pb-24 md:pb-6 px-4 md:px-8">
-      <div className="flex items-center justify-between mt-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{t('wallets.title')}</h1>
-          <p className="text-sm text-muted-foreground">
-            {t('wallets.description')}
-          </p>
-        </div>
-        <div className="hidden md:block">
-          <CreateWalletTrigger currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader 
+        title={t('wallets.title')}
+        description={t('wallets.description')}
+        action={trigger}
+      />
 
       <WalletsClientView
         regularWallets={regularWallets}
@@ -66,8 +66,8 @@ export default async function WalletsPage() {
 
       {/* Mobile trigger */}
       <div className="md:hidden">
-        <CreateWalletTrigger currencies={currencies} defaultCurrencyCode={defaultCurrencyCode} />
+        {trigger}
       </div>
-    </div>
+    </PageContainer>
   );
 }
