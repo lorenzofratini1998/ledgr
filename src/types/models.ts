@@ -15,6 +15,15 @@ export type CategoryWithChildren = Category & {
   children?: Category[];
 };
 
+export type CategoryOption = {
+  category_id: string;
+  category_name: string;
+  is_child?: boolean;
+  parent_id?: string | null;
+  icon?: string | null;
+  color?: string | null;
+};
+
 export type AppThemeType = Enums<'app_theme_type'>;
 export type AppDateFormatType = Enums<'app_date_format_type'>;
 export type DashboardRangeType = Enums<'dashboard_range_type'>;

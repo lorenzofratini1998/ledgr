@@ -4,14 +4,14 @@ import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { TransactionForm } from './transaction-form';
 import { useTranslation } from '@/i18n/hooks/use-translation';
-import { Currency, Tag } from '@/types/models';
+import { Currency, Tag, CategoryOption } from '@/types/models';
 import { Plus, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
 
 interface CreateTransactionTriggerProps {
   wallets: { id: string; name: string; currency_code: string; is_default: boolean }[];
-  categories: { category_id: string; category_name: string }[];
+  categories: CategoryOption[];
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];
   defaultCurrency: string;

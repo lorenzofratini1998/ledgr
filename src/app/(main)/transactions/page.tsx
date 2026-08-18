@@ -10,6 +10,7 @@ import { getTags } from '@/features/tags/queries';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateTransactionTrigger } from '@/features/transactions/components/create-transaction-trigger';
 import { TransactionsClientView } from '@/features/transactions/components/transactions-client-view';
+import { flattenCategoriesForSelect } from '@/features/categories/utils';
 import { Metadata } from 'next';
 
 import { getTranslator } from '@/i18n/server';
@@ -76,16 +77,7 @@ export default async function TransactionsPage(
     redirect('/onboarding');
   }
 
-  // Flatten categories for the select dropdown
-  const categories = nestedCategories.reduce((acc, cat) => {
-    acc.push({ category_id: cat.category_id, category_name: cat.category_name });
-    if (cat.children) {
-      cat.children.forEach(child => {
-        acc.push({ category_id: child.category_id, category_name: `-- ${child.category_name}` });
-      });
-    }
-    return acc;
-  }, [] as { category_id: string; category_name: string }[]);
+  const categories = flattenCategoriesForSelect(nestedCategories);
 
   const trigger = (
     <CreateTransactionTrigger 
@@ -110,7 +102,7 @@ export default async function TransactionsPage(
         totalCount={transactionsResponse.count}
         currentPage={page}
         wallets={wallets as any}
-        categories={nestedCategories as any}
+        categories={categories}
         tags={tags.data as any}
         currencies={currencies as any}
         primaryCurrencyCode={primaryCurrencyCode}

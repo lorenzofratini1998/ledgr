@@ -10,6 +10,7 @@ import { getRecurringPayments } from '@/features/recurring/queries';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { Metadata } from 'next';
 import { RecurringList, CreateRecurringTrigger } from '@/features/recurring/components';
+import { flattenCategoriesForSelect } from '@/features/categories/utils';
 import { getTranslator } from '@/i18n/server';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -58,15 +59,7 @@ export default async function ScheduledPage(
     redirect('/onboarding');
   }
 
-  const categories = nestedCategories.reduce((acc, cat) => {
-    acc.push({ category_id: cat.category_id, category_name: cat.category_name });
-    if (cat.children) {
-      cat.children.forEach(child => {
-        acc.push({ category_id: child.category_id, category_name: `-- ${child.category_name}` });
-      });
-    }
-    return acc;
-  }, [] as { category_id: string; category_name: string }[]);
+  const categories = flattenCategoriesForSelect(nestedCategories);
 
   const trigger = (
     <CreateRecurringTrigger 

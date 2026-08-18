@@ -32,17 +32,7 @@ export async function parsePeriod(
   return getDateRangeForPeriod(activePeriod, defaultFallback);
 }
 
-export function flattenCategoriesForSelect(nestedCategories: any[]) {
-  return nestedCategories.reduce((acc, cat) => {
-    acc.push({ category_id: cat.category_id, category_name: cat.category_name });
-    if (cat.children) {
-      cat.children.forEach((child: any) => {
-        acc.push({ category_id: child.category_id, category_name: `-- ${child.category_name}` });
-      });
-    }
-    return acc;
-  }, [] as { category_id: string; category_name: string }[]);
-}
+export { flattenCategoriesForSelect } from '@/features/categories/utils';
 
 export function getDisplayName(user: any) {
   return user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';

@@ -1,18 +1,17 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-interface CategoryOption {
-  category_id: string;
-  category_name: string;
-}
+import { CategoryOption } from '@/types/models';
+import { cn } from '@/lib/utils';
+import { CornerDownRight } from 'lucide-react';
 
 interface CategorySelectProps {
-  value?: string;
+  value?: string | null;
   onValueChange: (value: string) => void;
   categories: CategoryOption[];
   placeholder?: string;
   disabled?: boolean;
   allowEmpty?: boolean;
   emptyLabel?: string;
+  className?: string;
 }
 
 export function CategorySelect({
@@ -23,19 +22,39 @@ export function CategorySelect({
   disabled = false,
   allowEmpty = false,
   emptyLabel = "None / Uncategorized",
+  className,
 }: CategorySelectProps) {
+  const selectedCategory = categories.find((c) => c.category_id === value);
+
   return (
     <Select value={value || ""} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
-      <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
+      <SelectTrigger className={className}>
+        <SelectValue placeholder={placeholder}>
+          <span className="truncate block text-left">
+            {selectedCategory ? selectedCategory.category_name : null}
+          </span>
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {allowEmpty && (
           <SelectItem value="">{emptyLabel}</SelectItem>
         )}
         {categories.map((cat) => (
-          <SelectItem key={cat.category_id} value={cat.category_id}>
-            {cat.category_name}
+          <SelectItem
+            key={cat.category_id}
+            value={cat.category_id}
+            className={cn(
+              cat.is_child && "pl-3 text-muted-foreground"
+            )}
+          >
+            <div className="flex items-center gap-1.5 truncate">
+              {cat.is_child && (
+                <CornerDownRight className="size-3 shrink-0 text-muted-foreground/60" />
+              )}
+              <span className={cn(cat.is_child ? "text-sm" : "font-medium text-foreground")}>
+                {cat.category_name}
+              </span>
+            </div>
           </SelectItem>
         ))}
       </SelectContent>

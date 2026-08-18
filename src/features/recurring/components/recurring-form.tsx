@@ -18,6 +18,7 @@ import { CalendarIcon, Loader2 } from "lucide-react";
 import { CurrencySelector } from "@/components/shared/currency-selector";
 import { TransactionTypeToggle } from "@/components/shared/transaction-type-toggle";
 import { SubmitButton } from "@/components/shared/submit-button";
+import { CategorySelect } from "@/components/shared/category-select";
 
 interface RecurringFormProps {
   wallets: any[];
@@ -292,23 +293,17 @@ export function RecurringForm({ wallets, categories, currencies, defaultCurrency
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Category (Optional)</FormLabel>
-                <Select value={field.value || ""} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select category">
-                        <span className="truncate block text-left">
-                          {field.value ? categories.find(c => c.category_id === field.value)?.category_name : "None"}
-                        </span>
-                      </SelectValue>
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="">None</SelectItem>
-                    {categories.map(c => (
-                      <SelectItem key={c.category_id} value={c.category_id}>{c.category_name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <FormControl>
+                  <CategorySelect
+                    value={field.value || ""}
+                    onValueChange={field.onChange}
+                    categories={categories}
+                    placeholder="Select category"
+                    allowEmpty={true}
+                    emptyLabel="None"
+                    className="w-full"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             )}

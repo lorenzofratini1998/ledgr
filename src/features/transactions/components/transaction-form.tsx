@@ -21,13 +21,14 @@ import { createTransactionAction, updateTransactionAction } from '../actions';
 import { CreateTransactionPayload, createTransactionSchema } from '../schemas';
 import { TransactionTypeToggle } from '@/components/shared/transaction-type-toggle';
 import { SubmitButton } from '@/components/shared/submit-button';
-import { CurrencySelector } from '@/components/shared/currency-selector';
 import { TagSelector } from '@/components/shared/tag-selector';
-import { Currency, Tag } from '@/types/models';
+import { CurrencySelector } from '@/components/shared/currency-selector';
+import { CategorySelect } from '@/components/shared/category-select';
+import { Currency, Tag, CategoryOption } from '@/types/models';
 
 interface TransactionFormProps {
   wallets: { id: string; name: string; currency_code: string; is_default: boolean }[];
-  categories: { category_id: string; category_name: string }[];
+  categories: CategoryOption[];
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];
   defaultCurrency: string;
@@ -248,24 +249,17 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           render={({ field }) => (
             <FormItem>
               <FormLabel>{t('common.categoryOptional')}</FormLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder={t('transactions.selectCategory')}>
-                        <span className="truncate block text-left">
-                          {field.value ? categories.find(c => c.category_id === field.value)?.category_name : null}
-                        </span>
-                      </SelectValue>
-                    </SelectTrigger>
-                  </FormControl>
-                <SelectContent>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.category_id} value={cat.category_id}>
-                      {cat.category_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <FormControl>
+                <CategorySelect
+                  value={field.value}
+                  onValueChange={field.onChange}
+                  categories={categories}
+                  placeholder={t('transactions.selectCategory')}
+                  allowEmpty={true}
+                  emptyLabel={t('transactions.uncategorized')}
+                  className="w-full"
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
