@@ -31,9 +31,12 @@ export async function getWallets(userId: string) {
 
       const walletsWithBalances = wallets?.map(wallet => {
         const b = balancesData?.find((bd: any) => bd.wallet_id === wallet.id);
+        const bal = b ? b.balance : wallet.initial_balance;
+        const realBal = b && b.real_balance !== undefined ? b.real_balance : bal;
         return {
           ...wallet,
-          balance: b ? b.balance : wallet.initial_balance
+          balance: bal,
+          real_balance: realBal,
         };
       });
 
@@ -123,9 +126,12 @@ export async function getArchivedWallets(userId: string) {
 
       const walletsWithBalances = wallets?.map(wallet => {
         const b = balancesData?.find((bd: any) => bd.wallet_id === wallet.id);
+        const bal = b ? b.balance : wallet.initial_balance;
+        const realBal = b && b.real_balance !== undefined ? b.real_balance : bal;
         return {
           ...wallet,
-          balance: b ? b.balance : wallet.initial_balance
+          balance: bal,
+          real_balance: realBal,
         };
       });
 

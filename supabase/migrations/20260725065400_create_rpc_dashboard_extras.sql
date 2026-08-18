@@ -53,7 +53,8 @@ RETURNS TABLE (
     type public.wallet_type,
     icon TEXT,
     color TEXT,
-    balance NUMERIC
+    balance NUMERIC,
+    real_balance NUMERIC
 )
 LANGUAGE plpgsql STABLE SECURITY DEFINER AS $$
 BEGIN
@@ -64,11 +65,16 @@ BEGIN
         w.type,
         w.icon,
         w.color,
-        w.initial_balance + COALESCE((
+        (w.initial_balance + COALESCE((
             SELECT SUM(t.normalized_amount)
             FROM public.transactions t
             WHERE t.wallet_id = w.id
-        ), 0)::NUMERIC as balance
+        ), 0))::NUMERIC as balance,
+        (w.initial_balance + COALESCE((
+            SELECT SUM(t.normalized_amount)
+            FROM public.transactions t
+            WHERE t.wallet_id = w.id
+        ), 0))::NUMERIC as real_balance
     FROM public.wallets w
     WHERE w.user_id = p_user_id
       AND w.is_active = p_is_active;

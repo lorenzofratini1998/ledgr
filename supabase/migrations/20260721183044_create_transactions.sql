@@ -9,6 +9,7 @@ CREATE TABLE public.transactions (
     normalized_amount   NUMERIC(18, 4) NOT NULL,
     exchange_rate       NUMERIC(18, 6) DEFAULT 1.000000 NOT NULL,
     currency_code       CHAR(3) NOT NULL REFERENCES public.currencies(iso_code) ON UPDATE CASCADE,
+    transfer_id         UUID,
     created_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -16,6 +17,7 @@ CREATE TABLE public.transactions (
 CREATE INDEX idx_transactions_user_id ON public.transactions(user_id);
 CREATE INDEX idx_transactions_wallet_id ON public.transactions(wallet_id);
 CREATE INDEX idx_transactions_category_id ON public.transactions(category_id);
+CREATE INDEX idx_transactions_transfer_id ON public.transactions(transfer_id);
 
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 

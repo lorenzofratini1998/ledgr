@@ -1,4 +1,4 @@
--- Update get_cashflow_summary to filter by completed status
+-- Update get_cashflow_summary to filter by completed status and exclude transfers
 CREATE OR REPLACE FUNCTION public.get_cashflow_summary(
     p_user_id UUID,
     p_from DATE,
@@ -23,7 +23,8 @@ BEGIN
     WHERE t.user_id = p_user_id
       AND t.date >= p_from 
       AND t.date <= p_to
-      AND t.status = 'completed' -- NEW RULE
+      AND t.status = 'completed'
+      AND t.transfer_id IS NULL -- Exclude transfers from cashflow
       AND (p_wallet_id IS NULL OR t.wallet_id = p_wallet_id)
       AND (p_category_id IS NULL OR c.category_id = p_category_id OR c.parent_id = p_category_id);
 END;
@@ -59,7 +60,7 @@ BEGIN
             JOIN public.wallets w ON t.wallet_id = w.id
             WHERE t.user_id = p_user_id 
               AND t.date < p_from
-              AND t.status = 'completed' -- NEW RULE
+              AND t.status = 'completed'
               AND (p_wallet_id IS NULL OR t.wallet_id = p_wallet_id)
               AND (p_wallet_id IS NOT NULL OR w.exclude_from_net_worth = FALSE)
         ), 0);
@@ -79,7 +80,7 @@ BEGIN
         WHERE t.user_id = p_user_id
           AND t.date >= p_from 
           AND t.date <= p_to
-          AND t.status = 'completed' -- NEW RULE
+          AND t.status = 'completed'
           AND (p_wallet_id IS NULL OR t.wallet_id = p_wallet_id)
           AND (p_category_id IS NULL OR (p_wallet_id IS NOT NULL OR w.exclude_from_net_worth = FALSE))
           AND (p_category_id IS NULL OR c.category_id = p_category_id OR c.parent_id = p_category_id)
@@ -123,7 +124,8 @@ BEGIN
     WHERE t.user_id = p_user_id
       AND t.date >= p_from 
       AND t.date <= p_to
-      AND t.status = 'completed' -- NEW RULE
+      AND t.status = 'completed'
+      AND t.transfer_id IS NULL -- Exclude transfers from expense breakdown
       AND t.normalized_amount < 0
       AND (p_wallet_id IS NULL OR t.wallet_id = p_wallet_id)
       AND (p_category_id IS NULL OR c.parent_id = p_category_id OR c.category_id = p_category_id)
@@ -168,7 +170,8 @@ BEGIN
         ON t.user_id = p_user_id 
         AND t.date >= m.month_start 
         AND t.date <= m.month_end
-        AND t.status = 'completed' -- NEW RULE
+        AND t.status = 'completed'
+        AND t.transfer_id IS NULL -- Exclude transfers from monthly cashflow
         AND (p_wallet_id IS NULL OR t.wallet_id = p_wallet_id)
     LEFT JOIN public.categories c ON t.category_id = c.category_id
     WHERE (p_category_id IS NULL OR c.category_id = p_category_id OR c.parent_id = p_category_id)
@@ -177,7 +180,8 @@ BEGIN
 END;
 $$;
 
--- Update get_wallet_balances
+-- Update get_wallet_balances (with real_balance for regular wallets)
+DROP FUNCTION IF EXISTS public.get_wallet_balances(UUID, BOOLEAN);
 CREATE OR REPLACE FUNCTION public.get_wallet_balances(
     p_user_id UUID,
     p_is_active BOOLEAN DEFAULT TRUE
@@ -188,7 +192,8 @@ RETURNS TABLE (
     type public.wallet_type,
     icon TEXT,
     color TEXT,
-    balance NUMERIC
+    balance NUMERIC,
+    real_balance NUMERIC
 )
 LANGUAGE plpgsql STABLE SECURITY DEFINER AS $$
 BEGIN
@@ -199,12 +204,40 @@ BEGIN
         w.type,
         w.icon,
         w.color,
-        w.initial_balance + COALESCE((
+        (w.initial_balance + COALESCE((
             SELECT SUM(t.normalized_amount)
             FROM public.transactions t
             WHERE t.wallet_id = w.id
-              AND t.status = 'completed' -- NEW RULE
-        ), 0)::NUMERIC as balance
+              AND t.status = 'completed'
+        ), 0))::NUMERIC as balance,
+        (CASE 
+            WHEN w.type = 'regular' THEN
+                w.initial_balance + COALESCE((
+                    SELECT SUM(t.normalized_amount)
+                    FROM public.transactions t
+                    WHERE t.wallet_id = w.id
+                      AND t.status = 'completed'
+                      AND (
+                          t.transfer_id IS NULL
+                          OR NOT EXISTS (
+                              SELECT 1 
+                              FROM public.transactions t2
+                              JOIN public.wallets w2 ON t2.wallet_id = w2.id
+                              WHERE t2.transfer_id = t.transfer_id
+                                AND t2.transaction_id != t.transaction_id
+                                AND w2.type = 'savings'
+                                AND w2.is_active = TRUE
+                          )
+                      )
+                ), 0)
+            ELSE
+                w.initial_balance + COALESCE((
+                    SELECT SUM(t.normalized_amount)
+                    FROM public.transactions t
+                    WHERE t.wallet_id = w.id
+                      AND t.status = 'completed'
+                ), 0)
+        END)::NUMERIC as real_balance
     FROM public.wallets w
     WHERE w.user_id = p_user_id
       AND w.is_active = p_is_active;

@@ -64,42 +64,46 @@ DECLARE
 BEGIN
     -- Handle DELETE or UPDATE (subtract old amount from affected budgets)
     IF (TG_OP = 'DELETE' OR TG_OP = 'UPDATE') THEN
-        FOR b_id IN 
-            SELECT b.budget_id 
-            FROM public.budgets b
-            WHERE b.user_id = OLD.user_id
-              AND b.deleted_at IS NULL
-              AND OLD.date >= b.start_date 
-              AND OLD.date <= b.end_date
-              AND (
-                  b.is_global = TRUE 
-                  OR EXISTS (SELECT 1 FROM public.budget_categories bc WHERE bc.budget_id = b.budget_id AND bc.category_id = OLD.category_id)
-              )
-        LOOP
-            UPDATE public.budgets 
-            SET spent_amount = spent_amount - OLD.normalized_amount 
-            WHERE budget_id = b_id;
-        END LOOP;
+        IF OLD.transfer_id IS NULL THEN
+            FOR b_id IN 
+                SELECT b.budget_id 
+                FROM public.budgets b
+                WHERE b.user_id = OLD.user_id
+                  AND b.deleted_at IS NULL
+                  AND OLD.date >= b.start_date 
+                  AND OLD.date <= b.end_date
+                  AND (
+                      b.is_global = TRUE 
+                      OR EXISTS (SELECT 1 FROM public.budget_categories bc WHERE bc.budget_id = b.budget_id AND bc.category_id = OLD.category_id)
+                  )
+            LOOP
+                UPDATE public.budgets 
+                SET spent_amount = spent_amount - OLD.normalized_amount 
+                WHERE budget_id = b_id;
+            END LOOP;
+        END IF;
     END IF;
 
     -- Handle INSERT or UPDATE (add new amount to affected budgets)
     IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
-        FOR b_id IN 
-            SELECT b.budget_id 
-            FROM public.budgets b
-            WHERE b.user_id = NEW.user_id
-              AND b.deleted_at IS NULL
-              AND NEW.date >= b.start_date 
-              AND NEW.date <= b.end_date
-              AND (
-                  b.is_global = TRUE 
-                  OR EXISTS (SELECT 1 FROM public.budget_categories bc WHERE bc.budget_id = b.budget_id AND bc.category_id = NEW.category_id)
-              )
-        LOOP
-            UPDATE public.budgets 
-            SET spent_amount = spent_amount + NEW.normalized_amount 
-            WHERE budget_id = b_id;
-        END LOOP;
+        IF NEW.transfer_id IS NULL THEN
+            FOR b_id IN 
+                SELECT b.budget_id 
+                FROM public.budgets b
+                WHERE b.user_id = NEW.user_id
+                  AND b.deleted_at IS NULL
+                  AND NEW.date >= b.start_date 
+                  AND NEW.date <= b.end_date
+                  AND (
+                      b.is_global = TRUE 
+                      OR EXISTS (SELECT 1 FROM public.budget_categories bc WHERE bc.budget_id = b.budget_id AND bc.category_id = NEW.category_id)
+                  )
+            LOOP
+                UPDATE public.budgets 
+                SET spent_amount = spent_amount + NEW.normalized_amount 
+                WHERE budget_id = b_id;
+            END LOOP;
+        END IF;
     END IF;
 
     IF (TG_OP = 'DELETE') THEN
@@ -136,6 +140,7 @@ BEGIN
     SELECT COALESCE(SUM(t.normalized_amount), 0) INTO v_total
     FROM public.transactions t
     WHERE t.user_id = v_budget.user_id
+      AND t.transfer_id IS NULL
       AND t.date >= v_budget.start_date
       AND t.date <= v_budget.end_date
       AND (

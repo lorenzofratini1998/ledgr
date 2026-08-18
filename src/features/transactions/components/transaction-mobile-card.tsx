@@ -41,8 +41,17 @@ export function TransactionMobileCard({
   const formatted = formatCurrency(Math.abs(amount), currency, locale);
   const { t } = useTranslation();
 
+  const isTransfer = !!tx.transfer_id;
   const isConverted = amount !== normalizedAmount && primaryCurrencyCode;
   const formattedNormalized = isConverted ? formatCurrency(Math.abs(normalizedAmount), primaryCurrencyCode, locale) : null;
+
+  const amountColor = isTransfer
+    ? "text-blue-600 dark:text-blue-400"
+    : amount > 0
+    ? "text-emerald-500"
+    : "text-foreground";
+
+  const amountPrefix = isTransfer ? "⇄ " : amount > 0 ? "+" : "-";
 
   return (
     <div className="p-4 rounded-xl border bg-card flex items-start gap-3 shadow-sm">
@@ -57,7 +66,14 @@ export function TransactionMobileCard({
       <div className="flex-1 flex justify-between items-center min-w-0">
         <div className="flex flex-col space-y-1.5 min-w-0 pr-2">
           <div className="flex items-center space-x-2">
-            {tx.categories ? (
+            {isTransfer ? (
+              <Badge 
+                variant="outline" 
+                className="font-medium text-[10px] rounded-md bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20 px-1.5 py-0"
+              >
+                {t('transactions.transfer')}
+              </Badge>
+            ) : tx.categories ? (
               <Badge 
                 variant="secondary" 
                 className="font-medium text-[10px] rounded-md shadow-none px-1.5 py-0" 
@@ -95,12 +111,12 @@ export function TransactionMobileCard({
         
         <div className="flex flex-col items-end space-y-2 shrink-0">
           <div className="flex flex-col items-end">
-            <span className={`font-semibold text-base whitespace-nowrap ${amount > 0 ? "text-emerald-500" : "text-foreground"}`}>
-              {amount > 0 ? "+" : "-"}{formatted}
+            <span className={`font-semibold text-base whitespace-nowrap ${amountColor}`}>
+              {amountPrefix}{formatted}
             </span>
             {isConverted && (
               <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                ≈ {amount > 0 ? "+" : "-"}{formattedNormalized}
+                ≈ {amountPrefix}{formattedNormalized}
               </span>
             )}
           </div>

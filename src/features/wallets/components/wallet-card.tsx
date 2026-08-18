@@ -126,6 +126,22 @@ export function WalletCard({ wallet, currencies, defaultCurrencyCode }: WalletCa
             <div className={cn("text-2xl font-bold hover:text-primary transition-colors", !wallet.is_active && "text-muted-foreground")}>
               {formatCurrency(Number(wallet.balance ?? wallet.initial_balance), wallet.currency_code)}
             </div>
+            {wallet.type === 'regular' && wallet.real_balance !== undefined && Number(wallet.real_balance) !== Number(wallet.balance ?? wallet.initial_balance) && (
+              <div className="mt-2 pt-2 border-t border-border/50 flex flex-col gap-1 text-xs text-muted-foreground">
+                <div className="flex items-center justify-between">
+                  <span>{t('wallets.bankBalance')}:</span>
+                  <span className="font-medium text-foreground">{formatCurrency(Number(wallet.real_balance), wallet.currency_code)}</span>
+                </div>
+                {Number(wallet.real_balance) > Number(wallet.balance ?? wallet.initial_balance) && (
+                  <div className="flex items-center justify-between text-[11px] text-blue-600 dark:text-blue-400">
+                    <span>{t('wallets.allocatedToSavings')}:</span>
+                    <span className="font-medium">
+                      {formatCurrency(Number(wallet.real_balance) - Number(wallet.balance ?? wallet.initial_balance), wallet.currency_code)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </Link>
         </CardContent>
       </Card>

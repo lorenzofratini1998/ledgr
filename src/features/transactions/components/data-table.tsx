@@ -15,11 +15,15 @@ import { Loader2, Filter, Trash2, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { toast } from "sonner";
-import { deleteTransactionAction, bulkDeleteTransactionsAction } from "../actions";
+import {
+  deleteTransactionAction,
+  bulkDeleteTransactionsAction,
+  getTransferDetailsAction,
+  confirmPendingTransactionAction,
+} from "../actions";
 import { ResponsiveDrawer } from "@/components/shared/responsive-drawer";
 import { TransactionForm } from "./transaction-form";
 import { ActionDialog } from "@/components/shared/action-dialog";
-import { confirmPendingTransactionAction } from "../actions";
 import { Label } from "@/components/ui/label";
 import { DataGrid } from "@/components/shared/data-grid/data-grid";
 import { DataGridPagination } from "@/components/shared/data-grid/data-grid-pagination";
@@ -93,10 +97,24 @@ export function DataTable<TData, TValue>({
   const [searchTerm, setSearchTerm] = useState(searchParams.get("search") || "");
   const [rowSelection, setRowSelection] = useState({});
   const [editTransaction, setEditTransaction] = useState<TransactionRow | null>(null);
+  const [editTransferData, setEditTransferData] = useState<any | null>(null);
   const [deleteTransaction, setDeleteTransaction] = useState<TransactionRow | null>(null);
   const [confirmTransaction, setConfirmTransaction] = useState<TransactionRow | null>(null);
   const [confirmAmountStr, setConfirmAmountStr] = useState("");
   const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+
+  const handleOpenEdit = async (tx: TransactionRow) => {
+    if (tx.transfer_id) {
+      const res = await getTransferDetailsAction(tx.transfer_id);
+      if (res.success && res.data) {
+        setEditTransferData(res.data);
+        setEditTransaction(tx);
+        return;
+      }
+    }
+    setEditTransferData(null);
+    setEditTransaction(tx);
+  };
 
   const [localFilters, setLocalFilters] = useState({
     wallets: searchParams.get("wallets") ? searchParams.get("wallets")!.split(",") : [],
@@ -267,7 +285,7 @@ export function DataTable<TData, TValue>({
     onRowSelectionChange: setRowSelection,
     getRowId: (row: any) => row.transaction_id,
     meta: {
-      onEdit: setEditTransaction,
+      onEdit: handleOpenEdit,
       onDelete: setDeleteTransaction,
       onConfirm: (tx: TransactionRow) => {
         setConfirmTransaction(tx);
@@ -327,15 +345,15 @@ export function DataTable<TData, TValue>({
                 )}
               </Button>
             } />
-            <SheetContent className="w-full sm:max-w-md flex flex-col h-full">
-              <SheetHeader>
+            <SheetContent side="right" className="w-full sm:max-w-md overflow-y-auto flex flex-col justify-between">
+              <div>
+              <SheetHeader className="mb-6 text-left">
                 <SheetTitle>{t('transactions.advancedFiltersTitle')}</SheetTitle>
                 <SheetDescription>
                   {t('transactions.advancedFiltersDescription')}
                 </SheetDescription>
               </SheetHeader>
               
-              <div className="shrink overflow-y-auto py-2 pr-2 -mr-2">
               <TransactionFilters 
                 localFilters={localFilters}
                 setLocalFilters={setLocalFilters}
@@ -441,7 +459,7 @@ export function DataTable<TData, TValue>({
             primaryCurrencyCode={primaryCurrencyCode}
             dateFormatPreference={dateFormatPreference}
             locale={locale}
-            onEdit={(tx) => setEditTransaction(tx)}
+            onEdit={handleOpenEdit}
             onDelete={(tx) => setDeleteTransaction(tx)}
             onConfirm={(tx) => {
               setConfirmTransaction(tx as unknown as TransactionRow);
@@ -474,8 +492,13 @@ export function DataTable<TData, TValue>({
 
       <ResponsiveDrawer
         open={!!editTransaction}
-        onOpenChange={(open) => !open && setEditTransaction(null)}
-        title={t('transactions.editTransaction')}
+        onOpenChange={(open) => {
+          if (!open) {
+            setEditTransaction(null);
+            setEditTransferData(null);
+          }
+        }}
+        title={editTransferData ? t('transactions.transfer') : t('transactions.editTransaction')}
         description={t('transactions.editTransactionDescription')}
       >
         {editTransaction && (
@@ -485,18 +508,23 @@ export function DataTable<TData, TValue>({
             currencies={currencies}
             tags={tags}
             defaultCurrency={currencies[0]?.iso_code || 'EUR'}
-            initialData={{
-              transaction_id: editTransaction.transaction_id,
-              amount: Math.abs(Number(editTransaction.amount)).toFixed(2),
-              date: editTransaction.date,
-              description: editTransaction.description,
-              type: editTransaction.amount >= 0 ? 'income' : 'expense',
-              currency_code: editTransaction.currency_code,
-              wallet_id: editTransaction.wallet_id,
-              category_id: editTransaction.category_id || '',
-              tags: editTransaction.transactions_tags.map(t => t.tags.tag_id),
+            initialData={
+              editTransferData || {
+                transaction_id: editTransaction.transaction_id,
+                amount: Math.abs(Number(editTransaction.amount)).toFixed(2),
+                date: editTransaction.date,
+                description: editTransaction.description,
+                type: editTransaction.amount >= 0 ? 'income' : 'expense',
+                currency_code: editTransaction.currency_code,
+                wallet_id: editTransaction.wallet_id,
+                category_id: editTransaction.category_id || '',
+                tags: editTransaction.transactions_tags.map(t => t.tags.tag_id),
+              }
+            }
+            onSuccess={() => {
+              setEditTransaction(null);
+              setEditTransferData(null);
             }}
-            onSuccess={() => setEditTransaction(null)}
           />
         )}
       </ResponsiveDrawer>
@@ -504,8 +532,8 @@ export function DataTable<TData, TValue>({
       <ActionDialog
         open={!!deleteTransaction}
         onOpenChange={(open) => !open && setDeleteTransaction(null)}
-        title={t('transactions.deleteConfirmTitle')}
-        description={t('transactions.deleteConfirmDescription')}
+        title={deleteTransaction?.transfer_id ? t('transactions.deleteTransferConfirmTitle') : t('transactions.deleteConfirmTitle')}
+        description={deleteTransaction?.transfer_id ? t('transactions.deleteTransferConfirmDescription') : t('transactions.deleteConfirmDescription')}
         actionText={t('transactions.deleteAction')}
         destructive={true}
         isPending={isPending}

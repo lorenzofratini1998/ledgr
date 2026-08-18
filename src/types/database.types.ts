@@ -472,6 +472,7 @@ export type Database = {
           recurring_id: string | null
           status: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id: string
+          transfer_id: string | null
           updated_at: string
           user_id: string
           wallet_id: string
@@ -488,6 +489,7 @@ export type Database = {
           recurring_id?: string | null
           status?: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id?: string
+          transfer_id?: string | null
           updated_at?: string
           user_id: string
           wallet_id: string
@@ -504,6 +506,7 @@ export type Database = {
           recurring_id?: string | null
           status?: Database["public"]["Enums"]["transaction_status_type"]
           transaction_id?: string
+          transfer_id?: string | null
           updated_at?: string
           user_id?: string
           wallet_id?: string
@@ -880,6 +883,7 @@ export type Database = {
         Args: { p_is_active?: boolean; p_user_id: string }
         Returns: {
           balance: number
+          real_balance: number
           color: string
           icon: string
           name: string

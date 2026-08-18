@@ -10,7 +10,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 
 interface CreateTransactionTriggerProps {
-  wallets: { id: string; name: string; currency_code: string; is_default: boolean }[];
+  wallets: { id: string; name: string; currency_code: string; type?: string; is_default: boolean }[];
   categories: CategoryOption[];
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];

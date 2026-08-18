@@ -1,19 +1,17 @@
 'use client';
 
-import { useTransition, useState } from 'react';
+import { useTransition, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { ArrowRight, Info } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { useTranslation } from '@/i18n/hooks/use-translation';
 import { Input } from '@/components/ui/input';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InputGroup } from '@/components/ui/input-group';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 
@@ -27,7 +25,7 @@ import { CategorySelect } from '@/components/shared/category-select';
 import { Currency, Tag, CategoryOption } from '@/types/models';
 
 interface TransactionFormProps {
-  wallets: { id: string; name: string; currency_code: string; is_default: boolean }[];
+  wallets: { id: string; name: string; currency_code: string; type?: string; is_default: boolean }[];
   categories: CategoryOption[];
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];
@@ -37,22 +35,35 @@ interface TransactionFormProps {
     amount: string;
     date: string;
     description: string;
-    type: 'income' | 'expense';
+    type: 'income' | 'expense' | 'transfer';
     currency_code: string;
     wallet_id: string;
+    destination_wallet_id?: string | null;
+    destination_amount?: string | null;
+    fee?: string | null;
+    transfer_id?: string | null;
     category_id: string;
     tags: string[];
   };
   onSuccess?: () => void;
 }
 
-export function TransactionForm({ wallets, categories, currencies, tags, defaultCurrency, initialData, onSuccess }: TransactionFormProps) {
+export function TransactionForm({
+  wallets,
+  categories,
+  currencies,
+  tags,
+  defaultCurrency,
+  initialData,
+  onSuccess,
+}: TransactionFormProps) {
   const [isPending, startTransition] = useTransition();
   const [keepOpen, setKeepOpen] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
 
   const defaultWalletId = wallets.find((w) => w.is_default)?.id || wallets[0]?.id || '';
+  const secondWalletId = wallets.find((w) => w.id !== defaultWalletId)?.id || '';
 
   const form = useForm<CreateTransactionPayload>({
     resolver: zodResolver(createTransactionSchema),
@@ -61,6 +72,9 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
       amount: '',
       currency_code: defaultCurrency,
       wallet_id: defaultWalletId,
+      destination_wallet_id: secondWalletId,
+      destination_amount: '',
+      fee: '',
       date: new Date().toISOString().split('T')[0],
       category_id: '',
       description: '',
@@ -68,14 +82,48 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
     },
   });
 
+  const transactionType = form.watch('type');
+  const selectedWalletId = form.watch('wallet_id');
+  const selectedDestWalletId = form.watch('destination_wallet_id');
   const selectedCurrencyCode = form.watch('currency_code');
-  const selectedCurrency = currencies.find(c => c.iso_code === selectedCurrencyCode);
+
+  const selectedSourceWallet = wallets.find((w) => w.id === selectedWalletId);
+  const selectedDestWallet = wallets.find((w) => w.id === selectedDestWalletId);
+
+  // Synchronize source currency with selected wallet currency if user changes source wallet
+  useEffect(() => {
+    if (selectedSourceWallet && !initialData) {
+      form.setValue('currency_code', selectedSourceWallet.currency_code);
+    }
+  }, [selectedWalletId, selectedSourceWallet, form, initialData]);
+
+  const selectedCurrency = currencies.find((c) => c.iso_code === selectedCurrencyCode);
+  const destCurrency = currencies.find((c) => c.iso_code === selectedDestWallet?.currency_code);
+
+  const isCrossCurrency =
+    transactionType === 'transfer' &&
+    selectedDestWallet &&
+    selectedSourceWallet &&
+    selectedSourceWallet.currency_code !== selectedDestWallet.currency_code;
+
+  // Filter selectable wallets based on business rules (RF-06.2: savings wallets disabled for direct expenses)
+  const selectableSourceWallets =
+    transactionType === 'expense'
+      ? wallets.filter((w) => w.type !== 'savings' || w.id === initialData?.wallet_id)
+      : wallets;
+
+  const selectableDestWallets = wallets.filter((w) => w.id !== selectedWalletId);
 
   const onSubmit = (data: CreateTransactionPayload) => {
     startTransition(async () => {
+      const payload: CreateTransactionPayload = {
+        ...data,
+        category_id: data.type === 'transfer' ? null : (data.category_id || null),
+      };
+
       const response = initialData
-        ? await updateTransactionAction(initialData.transaction_id, data)
-        : await createTransactionAction(data);
+        ? await updateTransactionAction(initialData.transaction_id, payload)
+        : await createTransactionAction(payload);
 
       if (response.success) {
         toast.success(response.message);
@@ -83,6 +131,8 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           ...data,
           category_id: data.category_id || '',
           amount: '',
+          destination_amount: '',
+          fee: '',
           description: '',
           tags: [],
         });
@@ -102,7 +152,6 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        
         {/* Type Selector (Segmented Control via Tabs) */}
         <FormField
           control={form.control}
@@ -128,10 +177,10 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
                     {selectedCurrency?.symbol || '$'}
                   </div>
-                  <Input 
-                    placeholder="0.00" 
-                    type="number" 
-                    step="0.01" 
+                  <Input
+                    placeholder="0.00"
+                    type="number"
+                    step="0.01"
                     min="0.01"
                     className="pl-8 text-lg font-medium"
                     {...field}
@@ -149,7 +198,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
                       field.onBlur();
                       const val = e.target.value;
                       if (val && !isNaN(Number(val))) {
-                        form.setValue("amount", Number(val).toFixed(2), { shouldValidate: true });
+                        form.setValue('amount', Number(val).toFixed(2), { shouldValidate: true });
                       }
                     }}
                   />
@@ -160,7 +209,53 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           )}
         />
 
-        {/* Currency */}
+        {/* Destination Amount if Cross-Currency Transfer */}
+        {isCrossCurrency && (
+          <FormField
+            control={form.control}
+            name="destination_amount"
+            render={({ field }) => (
+              <FormItem className="animate-in fade-in slide-in-from-top-1 duration-200">
+                <FormLabel>{t('transactions.destinationAmount')}</FormLabel>
+                <FormControl>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
+                      {destCurrency?.symbol || '$'}
+                    </div>
+                    <Input
+                      placeholder="0.00"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      className="pl-8 font-medium"
+                      value={field.value || ''}
+                      onChange={(e) => {
+                        let val = e.target.value;
+                        if (val.includes('.')) {
+                          const parts = val.split('.');
+                          if (parts[1].length > 2) {
+                            val = `${parts[0]}.${parts[1].slice(0, 2)}`;
+                          }
+                        }
+                        field.onChange(val);
+                      }}
+                      onBlur={(e) => {
+                        field.onBlur();
+                        const val = e.target.value;
+                        if (val && !isNaN(Number(val))) {
+                          form.setValue('destination_amount', Number(val).toFixed(2), { shouldValidate: true });
+                        }
+                      }}
+                    />
+                  </div>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {/* Currency (only when not in simple transfer where wallet determines currency) */}
         <FormField
           control={form.control}
           name="currency_code"
@@ -195,8 +290,71 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
           )}
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Wallet */}
+        {/* Wallet Selection */}
+        {transactionType === 'transfer' ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Source Wallet */}
+            <FormField
+              control={form.control}
+              name="wallet_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('transactions.fromWallet')}</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('transactions.selectWallet')}>
+                          <span className="truncate block text-left">
+                            {field.value ? wallets.find((w) => w.id === field.value)?.name : null}
+                          </span>
+                        </SelectValue>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {wallets.map((wallet) => (
+                        <SelectItem key={wallet.id} value={wallet.id}>
+                          {wallet.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Destination Wallet */}
+            <FormField
+              control={form.control}
+              name="destination_wallet_id"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('transactions.toWallet')}</FormLabel>
+                  <Select value={field.value || ''} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder={t('transactions.selectWallet')}>
+                          <span className="truncate block text-left">
+                            {field.value ? wallets.find((w) => w.id === field.value)?.name : null}
+                          </span>
+                        </SelectValue>
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {selectableDestWallets.map((wallet) => (
+                        <SelectItem key={wallet.id} value={wallet.id}>
+                          {wallet.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        ) : (
+          /* Standard Single Wallet */
           <FormField
             control={form.control}
             name="wallet_id"
@@ -208,13 +366,13 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder={t('transactions.selectWallet')}>
                         <span className="truncate block text-left">
-                          {field.value ? wallets.find(w => w.id === field.value)?.name : null}
+                          {field.value ? wallets.find((w) => w.id === field.value)?.name : null}
                         </span>
                       </SelectValue>
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {wallets.map((wallet) => (
+                    {selectableSourceWallets.map((wallet) => (
                       <SelectItem key={wallet.id} value={wallet.id}>
                         {wallet.name}
                       </SelectItem>
@@ -225,8 +383,11 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
               </FormItem>
             )}
           />
+        )}
 
-          {/* Date Picker (Native for Mobile First UX) */}
+        {/* Date and Fee grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Date Picker */}
           <FormField
             control={form.control}
             name="date"
@@ -240,31 +401,68 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
               </FormItem>
             )}
           />
+
+          {/* Optional Transfer Fee */}
+          {transactionType === 'transfer' && (
+            <FormField
+              control={form.control}
+              name="fee"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('transactions.feeOptional')}</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
+                        {selectedCurrency?.symbol || '$'}
+                      </div>
+                      <Input
+                        placeholder="0.00"
+                        type="number"
+                        step="0.01"
+                        min="0"
+                        className="pl-8"
+                        value={field.value || ''}
+                        onChange={field.onChange}
+                      />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
         </div>
 
-        {/* Category */}
-        <FormField
-          control={form.control}
-          name="category_id"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('common.categoryOptional')}</FormLabel>
-              <FormControl>
-                <CategorySelect
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  categories={categories}
-                  placeholder={t('transactions.selectCategory')}
-                  allowEmpty={true}
-                  emptyLabel={t('transactions.uncategorized')}
-                  className="w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        
+        {/* Category (Only for Income / Expense) */}
+        {transactionType !== 'transfer' ? (
+          <FormField
+            control={form.control}
+            name="category_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('common.categoryOptional')}</FormLabel>
+                <FormControl>
+                  <CategorySelect
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    categories={categories}
+                    placeholder={t('transactions.selectCategory')}
+                    allowEmpty={true}
+                    emptyLabel={t('transactions.uncategorized')}
+                    className="w-full"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        ) : (
+          <div className="flex items-center gap-2 p-3 bg-muted/40 rounded-lg text-xs text-muted-foreground">
+            <Info className="w-4 h-4 shrink-0 text-blue-500" />
+            <span>{t('transactions.noCategoryNeeded')}</span>
+          </div>
+        )}
+
         {/* Tags */}
         <FormField
           control={form.control}
@@ -273,11 +471,7 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
             <FormItem>
               <FormLabel>{t('common.tagsOptional')}</FormLabel>
               <FormControl>
-                <TagSelector
-                  tags={tags}
-                  selectedIds={field.value || []}
-                  onChange={field.onChange}
-                />
+                <TagSelector tags={tags} selectedIds={field.value || []} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -302,3 +496,4 @@ export function TransactionForm({ wallets, categories, currencies, tags, default
     </Form>
   );
 }
+

@@ -53,22 +53,28 @@ export function TransactionFilters({
         <Label>{t('transactions.transactionType')}</Label>
         <div className="flex bg-muted p-1 rounded-lg w-full items-center">
           <button
-            className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'all' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
+            className={cn("flex-1 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'all' ? "bg-background shadow-sm text-foreground" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'all' }))}
           >
             {t('transactions.all')}
           </button>
           <button
-            className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'income' ? "bg-background shadow-sm text-emerald-500" : "text-muted-foreground hover:text-foreground")}
+            className={cn("flex-1 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'income' ? "bg-background shadow-sm text-emerald-500" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'income' }))}
           >
             {t('transactions.income')}
           </button>
           <button
-            className={cn("flex-1 py-1.5 text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'expense' ? "bg-background shadow-sm text-rose-500" : "text-muted-foreground hover:text-foreground")}
+            className={cn("flex-1 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'expense' ? "bg-background shadow-sm text-rose-500" : "text-muted-foreground hover:text-foreground")}
             onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'expense' }))}
           >
             {t('transactions.expense')}
+          </button>
+          <button
+            className={cn("flex-1 py-1.5 text-xs sm:text-sm font-medium rounded-md transition-all outline-hidden cursor-pointer", localFilters.type === 'transfer' ? "bg-background shadow-sm text-blue-500" : "text-muted-foreground hover:text-foreground")}
+            onClick={() => setLocalFilters((p: any) => ({ ...p, type: 'transfer' }))}
+          >
+            {t('transactions.transfers')}
           </button>
         </div>
       </div>
