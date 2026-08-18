@@ -30,7 +30,7 @@ export function ResponsiveDrawer({
               {description && <SheetDescription>{description}</SheetDescription>}
             </SheetHeader>
           )}
-          <div className="px-4 pb-8 mt-6 overflow-y-auto h-[calc(100vh-8rem)]">
+          <div className="px-4 pb-8 mt-4 overflow-y-auto h-[calc(100vh-7rem)]">
             {children}
           </div>
         </SheetContent>

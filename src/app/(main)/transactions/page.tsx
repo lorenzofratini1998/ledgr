@@ -7,6 +7,7 @@ import { getCategories } from '@/features/categories/queries';
 import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getPrimaryCurrencyCode, getTransactions } from '@/features/transactions/queries';
 import { getTags } from '@/features/tags/queries';
+import { getQuickTransactions } from '@/features/quick-transactions/queries';
 import { getUserPreferences } from '@/features/preferences/queries';
 import { CreateTransactionTrigger } from '@/features/transactions/components/create-transaction-trigger';
 import { TransactionsClientView } from '@/features/transactions/components/transactions-client-view';
@@ -58,6 +59,7 @@ export default async function TransactionsPage(
     primaryCurrencyCode,
     tags,
     preferences,
+    quickTransactions,
     { t }
   ] = await Promise.all([
     getTransactions(user.id, { 
@@ -70,6 +72,7 @@ export default async function TransactionsPage(
     getPrimaryCurrencyCode(supabase, user.id),
     getTags(user.id, { pageSize: 1000 }),
     getUserPreferences(user.id),
+    getQuickTransactions(user.id),
     getTranslator()
   ]);
 
@@ -86,6 +89,7 @@ export default async function TransactionsPage(
       currencies={currencies as any}
       tags={tags.data as any}
       defaultCurrency={primaryCurrencyCode}
+      quickTransactions={quickTransactions}
     />
   );
 

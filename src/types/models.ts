@@ -12,6 +12,11 @@ export type WalletWithBalance = Wallet & {
 export type Category = Tables<'categories'>;
 export type Tag = Tables<'tags'>;
 export type Transaction = Tables<'transactions'>;
+export type QuickTransaction = Tables<'quick_transactions'>;
+export type QuickTransactionWithDetails = QuickTransaction & {
+  wallet?: Wallet;
+  category?: Category | null;
+};
 export type CategoryWithChildren = Category & {
   children?: Category[];
 };

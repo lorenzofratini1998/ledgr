@@ -22,7 +22,10 @@ import { SubmitButton } from '@/components/shared/submit-button';
 import { TagSelector } from '@/components/shared/tag-selector';
 import { CurrencySelector } from '@/components/shared/currency-selector';
 import { CategorySelect } from '@/components/shared/category-select';
-import { Currency, Tag, CategoryOption } from '@/types/models';
+import { Currency, Tag, CategoryOption, QuickTransactionWithDetails } from '@/types/models';
+import { createQuickTransactionAction } from '@/features/quick-transactions/actions';
+import { Sparkles } from 'lucide-react';
+import { CATEGORY_COLOR_MAP, CATEGORY_ICON_MAP, CategoryColor, CategoryIcon } from '@/features/categories/constants';
 
 interface TransactionFormProps {
   wallets: { id: string; name: string; currency_code: string; type?: string; is_default: boolean }[];
@@ -30,6 +33,7 @@ interface TransactionFormProps {
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];
   defaultCurrency: string;
+  quickTransactions?: QuickTransactionWithDetails[];
   initialData?: {
     transaction_id: string;
     amount: string;
@@ -54,11 +58,13 @@ export function TransactionForm({
   currencies,
   tags,
   defaultCurrency,
+  quickTransactions = [],
   initialData,
   onSuccess,
 }: TransactionFormProps) {
   const [isPending, startTransition] = useTransition();
   const [keepOpen, setKeepOpen] = useState(false);
+  const [saveAsQuick, setSaveAsQuick] = useState(false);
   const { t } = useTranslation();
   const router = useRouter();
 
@@ -114,6 +120,15 @@ export function TransactionForm({
 
   const selectableDestWallets = wallets.filter((w) => w.id !== selectedWalletId);
 
+  const handleSelectTemplate = (tmpl: QuickTransactionWithDetails) => {
+    form.setValue('type', tmpl.type as 'expense' | 'income');
+    form.setValue('amount', String(tmpl.amount));
+    form.setValue('wallet_id', tmpl.wallet_id);
+    form.setValue('currency_code', tmpl.currency_code);
+    form.setValue('category_id', tmpl.category_id || '');
+    form.setValue('description', tmpl.description || tmpl.name);
+  };
+
   const onSubmit = (data: CreateTransactionPayload) => {
     startTransition(async () => {
       const payload: CreateTransactionPayload = {
@@ -127,6 +142,20 @@ export function TransactionForm({
 
       if (response.success) {
         toast.success(response.message);
+
+        // Optionally save as quick transaction template
+        if (saveAsQuick && !initialData && data.type !== 'transfer') {
+          await createQuickTransactionAction({
+            name: data.description.slice(0, 50),
+            wallet_id: data.wallet_id,
+            category_id: data.category_id || null,
+            amount: data.amount,
+            currency_code: data.currency_code,
+            type: data.type as 'expense' | 'income',
+            description: data.description,
+          });
+        }
+
         form.reset({
           ...data,
           category_id: data.category_id || '',
@@ -136,6 +165,7 @@ export function TransactionForm({
           description: '',
           tags: [],
         });
+        setSaveAsQuick(false);
         router.refresh();
         if (!keepOpen && onSuccess) onSuccess();
       } else {
@@ -151,7 +181,39 @@ export function TransactionForm({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Quick Templates Prefill Chips */}
+        {!initialData && quickTransactions.length > 0 && (
+          <div className="space-y-1.5 pb-1">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+              <span>{t('quickTransactions.title')}</span>
+            </div>
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+              {quickTransactions.map((tmpl) => {
+                const catIconKey = (tmpl.category?.icon as CategoryIcon) || 'tag';
+                const IconComp = CATEGORY_ICON_MAP[catIconKey] || CATEGORY_ICON_MAP.tag;
+                const colorKey = (tmpl.category?.color as CategoryColor) || 'slate';
+                const colorConfig = CATEGORY_COLOR_MAP[colorKey] || CATEGORY_COLOR_MAP.slate;
+
+                return (
+                  <button
+                    key={tmpl.id}
+                    type="button"
+                    onClick={() => handleSelectTemplate(tmpl)}
+                    className="flex items-center gap-2 px-2.5 py-1 rounded-lg border bg-muted/40 hover:bg-muted text-xs font-medium shrink-0 transition-colors shadow-2xs"
+                  >
+                    <div className={`w-4 h-4 rounded flex items-center justify-center text-white shrink-0 ${colorConfig.bg}`}>
+                      <IconComp className="w-2.5 h-2.5" />
+                    </div>
+                    <span>{tmpl.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Type Selector (Segmented Control via Tabs) */}
         <FormField
           control={form.control}
@@ -478,13 +540,39 @@ export function TransactionForm({
           )}
         />
 
-        {/* Keep Open Switch (Only for Create) */}
+        {/* Keep Open and Save as Quick Switches (Only for Create) */}
         {!initialData && (
-          <div className="flex items-center space-x-3 py-1">
-            <Switch id="keep-open" checked={keepOpen} onCheckedChange={setKeepOpen} />
-            <Label htmlFor="keep-open" className="text-sm font-normal cursor-pointer">
-              {t('transactions.saveAndAddAnother')}
-            </Label>
+          <div className="space-y-3 py-1">
+            <div className="flex items-center space-x-3">
+              <Switch id="keep-open" checked={keepOpen} onCheckedChange={setKeepOpen} />
+              <Label htmlFor="keep-open" className="text-sm font-normal cursor-pointer">
+                {t('transactions.saveAndAddAnother')}
+              </Label>
+            </div>
+
+            {transactionType !== 'transfer' && (
+              <div className="flex items-center justify-between p-2.5 rounded-xl border bg-muted/20">
+                <div className="flex items-center space-x-2.5">
+                  <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                  <div className="flex flex-col">
+                    <Label htmlFor="save-as-quick" className="text-xs font-medium cursor-pointer">
+                      {t('quickTransactions.saveAsQuick')}
+                    </Label>
+                    <span className="text-[10px] text-muted-foreground">
+                      {quickTransactions.length >= 5
+                        ? t('quickTransactions.limitReached')
+                        : t('quickTransactions.saveAsQuickDesc')}
+                    </span>
+                  </div>
+                </div>
+                <Switch
+                  id="save-as-quick"
+                  checked={saveAsQuick}
+                  disabled={quickTransactions.length >= 5}
+                  onCheckedChange={setSaveAsQuick}
+                />
+              </div>
+            )}
           </div>
         )}
 

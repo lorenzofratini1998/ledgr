@@ -16,7 +16,9 @@ import { getCategories } from '@/features/categories/queries';
 import { getActiveCurrencies } from '@/lib/constants/currencies';
 import { getPrimaryCurrencyCode } from '@/features/transactions/queries';
 import { getTags } from '@/features/tags/queries';
+import { getQuickTransactions } from '@/features/quick-transactions/queries';
 import { CreateTransactionTrigger } from '@/features/transactions/components/create-transaction-trigger';
+import { QuickTransactionsBar } from '@/features/quick-transactions/components';
 import { getTranslator } from '@/i18n/server';
 import { getUserPreferences } from '@/features/preferences/queries';
 
@@ -47,13 +49,15 @@ export default async function DashboardPage({
     nestedCategories,
     currencies,
     primaryCurrencyCode,
-    tags
+    tags,
+    quickTransactions
   ] = await Promise.all([
     getWallets(user.id),
     getCategories(user.id),
     getActiveCurrencies(),
     getPrimaryCurrencyCode(supabase, user.id),
-    getTags(user.id, { pageSize: 1000 })
+    getTags(user.id, { pageSize: 1000 }),
+    getQuickTransactions(user.id)
   ]);
 
   const userName = getDisplayName(user);
@@ -73,9 +77,20 @@ export default async function DashboardPage({
             currencies={currencies as any}
             tags={tags.data as any}
             defaultCurrency={primaryCurrencyCode || 'USD'}
+            quickTransactions={quickTransactions}
           />
         </div>
       </div>
+
+      {/* Quick Transactions One-Tap Bar */}
+      <QuickTransactionsBar
+        quickTransactions={quickTransactions}
+        wallets={wallets as any}
+        categories={categories}
+        currencies={currencies as any}
+        defaultCurrency={primaryCurrencyCode || 'USD'}
+        locale={languageLocale}
+      />
 
       <div className="flex flex-col gap-6">
         {/* KPI Row */}

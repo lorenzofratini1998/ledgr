@@ -344,6 +344,79 @@ export type Database = {
         }
         Relationships: []
       }
+      quick_transactions: {
+        Row: {
+          amount: number
+          category_id: string | null
+          color: string | null
+          created_at: string
+          currency_code: string
+          description: string | null
+          display_order: number
+          icon: string | null
+          id: string
+          name: string
+          type: "expense" | "income"
+          updated_at: string
+          user_id: string
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          category_id?: string | null
+          color?: string | null
+          created_at?: string
+          currency_code: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name: string
+          type?: "expense" | "income"
+          updated_at?: string
+          user_id: string
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          category_id?: string | null
+          color?: string | null
+          created_at?: string
+          currency_code?: string
+          description?: string | null
+          display_order?: number
+          icon?: string | null
+          id?: string
+          name?: string
+          type?: "expense" | "income"
+          updated_at?: string
+          user_id?: string
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quick_transactions_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["category_id"]
+          },
+          {
+            foreignKeyName: "quick_transactions_currency_code_fkey"
+            columns: ["currency_code"]
+            isOneToOne: false
+            referencedRelation: "currencies"
+            referencedColumns: ["iso_code"]
+          },
+          {
+            foreignKeyName: "quick_transactions_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
       recurring_payments: {
         Row: {
           amount: number

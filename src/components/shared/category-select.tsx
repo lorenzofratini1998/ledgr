@@ -30,9 +30,11 @@ export function CategorySelect({
     <Select value={value || ""} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
       <SelectTrigger className={className}>
         <SelectValue placeholder={placeholder}>
-          <span className="truncate block text-left">
-            {selectedCategory ? selectedCategory.category_name : null}
-          </span>
+          {selectedCategory ? (
+            <span className="truncate block text-left">
+              {selectedCategory.category_name}
+            </span>
+          ) : undefined}
         </SelectValue>
       </SelectTrigger>
       <SelectContent>

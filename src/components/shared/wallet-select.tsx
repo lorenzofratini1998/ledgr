@@ -21,10 +21,18 @@ export function WalletSelect({
   placeholder = "Select a wallet",
   disabled = false,
 }: WalletSelectProps) {
+  const selectedWallet = wallets.find((w) => w.id === value);
+
   return (
-    <Select value={value} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
+    <Select value={value || ""} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
       <SelectTrigger>
-        <SelectValue placeholder={placeholder} />
+        <SelectValue placeholder={placeholder}>
+          {selectedWallet ? (
+            <span className="truncate block text-left">
+              {selectedWallet.name} ({selectedWallet.currency_code})
+            </span>
+          ) : undefined}
+        </SelectValue>
       </SelectTrigger>
       <SelectContent>
         {wallets.map((wallet) => (

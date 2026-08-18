@@ -4,7 +4,7 @@ import { ResponsiveDrawer } from '@/components/shared/responsive-drawer';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { TransactionForm } from './transaction-form';
 import { useTranslation } from '@/i18n/hooks/use-translation';
-import { Currency, Tag, CategoryOption } from '@/types/models';
+import { Currency, Tag, CategoryOption, QuickTransactionWithDetails } from '@/types/models';
 import { Plus, Wallet } from 'lucide-react';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -15,6 +15,7 @@ interface CreateTransactionTriggerProps {
   currencies: Pick<Currency, 'iso_code' | 'name' | 'symbol'>[];
   tags: Tag[];
   defaultCurrency: string;
+  quickTransactions?: QuickTransactionWithDetails[];
 }
 
 export function CreateTransactionTrigger({
@@ -22,7 +23,8 @@ export function CreateTransactionTrigger({
   categories,
   currencies,
   tags,
-  defaultCurrency
+  defaultCurrency,
+  quickTransactions = [],
 }: CreateTransactionTriggerProps) {
   const [open, setOpen] = useState(false);
   const { t } = useTranslation();
@@ -73,6 +75,7 @@ export function CreateTransactionTrigger({
             currencies={currencies}
             tags={tags}
             defaultCurrency={defaultCurrency}
+            quickTransactions={quickTransactions}
             onSuccess={handleSuccess}
           />
         )}
