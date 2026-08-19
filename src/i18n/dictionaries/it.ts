@@ -6,6 +6,11 @@ export const it: Dictionary = {
       title: "Bentornato",
       description: "Accedi con la tua email o i tuoi account social",
       descriptionEmailOnly: "Inserisci la tua email qui sotto per accedere al tuo account",
+      biometricButton: "Accedi con Biometria (Face ID / Touch ID)",
+      biometricButtonWithEmail: "Accedi come {email}",
+      biometricVerifying: "Verifica biometrica in corso...",
+      biometricFailed: "Autenticazione biometrica non riuscita o annullata.",
+      orContinueWithEmail: "Oppure continua con email",
       emailLabel: "Email",
       emailPlaceholder: "m@example.com",
       passwordLabel: "Password",
@@ -452,6 +457,9 @@ export const it: Dictionary = {
       title: "Sicurezza",
       biometric_label: "Blocco Biometrico (PWA)",
       biometric_desc: "Richiedi FaceID o TouchID all'apertura dell'app.",
+      biometric_not_supported: "L'autenticazione biometrica non è supportata su questo dispositivo o browser.",
+      biometric_enroll_error: "Configurazione biometrica fallita o annullata.",
+      biometric_enroll_success: "Riconoscimento biometrico abilitato con successo.",
       timeout_label: "Timeout di Blocco",
       timeout_desc: "Quanto attendere prima di bloccare l'app in background.",
       timeout_placeholder: "Seleziona timeout",
@@ -634,6 +642,14 @@ export const it: Dictionary = {
     pageDescription: "Ledgr richiede una connessione attiva per garantire l'integrità dei tuoi conti e delle transazioni.",
     retryButton: "Riprova connessione",
     checkingConnection: "Verifica connessione in corso..."
+  },
+  lockScreen: {
+    title: "Ledgr è bloccato",
+    description: "Usa Face ID, Touch ID o l'impronta digitale per accedere ai tuoi dati finanziari.",
+    unlock_btn: "Sblocca con Biometria",
+    authenticating: "Verifica in corso...",
+    auth_failed: "Autenticazione biometrica non riuscita o annullata. Riprova.",
+    unlock_again: "Riprova lo sblocco",
   }
 };
 

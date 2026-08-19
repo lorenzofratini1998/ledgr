@@ -2,8 +2,13 @@ export const en = {
   auth: {
     login: {
       title: "Welcome back",
-      description: "Login with your email or social accounts",
+      description: "Login with your Apple, Google, or GitHub account",
       descriptionEmailOnly: "Enter your email below to login to your account",
+      biometricButton: "Sign in with Biometrics (Face ID / Touch ID)",
+      biometricButtonWithEmail: "Sign in as {email}",
+      biometricVerifying: "Verifying biometrics...",
+      biometricFailed: "Biometric authentication failed or was cancelled.",
+      orContinueWithEmail: "Or continue with email",
       emailLabel: "Email",
       emailPlaceholder: "m@example.com",
       passwordLabel: "Password",
@@ -450,6 +455,9 @@ export const en = {
       title: "Security",
       biometric_label: "Biometric Lock (PWA)",
       biometric_desc: "Require FaceID or TouchID when opening the app.",
+      biometric_not_supported: "Biometric authentication is not supported on this device or browser.",
+      biometric_enroll_error: "Biometric configuration failed or was cancelled.",
+      biometric_enroll_success: "Biometric authentication enabled successfully.",
       timeout_label: "Lock Timeout",
       timeout_desc: "How long to wait before locking the app when in background.",
       timeout_placeholder: "Select timeout",
@@ -632,6 +640,14 @@ export const en = {
     pageDescription: "Ledgr requires an active connection to ensure the integrity of your financial accounts and transactions.",
     retryButton: "Try Again",
     checkingConnection: "Checking connection..."
+  },
+  lockScreen: {
+    title: "Ledgr is locked",
+    description: "Use Face ID, Touch ID, or fingerprint to access your financial data.",
+    unlock_btn: "Unlock with Biometrics",
+    authenticating: "Verifying...",
+    auth_failed: "Biometric authentication failed or was cancelled. Please try again.",
+    unlock_again: "Retry unlock",
   }
 };
 

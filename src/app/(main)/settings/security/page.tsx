@@ -26,7 +26,7 @@ export default async function SettingsSecurityPage() {
         <h3 className="text-lg font-medium">{t("settings.security.title")}</h3>
       </div>
       <Separator />
-      <SecurityForm preferences={prefs} />
+      <SecurityForm preferences={{ ...prefs, email: user.email }} />
     </div>
   );
 }

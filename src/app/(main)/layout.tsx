@@ -2,6 +2,7 @@ import { Shell } from '@/components/layout/shell';
 import { UpcomingList } from '@/components/layout/upcoming-list';
 import { CalendarWidget } from '@/components/layout/calendar-widget';
 import { ScheduleProvider } from '@/components/layout/schedule-context';
+import { BiometricLockProvider } from '@/providers/biometric-lock-provider';
 import { getUser } from '@/lib/supabase/server';
 import { getRecurringPayments } from '@/features/recurring/queries';
 import { getUserPreferences } from '@/features/preferences/queries';
@@ -49,14 +50,19 @@ export default async function MainLayout({ children }: MainLayoutProps) {
   );
 
   return (
-    <ScheduleProvider>
-      <Shell 
-        user={userProfile} 
-        calendarSlot={calendarSlot} 
-        upcomingSlot={<UpcomingList payments={sortedPayments} dateFormatPreference={dateFormat} />}
-      >
-        {children}
-      </Shell>
-    </ScheduleProvider>
+    <BiometricLockProvider
+      enabled={preferences?.biometric_lock_enabled ?? false}
+      timeoutSeconds={preferences?.lock_timeout_seconds ?? 0}
+    >
+      <ScheduleProvider>
+        <Shell 
+          user={userProfile} 
+          calendarSlot={calendarSlot} 
+          upcomingSlot={<UpcomingList payments={sortedPayments} dateFormatPreference={dateFormat} />}
+        >
+          {children}
+        </Shell>
+      </ScheduleProvider>
+    </BiometricLockProvider>
   );
 }

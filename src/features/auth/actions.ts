@@ -1,10 +1,42 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 import { executePublicAction } from "@/lib/utils/action-utils";
 import { ActionResponse } from "@/types/actions";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
+
+export async function signInWithBiometrics(payload: { email: string }): Promise<ActionResponse> {
+  return executePublicAction(async () => {
+    const email = payload.email;
+
+    if (!email) {
+      return { success: false, message: "Email is required for biometric authentication." };
+    }
+
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: "magiclink",
+      email,
+    });
+
+    if (linkError || !linkData?.properties?.hashed_token) {
+      return { success: false, message: linkError?.message || "Failed to generate biometric authentication token." };
+    }
+
+    const supabase = await createClient();
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      token_hash: linkData.properties.hashed_token,
+      type: "magiclink",
+    });
+
+    if (verifyError) {
+      return { success: false, message: verifyError.message };
+    }
+
+    return { success: true, message: "Biometric authentication successful" };
+  });
+}
 
 export async function signInWithEmail(payload: Record<string, string>): Promise<ActionResponse> {
   return executePublicAction(async () => {

@@ -2,20 +2,27 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { signInWithEmail, signUpWithEmail } from "@/features/auth/actions";
+import { signInWithEmail, signUpWithEmail, signInWithBiometrics } from "@/features/auth/actions";
 import { useActionMutation } from "@/hooks/use-action-mutation";
 import { useTranslation } from "@/i18n/hooks/use-translation";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-
+import { Fingerprint } from "lucide-react";
+import { toast } from "sonner";
+import {
+  authenticateBiometric,
+  isBiometricAvailable,
+  hasLocalBiometricCredential,
+  getBiometricUserEmail,
+  markSessionUnlocked,
+} from "@/lib/biometrics";
 import { getLoginSchema, getRegisterSchema } from "@/features/auth/schemas";
-
 
 function OAuthProviders({ providers }: { providers: string[] }) {
   const { t } = useTranslation();
@@ -70,6 +77,10 @@ function OAuthProviders({ providers }: { providers: string[] }) {
 
 function LoginSubForm() {
   const { t, dictionary } = useTranslation();
+  const [hasBiometric, setHasBiometric] = useState(false);
+  const [biometricEmail, setBiometricEmail] = useState<string | null>(null);
+  const [isBiometricPending, setIsBiometricPending] = useState(false);
+
   const loginSchema = useMemo(() => getLoginSchema(dictionary.auth.login.errors), [dictionary.auth.login.errors]);
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -80,11 +91,26 @@ function LoginSubForm() {
     },
   });
 
+  useEffect(() => {
+    async function checkBiometrics() {
+      const available = await isBiometricAvailable();
+      const hasCredential = hasLocalBiometricCredential();
+      const storedEmail = getBiometricUserEmail();
+
+      if (available && hasCredential && storedEmail) {
+        setHasBiometric(true);
+        setBiometricEmail(storedEmail);
+      }
+    }
+    checkBiometrics();
+  }, []);
+
   const { mutate, isPending } = useActionMutation(loginForm, {
     action: signInWithEmail,
     successMessage: (res) => res.message || "Logged in successfully",
     errorMessage: (res) => res.message || "Login failed",
     onSuccess: () => {
+      markSessionUnlocked();
       window.location.href = "/dashboard";
     },
   });
@@ -93,48 +119,100 @@ function LoginSubForm() {
     mutate({ email: values.email, password: values.password });
   };
 
+  const handleBiometricLogin = async () => {
+    if (!biometricEmail) return;
+    setIsBiometricPending(true);
+    try {
+      const verified = await authenticateBiometric();
+      if (!verified) {
+        toast.error(t('auth.login.biometricFailed'));
+        return;
+      }
+
+      const res = await signInWithBiometrics({ email: biometricEmail });
+      if (res.success) {
+        markSessionUnlocked();
+        toast.success(res.message || "Logged in successfully");
+        window.location.href = "/dashboard";
+      } else {
+        toast.error(res.message || t('auth.login.biometricFailed'));
+      }
+    } catch (err: any) {
+      console.warn("Biometric login error:", err);
+      toast.error(t('auth.login.biometricFailed'));
+    } finally {
+      setIsBiometricPending(false);
+    }
+  };
+
   return (
-    <Form key="login" {...loginForm}>
-      <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
-        <FormField
-          control={loginForm.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>{t('auth.login.emailLabel')}</FormLabel>
-              <FormControl>
-                <Input placeholder={t('auth.login.emailPlaceholder') as string} type="email" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="space-y-4">
+      {hasBiometric && (
+        <div className="space-y-4">
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full gap-2.5 h-12 text-sm font-semibold border-primary/30 bg-primary/5 hover:bg-primary/10 text-primary shadow-sm active:scale-[0.99] transition-all"
+            onClick={handleBiometricLogin}
+            disabled={isBiometricPending || isPending}
+          >
+            <Fingerprint className={`h-5 w-5 shrink-0 ${isBiometricPending ? "animate-pulse" : ""}`} />
+            <span>
+              {isBiometricPending
+                ? t('auth.login.biometricVerifying')
+                : t('auth.login.biometricButton')}
+            </span>
+          </Button>
 
-        <FormField
-          control={loginForm.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <div className="flex items-center justify-between">
-                <FormLabel>{t('auth.login.passwordLabel')}</FormLabel>
-                <Link href="/forgot-password" className="text-sm underline-offset-4 hover:underline">
-                  {t('auth.login.forgotPassword')}
-                </Link>
-              </div>
-              <FormControl>
-                <Input type="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <span className="relative z-10 bg-card px-2 text-muted-foreground">
+              {t('auth.login.orContinueWithEmail')}
+            </span>
+          </div>
+        </div>
+      )}
 
+      <Form key="login" {...loginForm}>
+        <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+          <FormField
+            control={loginForm.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>{t('auth.login.emailLabel')}</FormLabel>
+                <FormControl>
+                  <Input placeholder={t('auth.login.emailPlaceholder') as string} type="email" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Button type="submit" className="w-full mt-2" disabled={isPending}>
-          {isPending ? t('auth.login.submitting') : t('auth.login.submit')}
-        </Button>
-      </form>
-    </Form>
+          <FormField
+            control={loginForm.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <div className="flex items-center justify-between">
+                  <FormLabel>{t('auth.login.passwordLabel')}</FormLabel>
+                  <Link href="/forgot-password" className="text-sm underline-offset-4 hover:underline">
+                    {t('auth.login.forgotPassword')}
+                  </Link>
+                </div>
+                <FormControl>
+                  <Input type="password" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full mt-2" disabled={isPending || isBiometricPending}>
+            {isPending ? t('auth.login.submitting') : t('auth.login.submit')}
+          </Button>
+        </form>
+      </Form>
+    </div>
   );
 }
 
@@ -158,6 +236,7 @@ function RegisterSubForm() {
     successMessage: (res) => res.message || "Registered successfully",
     errorMessage: (res) => res.message || "Registration failed",
     onSuccess: () => {
+      markSessionUnlocked();
       window.location.href = "/dashboard";
     },
   });

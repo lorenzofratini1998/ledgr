@@ -30,6 +30,8 @@ import { updateSecurityPreferencesSchema, UpdateSecurityPreferencesPayload } fro
 
 import { PushSettingsCard } from "@/features/notifications/components/push-settings-card";
 
+import { isBiometricAvailable, registerBiometric, hasLocalBiometricCredential } from "@/lib/biometrics";
+
 interface SecurityFormProps {
   preferences: any;
 }
@@ -48,6 +50,58 @@ export function SecurityForm({ preferences }: SecurityFormProps) {
       budget_alert_threshold: preferences.budget_alert_threshold,
     },
   });
+
+  const handleBiometricToggle = async (checked: boolean) => {
+    if (!checked) {
+      form.setValue("biometric_lock_enabled", false, { shouldDirty: true });
+      startTransition(async () => {
+        try {
+          await updateSecurityPreferences({
+            ...form.getValues(),
+            biometric_lock_enabled: false,
+          });
+          toast.success(t("settings.security.success"));
+        } catch (error: any) {
+          toast.error(t("settings.security.error"), { description: error.message });
+        }
+      });
+      return;
+    }
+
+    const available = await isBiometricAvailable();
+    if (!available) {
+      toast.error(t("settings.security.biometric_not_supported"));
+      form.setValue("biometric_lock_enabled", false);
+      return;
+    }
+
+    try {
+      const userEmail = preferences.email || "user@ledgr.local";
+      await registerBiometric(
+        preferences.profile_id || "user",
+        userEmail
+      );
+      toast.success(t("settings.security.biometric_enroll_success"));
+      form.setValue("biometric_lock_enabled", true, { shouldDirty: true });
+      
+      // Auto-persist preference to database immediately
+      startTransition(async () => {
+        try {
+          await updateSecurityPreferences({
+            ...form.getValues(),
+            biometric_lock_enabled: true,
+          });
+          toast.success(t("settings.security.success"));
+        } catch (error: any) {
+          toast.error(t("settings.security.error"), { description: error.message });
+        }
+      });
+    } catch (err) {
+      console.warn("Biometric enrollment error/cancelled:", err);
+      toast.error(t("settings.security.biometric_enroll_error"));
+      form.setValue("biometric_lock_enabled", false);
+    }
+  };
 
   function onSubmit(data: UpdateSecurityPreferencesPayload) {
     startTransition(async () => {
@@ -83,7 +137,7 @@ export function SecurityForm({ preferences }: SecurityFormProps) {
                     <FormControl>
                       <Switch
                         checked={field.value}
-                        onCheckedChange={field.onChange}
+                        onCheckedChange={handleBiometricToggle}
                       />
                     </FormControl>
                   </FormItem>

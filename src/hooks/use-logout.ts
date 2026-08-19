@@ -16,9 +16,19 @@ export function useLogout() {
       // Clear React Query cache
       queryClient.clear();
       
-      // Clear local storage / session storage
+      // Clear local storage / session storage while preserving device biometric credentials
+      const biometricCredId = localStorage.getItem('ledgr_biometric_credential_id');
+      const biometricUserEmail = localStorage.getItem('ledgr_biometric_user_email');
+
       localStorage.clear();
       sessionStorage.clear();
+
+      if (biometricCredId) {
+        localStorage.setItem('ledgr_biometric_credential_id', biometricCredId);
+      }
+      if (biometricUserEmail) {
+        localStorage.setItem('ledgr_biometric_user_email', biometricUserEmail);
+      }
       
       // Hard refresh to login page to guarantee pristine client state
       window.location.href = '/login';

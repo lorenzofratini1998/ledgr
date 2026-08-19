@@ -35,15 +35,9 @@ function getDeviceName(): string {
 }
 
 export function usePushSubscription() {
-  const [isSupported, setIsSupported] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return 'serviceWorker' in navigator && 'PushManager' in window;
-  });
+  const [isSupported, setIsSupported] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [permission, setPermission] = useState<NotificationPermission>(() => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return 'default';
-    return Notification.permission;
-  });
+  const [permission, setPermission] = useState<NotificationPermission>('default');
   const [isLoading, setIsLoading] = useState(true);
   const { t } = useTranslation();
   const tRef = useRef(t);
