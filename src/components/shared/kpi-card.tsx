@@ -12,14 +12,15 @@ interface KpiCardProps {
 
 export function KpiCard({ label, value, icon: Icon, className, valueClassName }: KpiCardProps) {
   return (
-    <div className={cn("p-4 rounded-xl border bg-card shadow-sm", className)}>
-      <p className="text-sm text-muted-foreground mb-1 flex items-center gap-1.5">
-        {Icon && <Icon className="w-4 h-4" />}
+    <div className={cn("p-3.5 sm:p-4 rounded-xl border bg-card shadow-2xs", className)}>
+      <p className="text-xs sm:text-sm text-muted-foreground mb-1 flex items-center gap-1.5 font-medium">
+        {Icon && <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />}
         {label}
       </p>
-      <div className={cn("text-2xl font-bold tracking-tight", valueClassName)}>
+      <div className={cn("text-xl sm:text-2xl font-bold tracking-tight", valueClassName)}>
         {value}
       </div>
     </div>
   );
 }
+

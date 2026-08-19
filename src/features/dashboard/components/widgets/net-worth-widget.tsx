@@ -26,7 +26,7 @@ export async function NetWorthWidget({ from, to, currencyCode = 'USD', locale = 
       title={t('dashboard.widgets.net_worth')}
       className="bg-primary/5 border-primary/20"
     >
-      <div className="text-3xl font-bold text-primary">
+      <div className="text-2xl sm:text-3xl font-bold tracking-tight text-primary">
         {formatCurrency(balance, currencyCode, locale)}
       </div>
       <PercentageBadge current={balance} previous={previousBalance} label={t('dashboard.widgets.vs_previous')} />

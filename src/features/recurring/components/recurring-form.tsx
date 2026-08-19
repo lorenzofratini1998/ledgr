@@ -138,10 +138,11 @@ export function RecurringForm({ wallets, categories, currencies, defaultCurrency
                     </div>
                     <Input 
                       type="number" 
+                      inputMode="decimal"
                       step="0.01" 
                       min="0.01"
                       placeholder="0.00" 
-                      className="pl-8 text-base font-medium"
+                      className="pl-8 text-sm font-medium"
                       {...field}
                       onChange={(e) => {
                         let val = e.target.value;

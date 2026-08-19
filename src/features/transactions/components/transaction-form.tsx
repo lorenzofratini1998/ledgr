@@ -242,9 +242,10 @@ export function TransactionForm({
                   <Input
                     placeholder="0.00"
                     type="number"
+                    inputMode="decimal"
                     step="0.01"
                     min="0.01"
-                    className="pl-8 text-lg font-medium"
+                    className="pl-8 text-sm font-medium"
                     {...field}
                     onChange={(e) => {
                       let val = e.target.value;
@@ -287,6 +288,7 @@ export function TransactionForm({
                     <Input
                       placeholder="0.00"
                       type="number"
+                      inputMode="decimal"
                       step="0.01"
                       min="0.01"
                       className="pl-8 font-medium"
@@ -480,6 +482,7 @@ export function TransactionForm({
                       <Input
                         placeholder="0.00"
                         type="number"
+                        inputMode="decimal"
                         step="0.01"
                         min="0"
                         className="pl-8"

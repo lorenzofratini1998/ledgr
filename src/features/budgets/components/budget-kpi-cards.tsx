@@ -69,40 +69,40 @@ export function BudgetKpiCards({ amount, spent, type, startDate, endDate, curren
   const overAmount = absoluteSpent > numAmount ? absoluteSpent - numAmount : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2 text-muted-foreground mb-2">
+        <CardContent className="p-4 sm:p-5 md:p-6">
+          <div className="flex items-center space-x-2 text-muted-foreground mb-1.5 sm:mb-2">
             <Target className="h-4 w-4" />
-            <span className="text-sm font-medium">{type === 'expense' ? t('budgets.limit' as any) : t('budgets.target' as any)}</span>
+            <span className="text-xs sm:text-sm font-medium">{type === 'expense' ? t('budgets.limit' as any) : t('budgets.target' as any)}</span>
           </div>
-          <div className="text-2xl font-bold">
+          <div className="text-xl sm:text-2xl font-bold tracking-tight">
             {formatCurrency(numAmount, currencyCode, locale)}
           </div>
         </CardContent>
       </Card>
       
       <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2 text-muted-foreground mb-2">
+        <CardContent className="p-4 sm:p-5 md:p-6">
+          <div className="flex items-center space-x-2 text-muted-foreground mb-1.5 sm:mb-2">
             {type === 'expense' ? <TrendingDown className="h-4 w-4" /> : <TrendingUp className="h-4 w-4" />}
-            <span className="text-sm font-medium">{t('budgets.current' as any)}</span>
+            <span className="text-xs sm:text-sm font-medium">{t('budgets.current' as any)}</span>
           </div>
-          <div className={cn("text-2xl font-bold", type === 'expense' && isOverbudget ? "text-destructive" : type === 'income' && isGoalReached ? "text-emerald-500" : "")}>
+          <div className={cn("text-xl sm:text-2xl font-bold tracking-tight", type === 'expense' && isOverbudget ? "text-destructive" : type === 'income' && isGoalReached ? "text-emerald-500" : "")}>
             {formatCurrency(absoluteSpent, currencyCode, locale)}
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2 text-muted-foreground mb-2">
+      <Card className="sm:col-span-2 md:col-span-1">
+        <CardContent className="p-4 sm:p-5 md:p-6">
+          <div className="flex items-center space-x-2 text-muted-foreground mb-1.5 sm:mb-2">
             {statusIcon}
-            <span className="text-sm font-medium">
+            <span className="text-xs sm:text-sm font-medium">
               {type === 'expense' ? 'Remaining' : 'Remaining to goal'}
             </span>
           </div>
-          <div className={cn("text-2xl font-bold", isOverbudget && type === 'expense' ? "text-destructive" : statusColor)}>
+          <div className={cn("text-xl sm:text-2xl font-bold tracking-tight", isOverbudget && type === 'expense' ? "text-destructive" : statusColor)}>
             {isOverbudget && type === 'expense' 
               ? `-${formatCurrency(overAmount, currencyCode, locale)}`
               : formatCurrency(remainingAmount, currencyCode, locale)}
@@ -117,3 +117,4 @@ export function BudgetKpiCards({ amount, spent, type, startDate, endDate, curren
     </div>
   );
 }
+

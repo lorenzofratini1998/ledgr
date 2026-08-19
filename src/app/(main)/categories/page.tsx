@@ -1,5 +1,6 @@
 import { PageContainer } from '@/components/layout/page-container';
 import { PageHeader } from '@/components/shared/page-header';
+import { TaxonomyNavTabs } from '@/components/shared/taxonomy-nav-tabs';
 import { CategoryGrid, CreateCategoryTrigger, CategoryDetailDashboard } from '@/features/categories/components';
 import { getCategories } from '@/features/categories/queries';
 import { parsePeriod } from '@/features/dashboard/utils';
@@ -44,6 +45,8 @@ export default async function CategoriesPage({
         description={t('categories.description')}
         action={trigger}
       />
+
+      <TaxonomyNavTabs />
 
       <CategoryGrid 
         categories={categories} 

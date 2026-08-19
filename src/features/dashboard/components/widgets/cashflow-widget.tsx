@@ -19,12 +19,12 @@ export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 
   const { t } = await getTranslator();
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4">
       <WidgetCard 
         title={<span className="text-muted-foreground">{t('dashboard.widgets.income_in_period')}</span>}
         className="bg-card"
       >
-        <div className="text-2xl font-semibold text-emerald-500">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-emerald-500">
           {formatCurrency(cashflow.income, currencyCode, locale)}
         </div>
         <PercentageBadge current={cashflow.income} previous={compareCashflow.income} label={t('dashboard.widgets.vs_previous')} />
@@ -34,7 +34,7 @@ export async function CashflowWidget({ from, to, currencyCode = 'USD', locale = 
         title={<span className="text-muted-foreground">{t('dashboard.widgets.expenses_in_period')}</span>}
         className="bg-card"
       >
-        <div className="text-2xl font-semibold text-rose-500">
+        <div className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight text-rose-500">
           {formatCurrency(Math.abs(cashflow.expense), currencyCode, locale)}
         </div>
         <PercentageBadge current={Math.abs(cashflow.expense)} previous={Math.abs(compareCashflow.expense)} invertColors label={t('dashboard.widgets.vs_previous')} />

@@ -372,9 +372,10 @@ export function QuickTransactionDialog({
                             <Input
                               placeholder="0.00"
                               type="number"
+                              inputMode="decimal"
                               step="0.01"
                               min="0.01"
-                              className="pl-8 text-base font-medium"
+                              className="pl-8 text-sm font-medium"
                               {...field}
                               onChange={(e) => {
                                 let val = e.target.value;
@@ -428,13 +429,14 @@ export function QuickTransactionDialog({
                     control={form.control}
                     name="wallet_id"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="w-full">
                         <FormLabel>{t('quickTransactions.walletLabel')}</FormLabel>
                         <FormControl>
                           <WalletSelect
                             wallets={wallets}
                             value={field.value}
                             onValueChange={handleWalletChange}
+                            className="w-full"
                           />
                         </FormControl>
                         <FormMessage />
@@ -446,7 +448,7 @@ export function QuickTransactionDialog({
                     control={form.control}
                     name="category_id"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="w-full">
                         <FormLabel>{t('quickTransactions.categoryLabel')}</FormLabel>
                         <FormControl>
                           <CategorySelect
@@ -454,6 +456,7 @@ export function QuickTransactionDialog({
                             value={field.value || ''}
                             onValueChange={field.onChange}
                             allowEmpty={true}
+                            className="w-full"
                           />
                         </FormControl>
                         <FormMessage />

@@ -150,7 +150,7 @@ export function WalletFormFields({ currencies, fieldPrefix = '', isEditMode = fa
                 <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted-foreground font-medium">
                   {selectedCurrency?.symbol || '$'}
                 </div>
-                <Input type="text" placeholder="0.00" className="pl-8" {...field} value={field.value || ''} />
+                <Input type="text" inputMode="decimal" placeholder="0.00" className="pl-8" {...field} value={field.value || ''} />
               </div>
             </FormControl>
             <FormMessage />

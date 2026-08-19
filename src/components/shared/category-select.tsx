@@ -28,7 +28,7 @@ export function CategorySelect({
 
   return (
     <Select value={value || ""} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
-      <SelectTrigger className={className}>
+      <SelectTrigger className={cn("w-full", className)}>
         <SelectValue placeholder={placeholder}>
           {selectedCategory ? (
             <span className="truncate block text-left">

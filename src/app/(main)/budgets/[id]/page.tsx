@@ -109,7 +109,7 @@ export default async function BudgetDetailsPage({
         todayDate={new Date().toISOString()}
       />
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 md:gap-6">
         <div>
           <BudgetPacingChart 
             data={pacingData.map((d: any) => ({ ...d, balance: budget.type === 'expense' ? Math.abs(d.balance) : d.balance }))}
@@ -127,33 +127,33 @@ export default async function BudgetDetailsPage({
               currencyCode={budget.currency_code || primaryCurrencyCode}
             />
           ) : (
-            <div className="h-full flex items-center justify-center p-8 text-center rounded-xl border border-dashed bg-muted/20">
-              <p className="text-sm text-muted-foreground">{t('budgets.noCategoryData' as any)}</p>
+            <div className="h-full flex items-center justify-center p-6 sm:p-8 text-center rounded-xl border border-dashed bg-muted/20">
+              <p className="text-xs sm:text-sm text-muted-foreground">{t('budgets.noCategoryData' as any)}</p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="pt-6">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold">{t('budgets.recentTransactions' as any)}</h2>
+      <div className="pt-2 sm:pt-4">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-semibold">{t('budgets.recentTransactions' as any)}</h2>
           <Link href={`/transactions?${new URLSearchParams({
               startDate: budget.start_date,
               endDate: budget.end_date,
               type: budget.type,
               ...(categoryIds && categoryIds.length > 0 ? { categories: categoryIds.join(',') } : {})
             }).toString()}`} className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
-            View All <ArrowRight className="ml-2 h-4 w-4" />
+            <span className="text-xs sm:text-sm">View All</span> <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
           </Link>
         </div>
-        <div className="bg-card border rounded-xl p-4 md:p-6">
+        <div className="bg-card border rounded-xl p-3.5 sm:p-4 md:p-6">
             {(!transactions || transactions.length === 0) ? (
               <div className="text-center py-6 text-muted-foreground">
                  <Receipt className="mx-auto h-8 w-8 mb-2 opacity-20" />
-                 <p>{t('dashboard.widgets.no_transactions' as any) || 'No transactions yet'}</p>
+                 <p className="text-xs sm:text-sm">{t('dashboard.widgets.no_transactions' as any) || 'No transactions yet'}</p>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {(transactions as any[]).slice(0, 5).map((tx: any) => (
                   <TransactionListItem 
                     key={tx.transaction_id} 

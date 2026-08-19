@@ -48,15 +48,15 @@ export default async function SettingsLayout({
   }));
 
   return (
-    <div className="space-y-6 p-4 md:p-10 pb-16 max-w-6xl mx-auto w-full">
+    <div className="space-y-4 md:space-y-6 p-3.5 sm:p-6 md:p-10 pb-20 md:pb-16 max-w-6xl mx-auto w-full">
       <div className="space-y-0.5">
-        <h2 className="text-2xl font-bold tracking-tight">{t("navigation.settings")}</h2>
-        <p className="text-muted-foreground">
+        <h2 className="text-xl sm:text-2xl font-bold tracking-tight">{t("navigation.settings")}</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           {t("settings.nav.profile")}, {t("settings.nav.general")}, {t("settings.nav.appearance")}, {t("settings.nav.security")}
         </p>
       </div>
       <div className="shrink-0 bg-border h-[1px] w-full" />
-      <div className="flex flex-col space-y-8 lg:flex-row lg:space-x-12 lg:space-y-0">
+      <div className="flex flex-col space-y-6 lg:flex-row lg:space-x-12 lg:space-y-0">
         <aside className="lg:w-1/5">
           <SettingsNav items={navItems} />
         </aside>
@@ -64,4 +64,5 @@ export default async function SettingsLayout({
       </div>
     </div>
   );
+
 }

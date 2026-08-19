@@ -4,6 +4,7 @@ import { getTags } from "@/features/tags/queries";
 import { TagsClientView } from "@/features/tags/components/tags-client-view";
 import { PageContainer } from '@/components/layout/page-container';
 import { PageHeader } from '@/components/shared/page-header';
+import { TaxonomyNavTabs } from '@/components/shared/taxonomy-nav-tabs';
 import { CreateTagTrigger } from "@/features/tags/components/create-tag-trigger";
 import { Metadata } from "next";
 
@@ -42,6 +43,8 @@ export default async function TagsPage(
         description="Manage your tags for detailed transaction organization."
         action={trigger}
       />
+
+      <TaxonomyNavTabs />
 
       <TagsClientView 
         tags={tagsResponse.data} 

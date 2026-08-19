@@ -15,21 +15,21 @@ interface ShellProps {
 
 export function Shell({ children, user, calendarSlot, upcomingSlot }: ShellProps) {
   return (
-    <div className="flex h-screen w-full bg-background overflow-hidden selection:bg-primary/20">
+    <div className="flex h-screen h-[100dvh] w-full bg-background overflow-hidden selection:bg-primary/20">
       <RealtimeNotificationListener />
 
-      
       {/* Mobile Layout */}
-      <div className="md:hidden flex flex-col w-full h-full">
+      <div className="md:hidden flex flex-col w-full h-full min-h-0 relative">
         <TopHeader user={user} upcomingSlot={upcomingSlot} />
-        <main className="flex-1 overflow-y-auto">
+        <main className="flex-1 overflow-y-auto min-h-0 overscroll-y-contain pb-20">
           {children}
         </main>
         <BottomNav />
       </div>
 
+
       {/* Tablet & Desktop Layout */}
-      <div className="hidden md:flex w-full h-full">
+      <div className="hidden md:flex w-full h-full min-h-0">
         <Sidebar user={user} />
         
         <main className="flex-1 overflow-y-auto min-w-0">
@@ -44,3 +44,4 @@ export function Shell({ children, user, calendarSlot, upcomingSlot }: ShellProps
     </div>
   );
 }
+

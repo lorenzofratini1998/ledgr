@@ -1,4 +1,5 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { cn } from '@/lib/utils';
 
 interface WalletOption {
   id: string;
@@ -12,6 +13,7 @@ interface WalletSelectProps {
   wallets: WalletOption[];
   placeholder?: string;
   disabled?: boolean;
+  className?: string;
 }
 
 export function WalletSelect({
@@ -20,12 +22,13 @@ export function WalletSelect({
   wallets,
   placeholder = "Select a wallet",
   disabled = false,
+  className,
 }: WalletSelectProps) {
   const selectedWallet = wallets.find((w) => w.id === value);
 
   return (
     <Select value={value || ""} onValueChange={(val) => onValueChange(val || "")} disabled={disabled}>
-      <SelectTrigger>
+      <SelectTrigger className={cn("w-full", className)}>
         <SelectValue placeholder={placeholder}>
           {selectedWallet ? (
             <span className="truncate block text-left">

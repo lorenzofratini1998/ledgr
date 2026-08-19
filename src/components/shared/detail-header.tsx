@@ -24,23 +24,23 @@ export function DetailHeader({
   badge,
 }: DetailHeaderProps) {
   return (
-    <div className="mt-4 flex items-center space-x-4">
-      <Link href={backHref} className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'rounded-full' })}>
-        <ArrowLeft className="w-5 h-5" />
+    <div className="mt-2 sm:mt-4 flex items-center space-x-3 sm:space-x-4">
+      <Link href={backHref} className={buttonVariants({ variant: 'ghost', size: 'icon', className: 'rounded-full h-8 w-8 sm:h-9 sm:w-9 shrink-0' })}>
+        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
       </Link>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         {Icon && (
-          <div className={cn("p-2.5 rounded-xl bg-primary/10 text-primary shrink-0", iconClassName)} style={iconStyle}>
-            <Icon className="w-5 h-5" />
+          <div className={cn("p-2 sm:p-2.5 rounded-xl bg-primary/10 text-primary shrink-0", iconClassName)} style={iconStyle}>
+            <Icon className="w-4 h-4 sm:w-5 sm:h-5" />
           </div>
         )}
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight flex items-center gap-2">
-            {title}
+        <div className="min-w-0">
+          <h1 className="text-lg sm:text-xl md:text-2xl font-bold tracking-tight flex items-center gap-2 truncate">
+            <span className="truncate">{title}</span>
             {badge}
           </h1>
           {subtitle && (
-            <div className="text-sm text-muted-foreground capitalize flex items-center gap-1.5">
+            <div className="text-xs sm:text-sm text-muted-foreground capitalize flex items-center gap-1.5 truncate">
               {subtitle}
             </div>
           )}
@@ -49,3 +49,4 @@ export function DetailHeader({
     </div>
   );
 }
+

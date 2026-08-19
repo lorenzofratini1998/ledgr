@@ -95,7 +95,7 @@ export default async function ScheduledPaymentDetailsPage({
       />
 
       {/* Hero Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
          <KpiCard 
            label="Next Execution"
            icon={Clock}
@@ -119,14 +119,14 @@ export default async function ScheduledPaymentDetailsPage({
       </div>
 
       {/* Widgets Grid */}
-      <div className="space-y-6">
-        <div className="grid gap-6 grid-cols-1">
+      <div className="space-y-4 md:space-y-6">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<RecurringHistoryWidgetSkeleton />}>
              <RecurringHistoryWidget recurringId={paymentId} currencyCode={payment.currency_code} locale={locale} dateFormatPreference={dateFormat} />
           </Suspense>
         </div>
 
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<RecentTransactionsWidgetSkeleton />}>
              <RecentTransactionsWidget recurringId={paymentId} locale={locale} dateFormatPreference={dateFormat} />
           </Suspense>

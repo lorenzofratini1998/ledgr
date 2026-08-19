@@ -65,10 +65,10 @@ export default async function DashboardPage({
   const { t } = await getTranslator();
 
   return (
-    <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+    <div className="p-3.5 sm:p-6 md:p-8 space-y-4 md:space-y-6 max-w-7xl mx-auto w-full">
       <DashboardRealtimeSubscriber userId={user.id} />
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold tracking-tight">{t('dashboard.hello', { name: userName })}</h1>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">{t('dashboard.hello', { name: userName })}</h1>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
           <PeriodSelector defaultPeriod={resolvedPeriod} defaultFrom={from} defaultTo={to} dateFormatPreference={dateFormatPreference} />
           <CreateTransactionTrigger
@@ -92,9 +92,9 @@ export default async function DashboardPage({
         locale={languageLocale}
       />
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 md:gap-6">
         {/* KPI Row */}
-        <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+        <div className="grid gap-3.5 sm:gap-4 grid-cols-1 md:grid-cols-3">
           <div className="md:col-span-1">
             <Suspense fallback={<NetWorthWidgetSkeleton />} key={`networth-${from}-${to}`}>
               <NetWorthWidget from={from} to={to} currencyCode={primaryCurrencyCode || 'USD'} locale={languageLocale} />
@@ -108,7 +108,7 @@ export default async function DashboardPage({
         </div>
 
         {/* Trend & Breakdown Row */}
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           {/* Net Worth Trend Chart */}
           <Suspense fallback={<BalanceTrendWidgetSkeleton className="col-span-full" />}>
             <BalanceTrendWidget from={from} to={to} className="col-span-full" dateFormatPreference={dateFormatPreference} currencyCode={primaryCurrencyCode || 'USD'} locale={languageLocale} />
@@ -121,7 +121,7 @@ export default async function DashboardPage({
         </div>
 
         {/* Income vs Expenses & Wallet Balances Row */}
-        <div className="grid gap-6 grid-cols-1 xl:grid-cols-3">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 xl:grid-cols-3">
           <Suspense fallback={<IncomeVsExpensesWidgetSkeleton className="xl:col-span-2" />} key={`income-${from}-${to}`}>
             <IncomeVsExpensesWidget from={from} to={to} className="xl:col-span-2" dateFormatPreference={dateFormatPreference} currencyCode={primaryCurrencyCode || 'USD'} locale={languageLocale} />
           </Suspense>
@@ -131,7 +131,7 @@ export default async function DashboardPage({
         </div>
 
         {/* Recent Transactions Row */}
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<RecentTransactionsWidgetSkeleton />}>
             <RecentTransactionsWidget dateFormatPreference={dateFormatPreference} locale={languageLocale} />
           </Suspense>

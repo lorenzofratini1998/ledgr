@@ -11,7 +11,7 @@ interface TopHeaderProps {
 
 export function TopHeader({ user, upcomingSlot }: TopHeaderProps) {
   return (
-    <header className="md:hidden w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b z-40 pt-safe shrink-0">
+    <header className="md:hidden sticky top-0 left-0 right-0 w-full bg-background/95 backdrop-blur-lg supports-[backdrop-filter]:bg-background/85 border-b z-40 pt-safe shrink-0">
       <div className="flex items-center justify-between px-4 h-14">
         <UserNavPopover
           align="start"

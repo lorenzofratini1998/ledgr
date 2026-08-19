@@ -13,26 +13,26 @@ export async function RecentTransactionsWidget({ walletId, categoryId, recurring
 
   return (
     <WidgetCard 
-      title={<span className="text-lg font-semibold">{t('dashboard.widgets.recent_transactions')}</span>}
+      title={<span className="text-sm sm:text-base font-semibold">{t('dashboard.widgets.recent_transactions')}</span>}
       className="col-span-full"
-      headerClassName="pb-4"
+      headerClassName="pb-3 sm:pb-4"
       headerRight={
         <Link href={`/transactions?${new URLSearchParams({
           ...(walletId ? { wallets: walletId } : {}),
           ...(categoryId ? { categories: categoryId } : {}),
           ...(recurringId ? { recurringId: recurringId } : {})
         }).toString()}`} className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
-          View All <ArrowRight className="ml-2 h-4 w-4" />
+          <span className="text-xs sm:text-sm">View All</span> <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
         </Link>
       }
     >
       {transactions.length === 0 ? (
         <div className="text-center py-6 text-muted-foreground">
            <Receipt className="mx-auto h-8 w-8 mb-2 opacity-20" />
-           <p>{t('dashboard.widgets.no_transactions')}</p>
+           <p className="text-xs sm:text-sm">{t('dashboard.widgets.no_transactions')}</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {transactions.map((tx: any) => (
             <TransactionListItem 
               key={tx.transaction_id} 

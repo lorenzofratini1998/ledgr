@@ -65,6 +65,7 @@ function CategoryAllocationRow({
           <div className="relative w-full sm:w-24 shrink-0">
             <Input
               type="number"
+              inputMode="decimal"
               step="0.01"
               min="0"
               placeholder="0.00"

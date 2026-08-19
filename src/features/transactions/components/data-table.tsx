@@ -608,7 +608,7 @@ export function DataTable<TData, TValue>({
                     setConfirmAmountStr(Number(val).toFixed(2));
                   }
                 }}
-                className="pl-8 text-lg font-medium"
+                className="pl-8 text-sm font-medium"
               />
             </div>
           </div>

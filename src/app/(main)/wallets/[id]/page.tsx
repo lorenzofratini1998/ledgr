@@ -76,10 +76,10 @@ export default async function WalletDetailsPage({
       />
 
       {/* Hero Stats */}
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
          <div>
-            <p className="text-sm text-muted-foreground mb-1">Balance</p>
-            <div className="text-3xl font-bold tracking-tight">
+            <p className="text-xs sm:text-sm text-muted-foreground mb-0.5 sm:mb-1">Balance</p>
+            <div className="text-2xl sm:text-3xl font-bold tracking-tight">
                {formatCurrency(Number(wallet.balance ?? wallet.initial_balance), wallet.currency_code)}
             </div>
          </div>
@@ -87,9 +87,9 @@ export default async function WalletDetailsPage({
       </div>
 
       {/* Widgets Grid */}
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         {/* Trend & Breakdown Row */}
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<BalanceTrendWidgetSkeleton />} key={`trend-${walletId}-${from}-${to}`}>
              <BalanceTrendWidget from={from} to={to} walletId={walletId} />
           </Suspense>
@@ -99,14 +99,14 @@ export default async function WalletDetailsPage({
         </div>
 
         {/* Income vs Expenses Row */}
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<IncomeVsExpensesWidgetSkeleton className="col-span-full" />} key={`income-${walletId}-${from}-${to}`}>
              <IncomeVsExpensesWidget from={from} to={to} walletId={walletId} className="col-span-full" />
           </Suspense>
         </div>
 
         {/* Recent Transactions Row */}
-        <div className="grid gap-6 grid-cols-1">
+        <div className="grid gap-4 md:gap-6 grid-cols-1">
           <Suspense fallback={<RecentTransactionsWidgetSkeleton />}>
              <RecentTransactionsWidget walletId={walletId} />
           </Suspense>

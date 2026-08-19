@@ -18,25 +18,26 @@ interface TransactionListItemProps {
 
 export function TransactionListItem({ transaction: tx, dateFormatPreference = 'DD/MM/YYYY', locale = 'en-US' }: TransactionListItemProps) {
   return (
-    <div className="flex items-center justify-between border-b last:border-0 pb-4 last:pb-0">
-      <div className="flex items-center space-x-4">
+    <div className="flex items-center justify-between border-b border-border/50 last:border-0 pb-3 sm:pb-4 last:pb-0 gap-2">
+      <div className="flex items-center space-x-3 sm:space-x-4 min-w-0">
         <div 
-          className="w-10 h-10 rounded-full flex items-center justify-center text-white shrink-0" 
+          className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white shrink-0 shadow-2xs" 
           style={{ backgroundColor: tx.categories?.color || '#94a3b8' }}
         >
-          <Receipt size={20} />
+          <Receipt className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
-        <div>
-          <p className="font-medium leading-none">{tx.description}</p>
-          <p className="text-sm text-muted-foreground mt-1">
+        <div className="min-w-0">
+          <p className="text-xs sm:text-sm font-medium leading-none truncate">{tx.description}</p>
+          <p className="text-[11px] sm:text-xs text-muted-foreground mt-1 truncate">
             {formatDate(tx.date, dateFormatPreference)} • {tx.wallets?.name || 'Unknown Wallet'}
           </p>
         </div>
       </div>
-      <div className={`font-semibold ${tx.normalized_amount > 0 ? 'text-emerald-500' : ''}`}>
+      <div className={`text-xs sm:text-sm font-bold tracking-tight shrink-0 ${tx.normalized_amount > 0 ? 'text-emerald-500' : ''}`}>
         {tx.normalized_amount > 0 ? '+' : ''}
         {formatCurrency(tx.amount, tx.currency_code, locale)}
       </div>
     </div>
   );
 }
+
