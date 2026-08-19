@@ -2,7 +2,7 @@ import { User } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
 
 
-const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/auth/callback', '/update-password'];
+const PUBLIC_ROUTES = ['/login', '/signup', '/forgot-password', '/auth/callback', '/update-password', '/terms', '/privacy'];
 
 
 export async function enforceRoutingGuards(
@@ -24,9 +24,14 @@ export async function enforceRoutingGuards(
     return NextResponse.redirect(url);
   }
 
-  // Exempt /auth/callback and /update-password from redirecting authenticated users to the dashboard.
-  // We need them to be able to exchange codes and reset passwords even if they have an active session.
-  if (user && isPublicRoute && path !== '/auth/callback' && path !== '/update-password') {
+  // Exempt /auth/callback, /update-password, /terms, and /privacy from redirecting authenticated users to dashboard
+  const isAccessibleWhileAuthenticated =
+    path === '/auth/callback' ||
+    path === '/update-password' ||
+    path.startsWith('/terms') ||
+    path.startsWith('/privacy');
+
+  if (user && isPublicRoute && !isAccessibleWhileAuthenticated) {
     url.pathname = '/dashboard';
     return NextResponse.redirect(url);
   }

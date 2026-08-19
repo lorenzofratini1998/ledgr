@@ -375,13 +375,13 @@ export function LoginForm({
 
       <p className="px-6 text-center text-sm text-muted-foreground">
         {t('auth.terms.agreement')}{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/terms" className="underline underline-offset-4 hover:text-foreground">
           {t('auth.terms.tos')}
-        </a>{" "}
+        </Link>{" "}
         {t('auth.terms.and')}{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-foreground">
+        <Link href="/privacy" className="underline underline-offset-4 hover:text-foreground">
           {t('auth.terms.privacy')}
-        </a>
+        </Link>
         .
       </p>
     </div>

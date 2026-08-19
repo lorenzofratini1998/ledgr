@@ -650,6 +650,44 @@ export const it: Dictionary = {
     authenticating: "Verifica in corso...",
     auth_failed: "Autenticazione biometrica non riuscita o annullata. Riprova.",
     unlock_again: "Riprova lo sblocco",
+  },
+  legal: {
+    backToLogin: "Torna al login",
+    backToDashboard: "Torna alla dashboard",
+    terms: {
+      title: "Termini di Servizio",
+      subtitle: "Ti invitiamo a leggere attentamente questi termini prima di utilizzare Ledgr.",
+      lastUpdated: "Ultimo aggiornamento: Agosto 2026",
+      sections: {
+        acceptance_title: "1. Accettazione dei Termini",
+        acceptance_desc: "Accedendo o utilizzando l'applicazione Ledgr, il sito web e i relativi servizi, accetti di essere vincolato dai presenti Termini di Servizio. Se non accetti qualsiasi parte di questi termini, non puoi accedere o utilizzare Ledgr.",
+        financial_title: "2. Integrità Finanziaria & Disclaimer",
+        financial_desc: "Ledgr è una piattaforma di gestione finanziaria personale creata per aiutarti a tracciare transazioni, gestire portafogli e pianificare budget. Ledgr non è un istituto finanziario, una banca o un consulente di investimenti. Tutti i riepiloghi dei saldi, i grafici e le metriche sono calcolati dalle voci inserite dall'utente a scopo di contabilità personale.",
+        account_title: "3. Sicurezza dell'Account & Biometria",
+        account_desc: "Sei l'unico responsabile della riservatezza delle credenziali del tuo account. Quando utilizzi lo sblocco biometrico (Face ID / Touch ID / WebAuthn), ogni verifica biometrica avviene esclusivamente in locale nell'hardware del tuo dispositivo e non viene mai trasmessa ai nostri server.",
+        data_title: "4. Proprietà dei Dati & Controllo Utente",
+        data_desc: "Mantieni la piena ed esclusiva proprietà di tutti i dati, transazioni e preferenze che inserisci in Ledgr. Hai il diritto di esportare i tuoi record finanziari o di eliminare permanentemente il tuo account e tutti i dati associati in qualsiasi momento dalle impostazioni di sicurezza.",
+        termination_title: "5. Modifiche del Servizio & Risoluzione",
+        termination_desc: "Ci riserviamo il diritto di modificare o interrompere qualsiasi parte del servizio con adeguato preavviso. L'uso continuato della piattaforma a seguito di modifiche costituisce accettazione dei termini aggiornati."
+      }
+    },
+    privacy: {
+      title: "Informativa sulla Privacy",
+      subtitle: "La privacy dei tuoi dati finanziari è la nostra priorità assoluta.",
+      lastUpdated: "Ultimo aggiornamento: Agosto 2026",
+      sections: {
+        collection_title: "1. Informazioni che Raccogliamo",
+        collection_desc: "Raccogliamo solo le informazioni strettamente necessarie all'erogazione del servizio: il tuo indirizzo email, le preferenze dell'applicazione (come valuta principale, data e tema) e i record delle tue transazioni, portafogli e budget inseriti manualmente.",
+        biometrics_title: "2. Dati Biometrici & Sicurezza del Dispositivo",
+        biometrics_desc: "Ledgr utilizza le API standard di Web Authentication (WebAuthn) per lo sblocco biometrico. Non abbiamo mai accesso, non raccogliamo né conserviamo le tue scansioni biometriche o impronte digitali. La verifica avviene interamente sul tuo dispositivo.",
+        storage_title: "3. Conservazione dei Dati & Crittografia",
+        storage_desc: "Tutti i dati finanziari sono archiviati in modo sicuro su database PostgreSQL protetti da criteri di Row-Level Security (RLS) e crittografia end-to-end in transito (HTTPS/TLS) e a riposo. Non vendiamo né condividiamo mai i tuoi dati finanziari con terze parti.",
+        push_title: "4. Notifiche Push & Archiviazione Offline",
+        push_desc: "Se abiliti le notifiche push, le chiavi crittografiche di sottoscrizione vengono memorizzate per recapitarti i promemoria. La cache locale e il service worker sono utilizzati esclusivamente per supportare l'operatività offline e la reattività della PWA.",
+        rights_title: "5. I Tuoi Diritti & Conformità GDPR",
+        rights_desc: "Hai il diritto di accedere, rettificare, esportare o eliminare definitivamente i tuoi dati ai sensi del GDPR. L'eliminazione dell'account cancella in modo permanente e irreversibile tutte le informazioni del profilo, i portafogli, le categorie e le transazioni."
+      }
+    }
   }
 };
 

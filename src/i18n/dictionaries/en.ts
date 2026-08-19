@@ -648,6 +648,44 @@ export const en = {
     authenticating: "Verifying...",
     auth_failed: "Biometric authentication failed or was cancelled. Please try again.",
     unlock_again: "Retry unlock",
+  },
+  legal: {
+    backToLogin: "Back to login",
+    backToDashboard: "Back to dashboard",
+    terms: {
+      title: "Terms of Service",
+      subtitle: "Please read these terms carefully before using Ledgr.",
+      lastUpdated: "Last updated: August 2026",
+      sections: {
+        acceptance_title: "1. Acceptance of Terms",
+        acceptance_desc: "By accessing or using the Ledgr application, website, and related services, you agree to be bound by these Terms of Service. If you disagree with any part of these terms, you may not access or use Ledgr.",
+        financial_title: "2. Financial Integrity & Disclaimer",
+        financial_desc: "Ledgr is a personal financial management platform built to help you track transactions, manage wallets, and organize budgets. Ledgr is not a financial institution, bank, or investment advisor. All balance summaries, charts, and metrics are calculated from user-provided entries for personal bookkeeping purposes.",
+        account_title: "3. Account Security & Biometrics",
+        account_desc: "You are solely responsible for maintaining the confidentiality of your account credentials. When using biometric unlock (Face ID / Touch ID / WebAuthn), all biometric verification takes place locally inside your device hardware and is never transmitted to our servers.",
+        data_title: "4. User Ownership & Data Control",
+        data_desc: "You maintain full and exclusive ownership of all data, transactions, and preferences you input into Ledgr. You have the right to export your financial records or permanently delete your account and all associated data at any time from your account settings.",
+        termination_title: "5. Service Modifications & Termination",
+        termination_desc: "We reserve the right to modify or discontinue any part of the service with appropriate notice. Continued use of the platform following modifications constitutes acceptance of the revised terms."
+      }
+    },
+    privacy: {
+      title: "Privacy Policy",
+      subtitle: "Your financial privacy is our top priority.",
+      lastUpdated: "Last updated: August 2026",
+      sections: {
+        collection_title: "1. Information We Collect",
+        collection_desc: "We collect only the information strictly necessary to provide the service: your account email address, selected application preferences (such as primary currency, locale, and theme), and your user-entered transaction records, wallets, and budgets.",
+        biometrics_title: "2. Biometric Data & Device Security",
+        biometrics_desc: "Ledgr utilizes standard browser Web Authentication (WebAuthn) APIs for biometric unlock. We never access, capture, or store your biometric scans, fingerprints, or facial recognition data. Authentication is verified strictly on your local hardware platform.",
+        storage_title: "3. Data Storage & Encryption",
+        storage_desc: "All financial data is securely stored in PostgreSQL databases protected by Row-Level Security (RLS) policies and end-to-end encryption in transit (HTTPS/TLS) and at rest. We never sell, monetize, or share your financial data with third-party advertisers.",
+        push_title: "4. Push Notifications & Offline Storage",
+        push_desc: "If you enable device push notifications, cryptographic subscription keys are stored to route transaction reminders. Local caching and service worker storage are used solely to support offline capability and rapid PWA responsiveness.",
+        rights_title: "5. Your Rights & GDPR Compliance",
+        rights_desc: "You have the right to access, rectify, export, or permanently delete your data under GDPR and relevant data protection laws. Initiating an account deletion permanently and irreversibly purges all your profile records, wallets, categories, and transactions."
+      }
+    }
   }
 };
 
