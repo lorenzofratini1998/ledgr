@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#09090b">
+  <title>Offline | Ledgr</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --card-bg: #ffffff;
+      --border: #e4e4e7;
+      --text-main: #09090b;
+      --text-muted: #71717a;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --accent-text: #ffffff;
+      --icon-bg: #fef3c7;
+      --icon-color: #d97706;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #09090b;
+        --card-bg: #18181b;
+        --border: #27272a;
+        --text-main: #f4f4f5;
+        --text-muted: #a1a1aa;
+        --accent: #3b82f6;
+        --accent-hover: #2563eb;
+        --accent-text: #ffffff;
+        --icon-bg: #451a03;
+        --icon-color: #fbbf24;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: calc(env(safe-area-inset-top, 0px) + 1.5rem) 1.5rem calc(env(safe-area-inset-bottom, 0px) + 1.5rem);
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2.25rem 1.75rem;
+      text-align: center;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.15);
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .icon-wrapper {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      border-radius: 1.25rem;
+      background: var(--icon-bg);
+      color: var(--icon-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-wrapper svg {
+      width: 32px;
+      height: 32px;
+      stroke-width: 2;
+    }
+
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    p {
+      font-size: 0.925rem;
+      line-height: 1.55;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 0.85rem 1.25rem;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 0.85rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--accent-text);
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 1.25rem;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--icon-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="icon-wrapper">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="1" y1="1" x2="23" y2="23"></line>
+        <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"></path>
+        <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"></path>
+        <path d="M10.71 5.05A16 16 0 0 1 22.58 9"></path>
+        <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+        <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+        <line x1="12" y1="20" x2="12.01" y2="20"></line>
+      </svg>
+    </div>
+
+    <h1 id="title">Nessuna connessione</h1>
+    <p id="desc">Ledgr richiede una connessione attiva per garantire l'integrità dei tuoi conti e sincronizzare le transazioni in sicurezza.</p>
+
+    <div class="button-group">
+      <button class="btn btn-primary" id="retry-btn" onclick="handleRetry()">
+        <span id="btn-text">Riprova connessione</span>
+      </button>
+    </div>
+
+    <div class="status-badge">
+      <span class="status-dot"></span>
+      <span id="status-text">In attesa di connessione internet...</span>
+    </div>
+  </div>
+
+  <script>
+    const I18N = {
+      it: {
+        title: "Nessuna connessione a internet",
+        description: "Ledgr richiede una connessione attiva per garantire l'integrità dei tuoi conti e delle transazioni.",
+        button: "Riprova connessione",
+        checking: "Verifica connessione in corso...",
+        waiting: "In attesa di connessione internet..."
+      },
+      en: {
+        title: "No Internet Connection",
+        description: "Ledgr requires an active connection to ensure the integrity of your financial accounts and transactions.",
+        button: "Try Again",
+        checking: "Checking connection...",
+        waiting: "Waiting for internet connection..."
+      }
+    };
+
+    function getPreferredLocale() {
+      // 1. Check LOCALE cookie from user settings in Ledgr
+      const match = document.cookie.match(/(?:^|; )LOCALE=([^;]*)/);
+      if (match && match[1]) {
+        const cookieLang = decodeURIComponent(match[1]).toLowerCase();
+        if (I18N[cookieLang]) return cookieLang;
+      }
+      
+      // 2. Fallback to browser language
+      const browserLang = (navigator.language || navigator.userLanguage || 'it').split('-')[0].toLowerCase();
+      return I18N[browserLang] ? browserLang : 'it';
+    }
+
+    const currentLocale = getPreferredLocale();
+    const strings = I18N[currentLocale];
+
+    document.documentElement.lang = currentLocale;
+    document.getElementById('title').textContent = strings.title;
+    document.getElementById('desc').textContent = strings.description;
+    document.getElementById('btn-text').textContent = strings.button;
+    document.getElementById('status-text').textContent = strings.waiting;
+
+    function handleRetry() {
+      const btn = document.getElementById('retry-btn');
+      const btnText = document.getElementById('btn-text');
+      btn.style.opacity = '0.7';
+      btn.style.pointerEvents = 'none';
+      btnText.textContent = strings.checking;
+      
+      if (navigator.onLine) {
+        window.location.reload();
+      } else {
+        setTimeout(() => {
+          btn.style.opacity = '1';
+          btn.style.pointerEvents = 'auto';
+          btnText.textContent = strings.button;
+        }, 1000);
+      }
+    }
+
+    // Auto-reload as soon as connectivity is restored
+    window.addEventListener('online', () => {
+      window.location.reload();
+    });
+  </script>
+</body>
+</html>

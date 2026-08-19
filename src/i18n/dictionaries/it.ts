@@ -624,6 +624,16 @@ export const it: Dictionary = {
     testSentSuccess: "Notifica di test inviata con successo!",
     testSentError: "Impossibile inviare la notifica di test",
     iosNote: "Nota per utenti Apple iOS: Per ricevere notifiche push su iPhone e iPad (iOS 16.4+), aggiungi Ledgr alla schermata Home dal menu Condividi di Safari."
+  },
+  offline: {
+    bannerTitle: "Sei offline",
+    bannerDescription: "Sincronizzazione dei dati sospesa. Verifica la connessione a internet.",
+    reconnectedTitle: "Di nuovo online",
+    reconnectedDescription: "Connessione ripristinata. Sincronizzazione attiva.",
+    pageTitle: "Nessuna connessione a internet",
+    pageDescription: "Ledgr richiede una connessione attiva per garantire l'integrità dei tuoi conti e delle transazioni.",
+    retryButton: "Riprova connessione",
+    checkingConnection: "Verifica connessione in corso..."
   }
 };
 

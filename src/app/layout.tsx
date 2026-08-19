@@ -1,4 +1,5 @@
 import { PWAManager } from "@/components/pwa-manager";
+import { OfflineBanner } from "@/components/shared/offline-banner";
 import { Toaster } from "@/components/ui/sonner";
 import { siteConfig } from "@/config/site";
 import { DictionaryProvider } from "@/i18n/dictionary-provider";
@@ -57,6 +58,7 @@ export default async function RootLayout({
             <QueryProvider>
               {children}
               <PWAManager />
+              <OfflineBanner />
             </QueryProvider>
             <Toaster />
           </DictionaryProvider>

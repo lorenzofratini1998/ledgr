@@ -622,6 +622,16 @@ export const en = {
     testSentSuccess: "Test notification sent successfully!",
     testSentError: "Failed to send test notification",
     iosNote: "Note for Apple iOS: To receive push notifications on iPhone and iPad (iOS 16.4+), add Ledgr to your Home Screen from Safari share menu."
+  },
+  offline: {
+    bannerTitle: "You're Offline",
+    bannerDescription: "Data synchronization is paused. Check your internet connection.",
+    reconnectedTitle: "Back Online",
+    reconnectedDescription: "Connection restored. Sync is active.",
+    pageTitle: "No Internet Connection",
+    pageDescription: "Ledgr requires an active connection to ensure the integrity of your financial accounts and transactions.",
+    retryButton: "Try Again",
+    checkingConnection: "Checking connection..."
   }
 };
 

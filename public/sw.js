@@ -1,6 +1,6 @@
-const CACHE_NAME = "ledgr-pwa-cache-v2";
+const CACHE_NAME = "ledgr-pwa-cache-v3";
 
-const ASSETS_TO_CACHE = [];
+const ASSETS_TO_CACHE = ["/offline.html", "/favicon.ico"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -29,25 +29,42 @@ self.addEventListener("fetch", (event) => {
 
   const url = new URL(event.request.url);
 
-  // Exclude Next.js internal data requests (RSC payloads, HMR, etc.)
+  // Handle page navigation requests: Network-First with Offline fallback page
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(async () => {
+        const offlinePage = await caches.match("/offline.html");
+        if (offlinePage) return offlinePage;
+        return new Response("Offline", {
+          status: 503,
+          statusText: "Service Unavailable",
+          headers: { "Content-Type": "text/plain" },
+        });
+      })
+    );
+    return;
+  }
+
+  // Exclude Next.js internal data requests (RSC payloads, HMR, prefetches)
   if (
-    event.request.mode === "navigate" ||
     event.request.headers.get("RSC") === "1" ||
     event.request.headers.get("Next-Router-Prefetch") === "1" ||
     url.pathname.startsWith("/_next/webpack-hmr")
   ) {
-    return; // Bypass Service Worker entirely
+    return; // Bypass Service Worker
   }
 
-  // Use Network-First for everything by default to prevent Next.js hydration mismatches
-  // and ensure Supabase Auth middleware always runs.
+  // Network-First for other static assets
   event.respondWith(
     fetch(event.request)
       .then((response) => response)
       .catch(async () => {
         const cachedResponse = await caches.match(event.request);
         if (cachedResponse) return cachedResponse;
-        return new Response('Network error or offline', { status: 503, statusText: 'Service Unavailable' });
+        return new Response("Network error or offline", {
+          status: 503,
+          statusText: "Service Unavailable",
+        });
       })
   );
 });
