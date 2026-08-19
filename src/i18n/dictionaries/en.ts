@@ -469,6 +469,7 @@ export const en = {
       updating_btn: "Updating...",
       success: "Security and notification preferences updated successfully.",
       error: "Failed to update security preferences.",
+      push_section_title: "Device & Push Notifications",
       logout: "Log out",
     },
     dangerZone: {
@@ -589,7 +590,41 @@ export const en = {
     deleteConfirmDescription: "Are you sure you want to delete '{name}'? Past transactions created from it will remain intact.",
     executing: "Recording...",
     saving: "Saving..."
+  },
+  notifications: {
+    title: "Notifications",
+    description: "Notifications center and budget alerts",
+    all: "All",
+    unread: "Unread",
+    markAllAsRead: "Mark all read",
+    markAsRead: "Mark as read",
+    delete: "Delete",
+    noUnread: "No unread notifications",
+    noUnreadDesc: "You have read all recent notifications.",
+    empty: "No notifications",
+    emptyDesc: "We'll notify you when there are updates on your budgets or upcoming scheduled payments.",
+    loading: "Loading notifications...",
+    view: "View",
+    budgetWarningTitle: "Budget Warning",
+    budgetWarningDesc: "You have reached {percentage}% of budget \"{budget_name}\" (Spent: {spent_amount} of {amount} {currency_code})",
+    budgetExceededTitle: "Budget Exceeded!",
+    budgetExceededDesc: "You exceeded 100% of budget \"{budget_name}\" (Spent: {spent_amount} of {amount} {currency_code})",
+    recurringReminderTitle: "Upcoming Payment Tomorrow",
+    recurringReminderDesc: "Tomorrow a payment of {amount} {currency_code} is scheduled for \"{description}\" ({wallet_name})",
+    pushTitle: "Device Push Notifications (PWA)",
+    pushDesc: "Receive real-time alerts on your device even when the app is closed.",
+    pushActive: "Push notifications active on this device",
+    pushInactive: "Push notifications inactive on this device",
+    pushBlocked: "Notification permissions blocked in browser settings",
+    pushUnsupported: "Push notifications not supported on this browser",
+    sendTest: "Send test notification",
+    sendingTest: "Sending...",
+    testSentSuccess: "Test notification sent successfully!",
+    testSentError: "Failed to send test notification",
+    iosNote: "Note for Apple iOS: To receive push notifications on iPhone and iPad (iOS 16.4+), add Ledgr to your Home Screen from Safari share menu."
   }
 };
 
 export type Dictionary = typeof en;
+
+

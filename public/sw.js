@@ -51,3 +51,63 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
+
+// WEB PUSH LISTENER
+self.addEventListener("push", (event) => {
+  if (!event.data) return;
+
+  try {
+    const data = event.data.json();
+    const title = data.title || "Ledgr Notification";
+    const options = {
+      body: data.body || "",
+      icon: data.icon || "/favicon.ico",
+      badge: data.badge || "/favicon.ico",
+      data: data.data || {},
+      vibrate: [100, 50, 100],
+      actions: [
+        {
+          action: "open",
+          title: data.actionTitle || "Open",
+        },
+      ],
+    };
+
+    event.waitUntil(self.registration.showNotification(title, options));
+  } catch (err) {
+    const text = event.data.text();
+    event.waitUntil(
+      self.registration.showNotification("Ledgr", {
+        body: text,
+        icon: "/favicon.ico",
+      })
+    );
+  }
+});
+
+// NOTIFICATION CLICK LISTENER
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  const targetUrl = event.notification.data?.url || "/dashboard";
+
+  event.waitUntil(
+    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((clientList) => {
+      // If a window client is already open, focus it and navigate
+      for (const client of clientList) {
+        if ("focus" in client) {
+          client.focus();
+          if ("navigate" in client) {
+            return client.navigate(targetUrl);
+          }
+          return;
+        }
+      }
+      // If not open, open a new window
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+

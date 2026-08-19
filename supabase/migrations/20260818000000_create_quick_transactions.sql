@@ -28,7 +28,6 @@ CREATE TRIGGER set_updated_at_quick_transactions
     BEFORE UPDATE ON public.quick_transactions
     FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime(updated_at);
 
--- Trigger to enforce MAX 5 quick transactions per user
 CREATE OR REPLACE FUNCTION check_quick_transactions_limit()
 RETURNS TRIGGER AS $$
 DECLARE

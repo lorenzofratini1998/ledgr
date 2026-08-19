@@ -1,10 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { LayoutUser } from '@/types/layout';
-import { Bell } from 'lucide-react';
 import { UpcomingDrawer } from './upcoming-drawer';
 import { UserNavPopover } from './user-nav-popover';
+import { NotificationCenter } from '@/features/notifications/components/notification-center';
 
 interface TopHeaderProps {
   user: LayoutUser;
@@ -35,23 +33,10 @@ export function TopHeader({ user, upcomingSlot }: TopHeaderProps) {
             {upcomingSlot}
           </UpcomingDrawer>
           
-          <Popover>
-            <PopoverTrigger render={<Button variant="ghost" size="icon" className="relative rounded-full h-9 w-9" />}>
-              <Bell className="h-5 w-5" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-destructive" />
-              <span className="sr-only">Notifications</span>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-80">
-              <div className="space-y-2">
-                <h4 className="font-medium leading-none">Notifications</h4>
-                <p className="text-sm text-muted-foreground">
-                  You have 2 unread messages.
-                </p>
-              </div>
-            </PopoverContent>
-          </Popover>
+          <NotificationCenter variant="header" />
         </div>
       </div>
     </header>
   );
 }
+

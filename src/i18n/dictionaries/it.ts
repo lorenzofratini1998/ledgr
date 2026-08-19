@@ -471,6 +471,7 @@ export const it: Dictionary = {
       updating_btn: "Aggiornamento...",
       success: "Impostazioni di sicurezza aggiornate con successo.",
       error: "Impossibile aggiornare la sicurezza.",
+      push_section_title: "Dispositivo & Notifiche Push",
       logout: "Esci",
     },
     dangerZone: {
@@ -591,5 +592,39 @@ export const it: Dictionary = {
     deleteConfirmDescription: "Sei sicuro di voler eliminare '{name}'? Le transazioni già create non subiranno variazioni.",
     executing: "Registrazione...",
     saving: "Salvataggio..."
+  },
+  notifications: {
+    title: "Notifiche",
+    description: "Centro notifiche e avvisi di budget",
+    all: "Tutte",
+    unread: "Non lette",
+    markAllAsRead: "Segna tutte",
+    markAsRead: "Segna come letta",
+    delete: "Elimina",
+    noUnread: "Nessuna notifica non letta",
+    noUnreadDesc: "Hai letto tutte le notifiche recenti.",
+    empty: "Nessuna notifica",
+    emptyDesc: "Ti avviseremo quando ci saranno aggiornamenti sui tuoi budget o pagamenti ricorrenti.",
+    loading: "Caricamento notifiche...",
+    view: "Visualizza",
+    budgetWarningTitle: "Attenzione al Budget",
+    budgetWarningDesc: "Hai raggiunto il {percentage}% del budget \"{budget_name}\" (Spesi: {spent_amount} su {amount} {currency_code})",
+    budgetExceededTitle: "Budget Superato!",
+    budgetExceededDesc: "Hai superato il 100% del budget \"{budget_name}\" (Spesi: {spent_amount} su {amount} {currency_code})",
+    recurringReminderTitle: "Pagamento Programmato Domani",
+    recurringReminderDesc: "Domani è previsto il pagamento di {amount} {currency_code} per \"{description}\" ({wallet_name})",
+    pushTitle: "Notifiche Push Dispositivo (PWA)",
+    pushDesc: "Ricevi avvisi in tempo reale sul tuo dispositivo anche quando l'applicazione è chiusa.",
+    pushActive: "Notifiche push attive su questo dispositivo",
+    pushInactive: "Notifiche push non attivate su questo dispositivo",
+    pushBlocked: "Permesso notifiche bloccato nelle impostazioni del browser",
+    pushUnsupported: "Notifiche push non supportate su questo browser",
+    sendTest: "Invia notifica di test",
+    sendingTest: "Invio in corso...",
+    testSentSuccess: "Notifica di test inviata con successo!",
+    testSentError: "Impossibile inviare la notifica di test",
+    iosNote: "Nota per utenti Apple iOS: Per ricevere notifiche push su iPhone e iPad (iOS 16.4+), aggiungi Ledgr alla schermata Home dal menu Condividi di Safari."
   }
 };
+
+

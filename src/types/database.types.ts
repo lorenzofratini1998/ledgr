@@ -200,7 +200,35 @@ export type Database = {
           },
         ]
       }
+      db_translations: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          locale: string
+          template: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          locale: string
+          template: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          locale?: string
+          template?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       currencies: {
+
         Row: {
           created_at: string
           is_default: boolean
@@ -495,6 +523,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          data: Json
+          deleted_at: string | null
+          id: string
+          is_read: boolean
+          message: string
+          read_at: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          deleted_at?: string | null
+          id?: string
+          is_read?: boolean
+          message: string
+          read_at?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          deleted_at?: string | null
+          id?: string
+          is_read?: boolean
+          message?: string
+          read_at?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       tags: {
         Row: {
@@ -979,6 +1049,11 @@ export type Database = {
         | "1y"
         | "ytd"
         | "custom"
+      notification_type:
+        | "budget_warning"
+        | "budget_exceeded"
+        | "recurring_reminder"
+        | "system"
       recurring_amount_type: "fixed" | "variable"
       recurring_frequency_type:
         | "once"
@@ -1122,6 +1197,12 @@ export const Constants = {
       app_date_format_type: ["DD/MM/YYYY", "YYYY-MM-DD", "MM/DD/YYYY"],
       app_theme_type: ["light", "dark", "system"],
       dashboard_range_type: ["7d", "30d", "90d", "6m", "1y", "ytd", "custom"],
+      notification_type: [
+        "budget_warning",
+        "budget_exceeded",
+        "recurring_reminder",
+        "system",
+      ],
       recurring_amount_type: ["fixed", "variable"],
       recurring_frequency_type: [
         "once",

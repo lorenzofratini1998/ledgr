@@ -129,14 +129,12 @@ DECLARE
     v_total NUMERIC(18,4);
     v_budget RECORD;
 BEGIN
-    -- Recupera il budget
     SELECT * INTO v_budget FROM public.budgets WHERE budget_id = p_budget_id;
     
     IF NOT FOUND THEN
         RETURN;
     END IF;
 
-    -- Calcola il totale dalle transazioni esistenti basandosi sugli attuali criteri
     SELECT COALESCE(SUM(t.normalized_amount), 0) INTO v_total
     FROM public.transactions t
     WHERE t.user_id = v_budget.user_id

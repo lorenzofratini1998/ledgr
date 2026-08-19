@@ -4,6 +4,7 @@ import { BottomNav } from './bottom-nav';
 import { RightPanel } from './right-panel';
 import { Sidebar } from './sidebar';
 import { TopHeader } from './top-header';
+import { RealtimeNotificationListener } from '@/features/notifications';
 
 interface ShellProps {
   children: ReactNode;
@@ -15,6 +16,8 @@ interface ShellProps {
 export function Shell({ children, user, calendarSlot, upcomingSlot }: ShellProps) {
   return (
     <div className="flex h-screen w-full bg-background overflow-hidden selection:bg-primary/20">
+      <RealtimeNotificationListener />
+
       
       {/* Mobile Layout */}
       <div className="md:hidden flex flex-col w-full h-full">

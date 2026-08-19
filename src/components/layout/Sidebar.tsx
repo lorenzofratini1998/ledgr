@@ -2,16 +2,16 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { MAIN_NAV_ITEMS } from '@/config/navigation';
 import { useTranslation } from '@/i18n/hooks/use-translation';
 import { TranslationKey } from '@/i18n/types';
 import { LayoutUser } from '@/types/layout';
-import { Bell, PanelLeft, PanelLeftClose, Settings } from 'lucide-react';
+import { PanelLeft, PanelLeftClose } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 import { UserNavPopover } from './user-nav-popover';
+import { NotificationCenter } from '@/features/notifications/components/notification-center';
 
 interface SidebarProps {
   user: LayoutUser;
@@ -61,25 +61,7 @@ export function Sidebar({ user }: SidebarProps) {
       <Separator />
 
       <div className="p-3 flex flex-col gap-2">
-        <Popover>
-          <PopoverTrigger render={<button className="w-full flex items-center gap-4 p-3 rounded-lg hover:bg-muted transition-colors text-muted-foreground hover:text-foreground relative" title={isCollapsed ? t('navigation.notifications') : undefined} />}>
-            <div className="relative mx-auto md:mx-0 shrink-0">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-destructive border-2 border-background" />
-            </div>
-            <span className={`font-medium whitespace-nowrap overflow-hidden transition-all text-left ${isCollapsed ? 'hidden' : 'block'}`}>
-              {t('navigation.notifications')}
-            </span>
-          </PopoverTrigger>
-          <PopoverContent align="end" side="right" sideOffset={16} className="w-80">
-            <div className="space-y-2">
-              <h4 className="font-medium leading-none">{t('navigation.notifications')}</h4>
-              <p className="text-sm text-muted-foreground">
-                {t('navigation.unreadMessages')}
-              </p>
-            </div>
-          </PopoverContent>
-        </Popover>
+        <NotificationCenter variant="sidebar" isCollapsed={isCollapsed} />
 
         <UserNavPopover
           side="right"
@@ -101,3 +83,4 @@ export function Sidebar({ user }: SidebarProps) {
     </aside>
   );
 }
+

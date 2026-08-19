@@ -1,16 +1,12 @@
--- 1. CREAZIONE NUOVI TIPI ENUM
 CREATE TYPE public.recurring_frequency_type AS ENUM ('once', 'daily', 'weekly', 'monthly', 'yearly');
 CREATE TYPE public.recurring_status_type AS ENUM ('active', 'paused', 'completed');
 CREATE TYPE public.recurring_amount_type AS ENUM ('fixed', 'variable');
 CREATE TYPE public.transaction_status_type AS ENUM ('pending', 'completed');
 
--- 2. AGGIORNAMENTO TABELLE ESISTENTI
--- Aggiungiamo lo stato e il collegamento alla ricorrenza nelle transazioni
 ALTER TABLE public.transactions 
 ADD COLUMN status public.transaction_status_type NOT NULL DEFAULT 'completed',
 ADD COLUMN recurring_id UUID;
 
--- 3. CREAZIONE TABELLA RECURRING PAYMENTS
 CREATE TABLE public.recurring_payments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -42,11 +38,9 @@ CREATE TRIGGER set_updated_at_recurring_payments
     BEFORE UPDATE ON public.recurring_payments
     FOR EACH ROW EXECUTE FUNCTION extensions.moddatetime(updated_at);
 
--- Ora possiamo aggiungere la Foreign Key su transactions
 ALTER TABLE public.transactions
 ADD CONSTRAINT fk_recurring_id FOREIGN KEY (recurring_id) REFERENCES public.recurring_payments(id) ON DELETE SET NULL DEFERRABLE INITIALLY DEFERRED;
 
--- 4. HELPER FUNCTION: GET LATEST EXCHANGE RATE
 CREATE OR REPLACE FUNCTION public.get_latest_exchange_rate(
     p_base_currency CHAR(3),
     p_quote_currency CHAR(3),
@@ -76,7 +70,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql STABLE;
 
--- 5. FUNZIONE MATEMATICA PER IL CALCOLO DEI "GIORNI MALEDETTI" (29, 30, 31)
 CREATE OR REPLACE FUNCTION public.get_next_recurring_date(p_start_date DATE, p_current_target DATE, p_frequency public.recurring_frequency_type)
 RETURNS DATE AS $$
 DECLARE
@@ -87,7 +80,6 @@ BEGIN
     ELSIF p_frequency = 'weekly' THEN
         RETURN p_current_target + INTERVAL '7 days';
     ELSIF p_frequency = 'monthly' THEN
-        -- Calcoliamo il differenziale di mesi direttamente dalla START DATE. 
         v_months := (EXTRACT(year FROM p_current_target) - EXTRACT(year FROM p_start_date)) * 12 +
                     (EXTRACT(month FROM p_current_target) - EXTRACT(month FROM p_start_date)) + 1;
         RETURN (p_start_date + (v_months || ' month')::INTERVAL)::DATE;
@@ -99,7 +91,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql IMMUTABLE;
 
--- 6. TRIGGER CORE: INSERIMENTO RETROATTIVO & AUTO-GENERAZIONE
 CREATE OR REPLACE FUNCTION public.handle_recurring_generation()
 RETURNS TRIGGER AS $$
 DECLARE
@@ -115,7 +106,6 @@ BEGIN
         RETURN NEW;
     END IF;
 
-    -- Estraiamo sia il timezone che la valuta principale dell'utente in una sola query
     SELECT timezone, primary_currency_code 
     INTO v_tz, v_primary_currency 
     FROM public.user_preferences 
@@ -140,7 +130,7 @@ BEGIN
         END IF;
 
         IF NOT EXISTS (SELECT 1 FROM public.wallets WHERE id = NEW.wallet_id AND is_active = TRUE) THEN
-            RAISE LOG 'Fallback: Il wallet % non è attivo. Pagamento ricorrente % messo in pausa.', NEW.wallet_id, NEW.id;
+            RAISE LOG 'Fallback: Wallet % is not active. Recurring payment % paused.', NEW.wallet_id, NEW.id;
             NEW.status := 'paused';
             EXIT;
         END IF;
@@ -188,12 +178,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Agganciamo il trigger 
 CREATE TRIGGER on_recurring_upsert
     BEFORE INSERT OR UPDATE ON public.recurring_payments
     FOR EACH ROW EXECUTE FUNCTION public.handle_recurring_generation();
-
--- 7. CRON JOB: IL WAKE-UP CALL
 CREATE OR REPLACE FUNCTION public.process_hourly_recurring_payments()
 RETURNS void AS $$
 BEGIN
@@ -204,12 +191,13 @@ BEGIN
       AND rp.status = 'active'
       AND rp.next_execution_date <= (CURRENT_TIMESTAMP AT TIME ZONE COALESCE(up.timezone, 'UTC'))::date;
 
-    RAISE LOG 'Esecuzione oraria di pg_cron per recurring_payments completata.';
+    RAISE LOG 'Hourly pg_cron execution for recurring_payments completed.';
 END;
 $$ LANGUAGE plpgsql;
 
--- Schedulazione su Supabase (Richiede pg_cron abilitato)
--- Commentato per lo sviluppo locale, ma verrà eseguito in prod se pg_cron è presente.
+-- Supabase pg_cron schedule (requires pg_cron enabled)
+-- Commented out for local development, will run in production if pg_cron is enabled.
 -- SELECT cron.schedule('generate_recurring_txs_hourly', '0 * * * *', $$
 --     SELECT public.process_hourly_recurring_payments();
 -- $$);
+

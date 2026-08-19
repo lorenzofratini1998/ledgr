@@ -30,7 +30,11 @@ export type CategoryOption = {
   color?: string | null;
 };
 
+export type Notification = Tables<'notifications'>;
+export type NotificationType = Enums<'notification_type'>;
+
 export type AppThemeType = Enums<'app_theme_type'>;
 export type AppDateFormatType = Enums<'app_date_format_type'>;
 export type DashboardRangeType = Enums<'dashboard_range_type'>;
 export type WalletType = Enums<'wallet_type'>;
+
